@@ -1,0 +1,101 @@
+import enum
+from datetime import datetime
+
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.db.database import Base
+
+
+class DifficultyLevel(str, enum.Enum):
+    beginner = "beginner"
+    intermediate = "intermediate"
+    advanced = "advanced"
+
+
+class SubmissionStatus(str, enum.Enum):
+    pending = "pending"
+    completed = "completed"
+    failed = "failed"
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    total_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    streak: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    submissions: Mapped[list["Submission"]] = relationship(back_populates="user")
+
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+
+    exercises: Mapped[list["Exercise"]] = relationship(back_populates="category")
+
+
+class Exercise(Base):
+    __tablename__ = "exercises"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    hint: Mapped[str | None] = mapped_column(Text)
+    difficulty_level: Mapped[DifficultyLevel] = mapped_column(
+        Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.beginner
+    )
+    category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id"))
+    starter_code: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    category: Mapped["Category | None"] = relationship(back_populates="exercises")
+    test_cases: Mapped[list["TestCase"]] = relationship(back_populates="exercise")
+    submissions: Mapped[list["Submission"]] = relationship(back_populates="exercise")
+
+
+class TestCase(Base):
+    __tablename__ = "test_cases"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    exercise_id: Mapped[int] = mapped_column(ForeignKey("exercises.id"), nullable=False)
+    input_data: Mapped[str] = mapped_column(Text, default="")
+    expected_output: Mapped[str] = mapped_column(Text, nullable=False)
+    score_weight: Mapped[float] = mapped_column(Float, default=1.0)
+    is_hidden: Mapped[bool] = mapped_column(default=False)
+
+    exercise: Mapped["Exercise"] = relationship(back_populates="test_cases")
+
+
+class Submission(Base):
+    __tablename__ = "submissions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    exercise_id: Mapped[int] = mapped_column(ForeignKey("exercises.id"), nullable=False)
+    code: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[SubmissionStatus] = mapped_column(
+        Enum(SubmissionStatus), default=SubmissionStatus.pending
+    )
+    score: Mapped[float] = mapped_column(Float, default=0.0)
+    stdout: Mapped[str] = mapped_column(Text, default="")
+    stderr: Mapped[str] = mapped_column(Text, default="")
+    time_taken_ms: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    user: Mapped["User"] = relationship(back_populates="submissions")
+    exercise: Mapped["Exercise"] = relationship(back_populates="submissions")
