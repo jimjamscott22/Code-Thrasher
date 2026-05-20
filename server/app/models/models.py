@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -31,6 +31,9 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     submissions: Mapped[list["Submission"]] = relationship(back_populates="user")
 
@@ -55,7 +58,7 @@ class Exercise(Base):
     difficulty_level: Mapped[DifficultyLevel] = mapped_column(
         Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.beginner
     )
-    category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id"))
+    category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id"), index=True)
     starter_code: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -70,7 +73,7 @@ class TestCase(Base):
     __tablename__ = "test_cases"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    exercise_id: Mapped[int] = mapped_column(ForeignKey("exercises.id"), nullable=False)
+    exercise_id: Mapped[int] = mapped_column(ForeignKey("exercises.id"), nullable=False, index=True)
     input_data: Mapped[str] = mapped_column(Text, default="")
     expected_output: Mapped[str] = mapped_column(Text, nullable=False)
     score_weight: Mapped[float] = mapped_column(Float, default=1.0)
@@ -81,13 +84,17 @@ class TestCase(Base):
 
 class Submission(Base):
     __tablename__ = "submissions"
+    __table_args__ = (
+        # Covers "all submissions for a user" and "user's attempt on a specific exercise"
+        Index("ix_submissions_user_exercise", "user_id", "exercise_id"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     exercise_id: Mapped[int] = mapped_column(ForeignKey("exercises.id"), nullable=False)
     code: Mapped[str] = mapped_column(Text, nullable=False)
     status: Mapped[SubmissionStatus] = mapped_column(
-        Enum(SubmissionStatus), default=SubmissionStatus.pending
+        Enum(SubmissionStatus), default=SubmissionStatus.pending, index=True
     )
     score: Mapped[float] = mapped_column(Float, default=0.0)
     stdout: Mapped[str] = mapped_column(Text, default="")

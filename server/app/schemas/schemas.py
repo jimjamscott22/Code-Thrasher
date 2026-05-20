@@ -1,38 +1,9 @@
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.models.models import DifficultyLevel, SubmissionStatus
-
-
-# ── Auth ──────────────────────────────────────────────────────────────────────
-
-class UserRegister(BaseModel):
-    username: Annotated[str, Field(min_length=3, max_length=50)]
-    email: EmailStr
-    password: Annotated[str, Field(min_length=8, max_length=128)]
-
-
-class UserLogin(BaseModel):
-    username: str
-    password: str
-
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-
-
-class UserPublic(BaseModel):
-    id: int
-    username: str
-    email: str
-    total_score: int
-    streak: int
-    created_at: datetime
-
-    model_config = {"from_attributes": True}
 
 
 # ── Categories ────────────────────────────────────────────────────────────────

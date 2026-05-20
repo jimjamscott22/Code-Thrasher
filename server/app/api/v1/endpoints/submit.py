@@ -5,9 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.api.dependencies import get_current_user
 from app.db.database import get_db
-from app.models.models import Exercise, Submission, SubmissionStatus, TestCase, User
+from app.models.models import Exercise, Submission, SubmissionStatus, TestCase
 from app.schemas.schemas import SubmitRequest, SubmitResponse, TestCaseResult
 from app.services.sandbox import run_in_sandbox
 
@@ -21,9 +20,7 @@ async def submit_code(
     request: Request,
     payload: SubmitRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ) -> SubmitResponse:
-    # Load exercise + test cases
     result = await db.execute(
         select(Exercise)
         .where(Exercise.id == payload.exercise_id)
@@ -74,7 +71,6 @@ async def submit_code(
     sub_status = SubmissionStatus.completed if score == 100.0 else SubmissionStatus.failed
 
     submission = Submission(
-        user_id=current_user.id,
         exercise_id=payload.exercise_id,
         code=payload.code,
         status=sub_status,
@@ -84,10 +80,6 @@ async def submit_code(
         time_taken_ms=max_time,
     )
     db.add(submission)
-
-    if sub_status == SubmissionStatus.completed:
-        current_user.total_score += int(score)
-
     await db.commit()
     await db.refresh(submission)
 

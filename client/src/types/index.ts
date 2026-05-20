@@ -1,15 +1,6 @@
 export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
 export type SubmissionStatus = "pending" | "completed" | "failed";
 
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  total_score: number;
-  streak: number;
-  created_at: string;
-}
-
 export interface Category {
   id: number;
   name: string;

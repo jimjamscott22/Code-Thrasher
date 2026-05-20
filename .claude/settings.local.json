@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Head-20)",
+      "Bash(Remove-Item \"d:\\\\Code\\\\Python\\\\PythonApps\\\\Code-Thrasher\\\\server\\\\app\\\\api\\\\v1\\\\endpoints\\\\auth.py\" -Force)",
+      "Bash(Remove-Item \"d:\\\\Code\\\\Python\\\\PythonApps\\\\Code-Thrasher\\\\server\\\\app\\\\api\\\\dependencies.py\" -Force)",
+      "Bash(Remove-Item \"d:\\\\Code\\\\Python\\\\PythonApps\\\\Code-Thrasher\\\\server\\\\app\\\\core\\\\security.py\" -Force)",
+      "Bash(Remove-Item \"d:\\\\Code\\\\Python\\\\PythonApps\\\\Code-Thrasher\\\\client\\\\src\\\\store\\\\useAuthStore.ts\" -Force)",
+      "Bash(Remove-Item \"d:\\\\Code\\\\Python\\\\PythonApps\\\\Code-Thrasher\\\\client\\\\src\\\\pages\\\\Login.tsx\" -Force)",
+      "Bash(docker compose *)"
+    ]
+  }
+}
