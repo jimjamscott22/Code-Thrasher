@@ -35,14 +35,19 @@ function TestResultRow({
       </div>
       {!result.passed && (
         <div className="mt-2 space-y-1 pl-5">
-          <p>
-            <span className="text-gray-500">expected: </span>
-            {result.expected || "(empty)"}
-          </p>
+          {!isHidden && (
+            <p>
+              <span className="text-gray-500">expected: </span>
+              {result.expected || "(empty)"}
+            </p>
+          )}
           <p>
             <span className="text-gray-500">got:      </span>
             {result.actual || "(empty)"}
           </p>
+          {isHidden && (
+            <p className="text-gray-600">expected output is hidden — figure it out!</p>
+          )}
         </div>
       )}
     </div>
