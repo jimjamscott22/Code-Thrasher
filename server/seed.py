@@ -20,7 +20,7 @@ CATEGORIES = [
     {"name": "Functions", "slug": "functions"},
 ]
 
-# Each exercise runs its code once per test case (no stdin — sandbox blocks input()).
+# All exercises produce deterministic output (no stdin needed); test cases verify stdout.
 # Exercises are therefore deterministic programs; test cases verify the expected output.
 EXERCISES = [
     {

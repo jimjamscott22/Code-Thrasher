@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "@/api/client";
 import CodeEditor from "@/components/editor/CodeEditor";
+import { getPyodide, runPython } from "@/services/pyodide";
 import type { ExerciseDetail as ExerciseDetailType, SubmitResponse, TestCaseResult } from "@/types";
 
 const DIFFICULTY_COLORS = {
@@ -10,7 +11,13 @@ const DIFFICULTY_COLORS = {
   advanced: "text-red-400 bg-red-400/10",
 } as const;
 
-function TestResultRow({ result }: { result: TestCaseResult }) {
+function TestResultRow({
+  result,
+  isHidden,
+}: {
+  result: TestCaseResult;
+  isHidden: boolean;
+}) {
   return (
     <div
       className={`rounded-lg border p-3 font-mono text-xs ${
@@ -21,7 +28,10 @@ function TestResultRow({ result }: { result: TestCaseResult }) {
     >
       <div className="flex items-center gap-2">
         <span>{result.passed ? "✓" : "✗"}</span>
-        <span className="text-gray-400">Test #{result.test_case_id}</span>
+        <span className="text-gray-400">
+          Test #{result.test_case_id}
+          {isHidden && <span className="ml-1 text-gray-600">(hidden)</span>}
+        </span>
       </div>
       {!result.passed && (
         <div className="mt-2 space-y-1 pl-5">
@@ -43,11 +53,12 @@ export default function ExerciseDetail() {
   const { id } = useParams<{ id: string }>();
   const [exercise, setExercise] = useState<ExerciseDetailType | null>(null);
   const [code, setCode] = useState("");
-  const [result, setResult] = useState<SubmitResponse | null>(null);
+  const [result, setResult] = useState<(SubmitResponse & { stdout: string; stderr: string }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
+  const [pyodideReady, setPyodideReady] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -59,18 +70,38 @@ export default function ExerciseDetail() {
       })
       .catch(() => setError("Exercise not found."))
       .finally(() => setLoading(false));
+
+    // Kick off Pyodide download in the background while the user reads the problem
+    getPyodide()
+      .then(() => setPyodideReady(true))
+      .catch(() => {/* will surface as error on submit */});
   }, [id]);
 
   async function handleSubmit() {
     if (!exercise) return;
     setSubmitting(true);
     setResult(null);
+    setError(null);
     try {
-      const r = await api.post<SubmitResponse>("/submit/", {
+      const { stdout, stderr, durationMs } = await runPython(code);
+      const trimmedActual = stdout.trim();
+
+      const testResults: TestCaseResult[] = exercise.test_cases.map((tc) => ({
+        test_case_id: tc.id,
+        passed: !stderr && trimmedActual === tc.expected_output.trim(),
+        expected: tc.expected_output,
+        actual: trimmedActual,
+        score_weight: tc.score_weight,
+      }));
+
+      const serverResp = await api.post<SubmitResponse>("/submit/", {
         exercise_id: exercise.id,
         code,
+        test_results: testResults,
+        time_taken_ms: durationMs,
       });
-      setResult(r.data);
+
+      setResult({ ...serverResp.data, stdout, stderr });
     } catch (e: unknown) {
       const msg =
         (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
@@ -150,15 +181,24 @@ export default function ExerciseDetail() {
               }`}
             >
               <div className="mb-3 flex items-center justify-between">
-                <span className={`text-lg font-bold ${passed ? "text-green-400" : "text-red-400"}`}>
+                <span
+                  className={`text-lg font-bold ${passed ? "text-green-400" : "text-red-400"}`}
+                >
                   {passed ? "All tests passed!" : `Score: ${result.score}%`}
                 </span>
                 <span className="text-xs text-gray-500">{result.time_taken_ms}ms</span>
               </div>
               <div className="space-y-2">
-                {result.test_results.map((tr) => (
-                  <TestResultRow key={tr.test_case_id} result={tr} />
-                ))}
+                {result.test_results.map((tr) => {
+                  const tc = exercise.test_cases.find((t) => t.id === tr.test_case_id);
+                  return (
+                    <TestResultRow
+                      key={tr.test_case_id}
+                      result={tr}
+                      isHidden={tc?.is_hidden ?? false}
+                    />
+                  );
+                })}
               </div>
               {(result.stdout || result.stderr) && (
                 <div className="mt-4 rounded-lg bg-gray-950 p-3 font-mono text-xs">
@@ -170,6 +210,12 @@ export default function ExerciseDetail() {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {error && (
+            <div className="rounded-xl border border-red-800 bg-red-900/20 p-4 text-sm text-red-400">
+              {error}
             </div>
           )}
         </div>
@@ -194,7 +240,11 @@ export default function ExerciseDetail() {
             {submitting && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             )}
-            {submitting ? "Running…" : "Run & Submit"}
+            {submitting
+              ? pyodideReady
+                ? "Running…"
+                : "Loading Python runtime…"
+              : "Run & Submit"}
           </button>
         </div>
       </div>
