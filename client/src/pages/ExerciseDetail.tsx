@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import api from "@/api/client";
 import CodeEditor from "@/components/editor/CodeEditor";
 import { getPyodide, runPython } from "@/services/pyodide";
+import { useProgressStore } from "@/store/useProgressStore";
 import type { ExerciseDetail as ExerciseDetailType, SubmitResponse, TestCaseResult } from "@/types";
 
 const DIFFICULTY_COLORS = {
@@ -64,6 +65,8 @@ export default function ExerciseDetail() {
   const [error, setError] = useState<string | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
   const [pyodideReady, setPyodideReady] = useState(false);
+  const { exercises: progress, fetch: fetchProgress } = useProgressStore();
+  const exerciseProgress = id ? progress[Number(id)] : undefined;
 
   useEffect(() => {
     if (!id) return;
@@ -80,6 +83,9 @@ export default function ExerciseDetail() {
     getPyodide()
       .then(() => setPyodideReady(true))
       .catch(() => {/* will surface as error on submit */});
+
+    fetchProgress().catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function handleSubmit() {
@@ -107,6 +113,7 @@ export default function ExerciseDetail() {
       });
 
       setResult({ ...serverResp.data, stdout, stderr });
+      fetchProgress().catch(() => {});
     } catch (e: unknown) {
       const msg =
         (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
@@ -150,7 +157,19 @@ export default function ExerciseDetail() {
                 <span className="text-xs text-gray-500">{exercise.category.name}</span>
               )}
             </div>
-            <h1 className="text-2xl font-bold">{exercise.title}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold">{exercise.title}</h1>
+              {exerciseProgress?.solved && (
+                <span className="rounded-full bg-green-900/40 px-2.5 py-0.5 text-xs font-medium text-green-400 ring-1 ring-green-700">
+                  ✓ Solved
+                </span>
+              )}
+              {exerciseProgress && !exerciseProgress.solved && (
+                <span className="rounded-full bg-yellow-900/30 px-2.5 py-0.5 text-xs font-medium text-yellow-500 ring-1 ring-yellow-700/50">
+                  Best: {exerciseProgress.best_score}%
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="prose prose-invert prose-sm max-w-none rounded-xl border border-gray-800 bg-gray-900 p-5">

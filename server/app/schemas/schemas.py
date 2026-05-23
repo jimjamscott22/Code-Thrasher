@@ -102,3 +102,17 @@ class SubmissionHistory(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# ── Progress ──────────────────────────────────────────────────────────────────
+
+class ExerciseProgress(BaseModel):
+    best_score: float
+    attempts: int
+    solved: bool
+
+
+class ProgressResponse(BaseModel):
+    total_exercises: int
+    completed_count: int
+    exercises: dict[int, ExerciseProgress]

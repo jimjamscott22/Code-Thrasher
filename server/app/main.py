@@ -5,7 +5,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.api.v1.endpoints import exercises, submit
+from app.api.v1.endpoints import exercises, progress, submit
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -41,6 +41,7 @@ async def security_headers(request: Request, call_next):  # type: ignore[no-unty
 
 app.include_router(exercises.router, prefix="/api/v1")
 app.include_router(submit.router, prefix="/api/v1")
+app.include_router(progress.router, prefix="/api/v1")
 
 
 @app.get("/api/health")
