@@ -19,6 +19,7 @@ export interface TestCase {
   input_data: string;
   expected_output: string;
   score_weight: number;
+  is_hidden: boolean;
 }
 
 export interface ExerciseDetail {

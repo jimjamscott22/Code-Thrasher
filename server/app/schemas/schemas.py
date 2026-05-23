@@ -23,6 +23,7 @@ class TestCaseOut(BaseModel):
     input_data: str
     expected_output: str
     score_weight: float
+    is_hidden: bool
 
     model_config = {"from_attributes": True}
 
@@ -60,9 +61,19 @@ class ExerciseCreate(BaseModel):
 
 # ── Submissions ───────────────────────────────────────────────────────────────
 
+class TestCaseResult(BaseModel):
+    test_case_id: int
+    passed: bool
+    expected: str
+    actual: str
+    score_weight: float
+
+
 class SubmitRequest(BaseModel):
     exercise_id: int
     code: Annotated[str, Field(max_length=50_000)]
+    test_results: list[TestCaseResult]
+    time_taken_ms: int = 0
 
     @field_validator("code")
     @classmethod
@@ -70,14 +81,6 @@ class SubmitRequest(BaseModel):
         if not v.strip():
             raise ValueError("code must not be empty")
         return v
-
-
-class TestCaseResult(BaseModel):
-    test_case_id: int
-    passed: bool
-    expected: str
-    actual: str
-    score_weight: float
 
 
 class SubmitResponse(BaseModel):
@@ -99,3 +102,17 @@ class SubmissionHistory(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# ── Progress ──────────────────────────────────────────────────────────────────
+
+class ExerciseProgress(BaseModel):
+    best_score: float
+    attempts: int
+    solved: bool
+
+
+class ProgressResponse(BaseModel):
+    total_exercises: int
+    completed_count: int
+    exercises: dict[int, ExerciseProgress]
