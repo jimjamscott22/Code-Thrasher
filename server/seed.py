@@ -40,6 +40,38 @@ EXERCISES = [
         ],
     },
     {
+        "title": "Variable Assignment",
+        "description": (
+            "## Variable Assignment\n\n"
+            "Assign the integer `42` to a variable named `answer` and print it.\n\n"
+            "**Expected output:**\n```\n42\n```"
+        ),
+        "hint": "Use the `=` operator to assign a value to a variable, then pass the variable to `print()`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "basics",
+        "starter_code": "# Assign 42 to answer and print it\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "42", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "42", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Area of a Rectangle",
+        "description": (
+            "## Area of a Rectangle\n\n"
+            "Given a `length` of 5 and a `width` of 3, calculate the area of the rectangle and print the result.\n\n"
+            "**Expected output:**\n```\n15\n```"
+        ),
+        "hint": "The area of a rectangle is length multiplied by width (`length * width`).",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "basics",
+        "starter_code": "length = 5\nwidth = 3\n# Calculate and print the area\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
         "title": "Sum 1 to 10",
         "description": (
             "## Sum 1 to 10\n\n"
