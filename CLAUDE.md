@@ -38,6 +38,7 @@ Tests use an in-memory SQLite database (`aiosqlite`) — no running Postgres nee
 pytest              # all tests
 pytest -v -x        # verbose, stop on first failure
 pytest -k "test_name"
+uv run pytest       # use if pytest is not on PATH; uv creates/uses server/.venv
 ```
 
 ### Frontend (`client/`)
@@ -79,6 +80,7 @@ This means the server-side `SANDBOX_*` config settings in `app/core/config.py` a
 - `app/models/models.py` — ORM models: `User`, `Category`, `Exercise`, `TestCase`, `Submission`
 - `app/schemas/schemas.py` — Pydantic v2 request/response schemas
 - `app/api/v1/endpoints/` — three routers: `exercises`, `submit`, `progress`
+- `app/api/v1/endpoints/exercises.py` — exercise list/detail plus explicit `GET /exercises/{id}/solution`; default detail responses include `guide` + `has_solution`, never solution text
 - `alembic/` — migration history; `alembic.ini` points to `server/` as base dir
 
 There is no auth middleware wired into endpoints yet — `user_id` on `Submission` is nullable and the submit endpoint does not require a JWT.
@@ -90,13 +92,18 @@ There is no auth middleware wired into endpoints yet — `user_id` on `Submissio
 - `src/store/useProgressStore.ts` — Zustand store, fetches `GET /progress/` to track completion
 - `src/services/pyodide.ts` — singleton Pyodide loader; first call downloads ~10 MB
 - `src/components/editor/CodeEditor.tsx` — Monaco Editor wrapper
+- `src/components/exercise/ExerciseGuidePanel.tsx` — progressive guide cards, snippets, and deliberate solution reveal without overwriting editor code
 
 ### Data Model
 
 `Exercise` has many `TestCase`s. Each `TestCase` has `input_data`, `expected_output`, `score_weight`, and `is_hidden`. Submissions store the final `score` (0–100) and `status` (`completed` = 100, `failed` = anything less).
+
+`Exercise` keeps legacy `hint`, plus structured `guide` JSON and optional `solution_code` / `solution_explanation`; expose answers only through the solution reveal endpoint.
 
 ## Key Constraints
 
 - **Vite proxy**: The `vite.config.ts` proxies `/api` to `http://localhost:8000`. The CORS allow-list in `app/main.py` is hardcoded to `http://localhost:5173`.
 - **Test isolation**: `server/tests/conftest.py` overrides `get_db` with an async SQLite session; every test gets a fresh schema via `autouse` fixture.
 - **`asyncio_mode = "auto"`** is set in `pyproject.toml` — all test functions can be `async def` without decorators.
+- **Guidance reveal**: solution reveal is currently anonymous because auth is not wired into exercise endpoints; future per-user reveal tracking should wait for auth.
+- **Frontend validation**: `npm run lint` requires `client/.eslintrc.cjs`; `npm run build` may emit TypeScript build artifacts if not ignored/cleaned.

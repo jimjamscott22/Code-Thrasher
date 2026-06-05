@@ -24,7 +24,8 @@ Users register, browse exercises filtered by difficulty or category, write Pytho
 - **User accounts** — register, log in, and track personal score and streak
 - **Exercise library** — filterable by difficulty (`beginner`, `intermediate`, `advanced`) and category
 - **In-browser code editor** — Monaco Editor with Python syntax highlighting and starter code
-- **Secure sandbox** — user code is blocked from dangerous imports (`os`, `subprocess`, `socket`, etc.) by an AST scanner, then executed in a child process with memory, CPU, and fork limits enforced via `resource`
+- **In-browser Python execution** — user code runs client-side in Pyodide; the backend records reported submission results
+- **Progressive challenge guidance** — each exercise can provide staged guide cards, small snippets, and an explicit full-solution reveal
 - **Automated test cases** — submissions are scored against hidden and visible test cases; partial credit is supported via per-case score weights
 - **Interactive dashboard** — lists all exercises with completion status and score breakdown
 - **Rate limiting** — API endpoints are protected with slowapi to prevent abuse
@@ -149,10 +150,10 @@ alembic downgrade -1
 
 ```bash
 cd server
-pytest              # run all tests with coverage
-pytest -v           # verbose output
-pytest -x           # stop on first failure
-pytest --cov-report=html   # generate HTML coverage report in htmlcov/
+uv run pytest       # run all tests with coverage
+uv run pytest -v    # verbose output
+uv run pytest -x    # stop on first failure
+uv run pytest --cov-report=html   # generate HTML coverage report in htmlcov/
 ```
 
 ---
@@ -205,11 +206,18 @@ Code-Thrasher/
 | `POST` | `/api/v1/auth/login` | Log in and receive a JWT |
 | `GET` | `/api/v1/exercises` | List exercises (filter by `difficulty`, `category_id`) |
 | `GET` | `/api/v1/exercises/{id}` | Get exercise details and visible test cases |
+| `GET` | `/api/v1/exercises/{id}/solution` | Reveal the reference solution for an exercise |
 | `POST` | `/api/v1/exercises` | Create an exercise (admin) |
-| `POST` | `/api/v1/submit/{exercise_id}` | Submit code for evaluation |
+| `POST` | `/api/v1/submit/` | Submit code for evaluation |
 | `GET` | `/api/health` | Health check |
 
 Full interactive documentation is available at `http://localhost:8000/api/docs`.
+
+---
+
+## Next
+
+- Track guide and solution reveals per user once authentication is wired into exercise endpoints.
 
 ---
 
