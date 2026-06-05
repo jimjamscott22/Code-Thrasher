@@ -165,7 +165,7 @@ export default function ExerciseDetail() {
       </div>
     );
 
-  if (error || !exercise)
+  if (!exercise)
     return (
       <div className="mx-auto mt-12 max-w-md rounded-lg border border-red-800 bg-red-900/20 p-6 text-center text-red-400">
         {error ?? "Exercise not found."}
@@ -280,6 +280,41 @@ export default function ExerciseDetail() {
             </div>
           )}
 
+        </div>
+
+        {/* Right — editor + submit */}
+        <div className="flex flex-col gap-4">
+          <CodeEditor value={code} onChange={setCode} height="480px" />
+
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className={`flex items-center justify-center gap-2 rounded-xl py-3 font-semibold transition ${
+              submitting
+                ? "cursor-not-allowed bg-gray-700 text-gray-400"
+                : passed
+                  ? "bg-brand-500 text-white hover:bg-brand-600"
+                  : failed
+                    ? "bg-red-700 text-white hover:bg-red-600"
+                    : "bg-brand-500 text-white hover:bg-brand-600"
+            }`}
+          >
+            {submitting && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            )}
+            {submitting
+              ? pyodideReady
+                ? "Running…"
+                : "Loading Python runtime…"
+              : "Run & Submit"}
+          </button>
+
+          {error && (
+            <div className="rounded-xl border border-red-800 bg-red-900/20 p-4 text-sm text-red-400">
+              {error}
+            </div>
+          )}
+
           {/* Result panel */}
           {result && (
             <div
@@ -329,40 +364,6 @@ export default function ExerciseDetail() {
               )}
             </div>
           )}
-
-          {error && (
-            <div className="rounded-xl border border-red-800 bg-red-900/20 p-4 text-sm text-red-400">
-              {error}
-            </div>
-          )}
-        </div>
-
-        {/* Right — editor + submit */}
-        <div className="flex flex-col gap-4">
-          <CodeEditor value={code} onChange={setCode} height="480px" />
-
-          <button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className={`flex items-center justify-center gap-2 rounded-xl py-3 font-semibold transition ${
-              submitting
-                ? "cursor-not-allowed bg-gray-700 text-gray-400"
-                : passed
-                  ? "bg-brand-500 text-white hover:bg-brand-600"
-                  : failed
-                    ? "bg-red-700 text-white hover:bg-red-600"
-                    : "bg-brand-500 text-white hover:bg-brand-600"
-            }`}
-          >
-            {submitting && (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            )}
-            {submitting
-              ? pyodideReady
-                ? "Running…"
-                : "Loading Python runtime…"
-              : "Run & Submit"}
-          </button>
         </div>
       </div>
     </div>

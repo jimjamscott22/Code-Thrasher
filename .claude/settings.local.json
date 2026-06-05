@@ -11,5 +11,19 @@
       "Bash(Remove-Item \"d:\\\\Code\\\\Python\\\\PythonApps\\\\Code-Thrasher\\\\client\\\\src\\\\pages\\\\Login.tsx\" -Force)",
       "Bash(docker compose *)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "python-sdk",
+    "docker",
+    "postgresql",
+    "memory-bank",
+    "sequential-thinking"
+  ],
+  "disabledMcpjsonServers": [
+    "jupyter",
+    "opik",
+    "brave-search",
+    "google-maps",
+    "deep-graph"
+  ]
 }
