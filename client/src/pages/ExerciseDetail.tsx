@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "@/api/client";
 import CodeEditor from "@/components/editor/CodeEditor";
 import { getPyodide, runPython } from "@/services/pyodide";
 import { useProgressStore } from "@/store/useProgressStore";
-import type { ExerciseDetail as ExerciseDetailType, SubmitResponse, TestCaseResult } from "@/types";
+import type {
+  ExerciseDetail as ExerciseDetailType,
+  ExerciseListItem,
+  SubmitResponse,
+  TestCaseResult,
+} from "@/types";
 
 const DIFFICULTY_COLORS = {
   beginner: "text-green-400 bg-green-400/10",
@@ -57,7 +62,9 @@ function TestResultRow({
 
 export default function ExerciseDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [exercise, setExercise] = useState<ExerciseDetailType | null>(null);
+  const [navExercises, setNavExercises] = useState<ExerciseListItem[]>([]);
   const [code, setCode] = useState("");
   const [result, setResult] = useState<(SubmitResponse & { stdout: string; stderr: string }) | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,9 +74,26 @@ export default function ExerciseDetail() {
   const [pyodideReady, setPyodideReady] = useState(false);
   const { exercises: progress, fetch: fetchProgress } = useProgressStore();
   const exerciseProgress = id ? progress[Number(id)] : undefined;
+  const currentExerciseId = id ? Number(id) : undefined;
+  const currentIndex = useMemo(
+    () => navExercises.findIndex((item) => item.id === currentExerciseId),
+    [currentExerciseId, navExercises],
+  );
+  const canNavigate = navExercises.length > 1 && currentIndex >= 0;
+  const previousExercise = canNavigate
+    ? navExercises[(currentIndex - 1 + navExercises.length) % navExercises.length]
+    : undefined;
+  const nextExercise = canNavigate
+    ? navExercises[(currentIndex + 1) % navExercises.length]
+    : undefined;
 
   useEffect(() => {
     if (!id) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    setHintVisible(false);
+
     api
       .get<ExerciseDetailType>(`/exercises/${id}`)
       .then((r) => {
@@ -79,6 +103,11 @@ export default function ExerciseDetail() {
       .catch(() => setError("Exercise not found."))
       .finally(() => setLoading(false));
 
+    api
+      .get<ExerciseListItem[]>("/exercises/")
+      .then((r) => setNavExercises([...r.data].sort((a, b) => a.id - b.id)))
+      .catch(() => setNavExercises([]));
+
     // Kick off Pyodide download in the background while the user reads the problem
     getPyodide()
       .then(() => setPyodideReady(true))
@@ -87,6 +116,11 @@ export default function ExerciseDetail() {
     fetchProgress().catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  function goToExercise(exerciseId: number | undefined) {
+    if (!exerciseId) return;
+    navigate(`/exercise/${exerciseId}`);
+  }
 
   async function handleSubmit() {
     if (!exercise) return;
@@ -172,6 +206,57 @@ export default function ExerciseDetail() {
             </div>
           </div>
 
+          <div className="overflow-hidden rounded-2xl border border-brand-500/20 bg-gray-950 shadow-[0_0_36px_rgba(34,197,94,0.08)]">
+            <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-brand-500">
+                  Challenge nav
+                </p>
+                <p className="mt-1 text-sm text-gray-400">
+                  Jump around, or cycle through exercises without returning to the list.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:min-w-72">
+                <select
+                  value={exercise.id}
+                  onChange={(event) => goToExercise(Number(event.target.value))}
+                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  aria-label="Choose exercise"
+                >
+                  {navExercises.length === 0 ? (
+                    <option value={exercise.id}>{exercise.title}</option>
+                  ) : (
+                    navExercises.map((item, index) => (
+                      <option key={item.id} value={item.id}>
+                        {index + 1}. {item.title}
+                      </option>
+                    ))
+                  )}
+                </select>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => goToExercise(previousExercise?.id)}
+                    disabled={!previousExercise}
+                    className="rounded-xl border border-gray-700 px-3 py-2 text-sm font-medium text-gray-300 transition hover:border-brand-500/60 hover:text-white disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600"
+                  >
+                    ← Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => goToExercise(nextExercise?.id)}
+                    disabled={!nextExercise}
+                    className="rounded-xl bg-brand-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-600"
+                  >
+                    Next →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="prose prose-invert prose-sm max-w-none rounded-xl border border-gray-800 bg-gray-900 p-5">
             <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-gray-300">
               {exercise.description}
@@ -233,6 +318,14 @@ export default function ExerciseDetail() {
                     <pre className="text-red-400">{result.stderr}</pre>
                   )}
                 </div>
+              )}
+              {passed && nextExercise && (
+                <Link
+                  to={`/exercise/${nextExercise.id}`}
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-600 sm:w-auto"
+                >
+                  Continue to next challenge: {nextExercise.title} →
+                </Link>
               )}
             </div>
           )}
