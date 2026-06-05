@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "@/api/client";
 import CodeEditor from "@/components/editor/CodeEditor";
+import ExerciseGuidePanel from "@/components/exercise/ExerciseGuidePanel";
 import { getPyodide, runPython } from "@/services/pyodide";
 import { useProgressStore } from "@/store/useProgressStore";
 import type {
@@ -70,7 +71,6 @@ export default function ExerciseDetail() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hintVisible, setHintVisible] = useState(false);
   const [pyodideReady, setPyodideReady] = useState(false);
   const { exercises: progress, fetch: fetchProgress } = useProgressStore();
   const exerciseProgress = id ? progress[Number(id)] : undefined;
@@ -92,7 +92,6 @@ export default function ExerciseDetail() {
     setLoading(true);
     setError(null);
     setResult(null);
-    setHintVisible(false);
 
     api
       .get<ExerciseDetailType>(`/exercises/${id}`)
@@ -176,10 +175,10 @@ export default function ExerciseDetail() {
   const failed = result?.status === "failed";
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="grid gap-6 lg:grid-cols-2">
+    <div className="mx-auto max-w-[96rem] px-4 py-8">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)_minmax(18rem,0.75fr)]">
         {/* Left — problem description */}
-        <div className="space-y-6">
+        <div className="order-1 space-y-6 xl:order-none">
           <div>
             <div className="mb-1 flex items-center gap-3">
               <span
@@ -263,27 +262,10 @@ export default function ExerciseDetail() {
             </pre>
           </div>
 
-          {exercise.hint && (
-            <div className="rounded-xl border border-gray-800 bg-gray-900">
-              <button
-                onClick={() => setHintVisible((v) => !v)}
-                className="flex w-full items-center justify-between px-4 py-3 text-sm text-gray-400 hover:text-white"
-              >
-                <span>Hint</span>
-                <span>{hintVisible ? "▲" : "▼"}</span>
-              </button>
-              {hintVisible && (
-                <p className="border-t border-gray-800 px-4 py-3 text-sm text-yellow-300">
-                  {exercise.hint}
-                </p>
-              )}
-            </div>
-          )}
-
         </div>
 
         {/* Right — editor + submit */}
-        <div className="flex flex-col gap-4">
+        <div className="order-3 flex flex-col gap-4 xl:order-none">
           <CodeEditor value={code} onChange={setCode} height="480px" />
 
           <button
@@ -364,6 +346,15 @@ export default function ExerciseDetail() {
               )}
             </div>
           )}
+        </div>
+
+        <div className="order-2 xl:order-none">
+          <ExerciseGuidePanel
+            exerciseId={exercise.id}
+            guide={exercise.guide}
+            fallbackHint={exercise.hint}
+            hasSolution={exercise.has_solution}
+          />
         </div>
       </div>
     </div>

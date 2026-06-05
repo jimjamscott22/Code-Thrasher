@@ -22,11 +22,20 @@ export interface TestCase {
   is_hidden: boolean;
 }
 
+export interface ExerciseGuideBlock {
+  kind: "nudge" | "pattern" | "checklist" | "snippet" | string;
+  title: string;
+  body: string;
+  code?: string | null;
+}
+
 export interface ExerciseDetail {
   id: number;
   title: string;
   description: string;
   hint: string | null;
+  guide: ExerciseGuideBlock[];
+  has_solution: boolean;
   difficulty_level: DifficultyLevel;
   starter_code: string;
   category: Category | null;
@@ -49,4 +58,10 @@ export interface SubmitResponse {
   stderr: string;
   time_taken_ms: number;
   test_results: TestCaseResult[];
+}
+
+export interface ExerciseSolution {
+  exercise_id: number;
+  code: string;
+  explanation: string | null;
 }

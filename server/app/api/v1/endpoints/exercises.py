@@ -5,7 +5,12 @@ from sqlalchemy.orm import selectinload
 
 from app.db.database import get_db
 from app.models.models import DifficultyLevel, Exercise
-from app.schemas.schemas import ExerciseCreate, ExerciseDetail, ExerciseListItem
+from app.schemas.schemas import (
+    ExerciseCreate,
+    ExerciseDetail,
+    ExerciseListItem,
+    ExerciseSolution,
+)
 
 router = APIRouter(prefix="/exercises", tags=["exercises"])
 
@@ -39,6 +44,25 @@ async def get_exercise(exercise_id: int, db: AsyncSession = Depends(get_db)) -> 
     if not exercise:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
     return exercise
+
+
+@router.get("/{exercise_id}/solution", response_model=ExerciseSolution)
+async def get_exercise_solution(
+    exercise_id: int,
+    db: AsyncSession = Depends(get_db),
+) -> ExerciseSolution:
+    result = await db.execute(select(Exercise).where(Exercise.id == exercise_id))
+    exercise = result.scalar_one_or_none()
+    if not exercise:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
+    if not exercise.solution_code or not exercise.solution_code.strip():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Solution not available")
+
+    return ExerciseSolution(
+        exercise_id=exercise.id,
+        code=exercise.solution_code,
+        explanation=exercise.solution_explanation,
+    )
 
 
 @router.post("/", response_model=ExerciseDetail, status_code=status.HTTP_201_CREATED)

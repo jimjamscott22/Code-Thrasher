@@ -1,7 +1,18 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, func
+from sqlalchemy import (
+    JSON,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -55,11 +66,14 @@ class Exercise(Base):
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     hint: Mapped[str | None] = mapped_column(Text)
+    guide: Mapped[list[dict[str, str]]] = mapped_column(JSON, default=list, nullable=False)
     difficulty_level: Mapped[DifficultyLevel] = mapped_column(
         Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.beginner
     )
     category_id: Mapped[int | None] = mapped_column(ForeignKey("categories.id"), index=True)
     starter_code: Mapped[str] = mapped_column(Text, default="")
+    solution_code: Mapped[str | None] = mapped_column(Text)
+    solution_explanation: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -67,6 +81,10 @@ class Exercise(Base):
     category: Mapped["Category | None"] = relationship(back_populates="exercises")
     test_cases: Mapped[list["TestCase"]] = relationship(back_populates="exercise")
     submissions: Mapped[list["Submission"]] = relationship(back_populates="exercise")
+
+    @property
+    def has_solution(self) -> bool:
+        return bool(self.solution_code and self.solution_code.strip())
 
 
 class TestCase(Base):

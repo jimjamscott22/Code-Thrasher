@@ -37,11 +37,20 @@ class ExerciseListItem(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ExerciseGuideBlock(BaseModel):
+    kind: str
+    title: str
+    body: str
+    code: str | None = None
+
+
 class ExerciseDetail(BaseModel):
     id: int
     title: str
     description: str
     hint: str | None
+    guide: list[ExerciseGuideBlock] = Field(default_factory=list)
+    has_solution: bool = False
     difficulty_level: DifficultyLevel
     starter_code: str
     category: CategoryOut | None
@@ -50,13 +59,22 @@ class ExerciseDetail(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ExerciseSolution(BaseModel):
+    exercise_id: int
+    code: str
+    explanation: str | None = None
+
+
 class ExerciseCreate(BaseModel):
     title: Annotated[str, Field(min_length=1, max_length=200)]
     description: str
     hint: str | None = None
+    guide: list[ExerciseGuideBlock] = Field(default_factory=list)
     difficulty_level: DifficultyLevel = DifficultyLevel.beginner
     category_id: int | None = None
     starter_code: str = ""
+    solution_code: str | None = None
+    solution_explanation: str | None = None
 
 
 # ── Submissions ───────────────────────────────────────────────────────────────
