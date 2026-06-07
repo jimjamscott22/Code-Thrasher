@@ -6,6 +6,8 @@ Users register, browse exercises filtered by difficulty or category, write Pytho
 
 ---
 
+![Screenshot of code-thrasher](docs/code-thrasher-scrnsht.png)
+
 ## Tech Stack
 
 | Layer | Technology |

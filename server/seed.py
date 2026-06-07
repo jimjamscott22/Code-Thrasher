@@ -500,6 +500,143 @@ EXERCISES = [
             {"input_data": "", "expected_output": "['apple', 'banana', 'orange']", "score_weight": 1.0, "is_hidden": True},
         ],
     },
+    {
+        "title": "Maximum of Two Numbers",
+        "description": (
+            "## Maximum of Two Numbers\n\n"
+            "Define a function named `maximum` that takes two parameters, `a` and `b`, and "
+            "returns the larger of the two. Call it with `3` and `9` and print the returned value.\n\n"
+            "**Expected output:**\n```\n9\n```"
+        ),
+        "hint": "Use an `if`/`else` inside the function to decide which value to return, or use the built-in `max()`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "functions",
+        "starter_code": "# Define maximum, call it with 3 and 9, and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "9", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "9", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Default Parameter Value",
+        "description": (
+            "## Default Parameter Value\n\n"
+            "Define a function named `power` that takes a `base` and an `exponent` that "
+            "defaults to `2`. It should return `base` raised to `exponent`. Call it with just "
+            "`power(5)` and print the result.\n\n"
+            "**Expected output:**\n```\n25\n```"
+        ),
+        "hint": "Give a parameter a default by writing `exponent=2` in the function definition. Then `power(5)` uses the default.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "functions",
+        "starter_code": "# Define power with a default exponent, then call power(5) and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "25", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "25", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Sum a List with a Function",
+        "description": (
+            "## Sum a List with a Function\n\n"
+            "Define a function named `total` that takes one parameter, `numbers` (a list), and "
+            "returns the sum of its values. Call it with `[1, 2, 3, 4]` and print the result.\n\n"
+            "**Expected output:**\n```\n10\n```"
+        ),
+        "hint": "Inside the function, return `sum(numbers)`. Then print the result of calling the function.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "functions",
+        "starter_code": "# Define total, call it with [1, 2, 3, 4], and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "10", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "10", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Recursive Factorial",
+        "description": (
+            "## Recursive Factorial\n\n"
+            "Define a function named `factorial` that calculates a number's factorial by "
+            "calling itself (recursion). The factorial of `0` or `1` is `1`. Call it with `5` "
+            "and print the result.\n\n"
+            "**Expected output:**\n```\n120\n```"
+        ),
+        "hint": "A recursive function calls itself with a smaller value. Base case: `n <= 1` returns `1`. Otherwise return `n * factorial(n - 1)`.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "functions",
+        "starter_code": "# Define a recursive factorial, call it with 5, and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "120", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "120", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Sort a List",
+        "description": (
+            "## Sort a List\n\n"
+            "A variable `numbers` holds `[5, 2, 8, 1, 9, 3]`. Print a new list with the values "
+            "sorted in ascending order.\n\n"
+            "**Expected output:**\n```\n[1, 2, 3, 5, 8, 9]\n```"
+        ),
+        "hint": "The built-in `sorted()` function returns a new sorted list without changing the original.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "lists",
+        "starter_code": "numbers = [5, 2, 8, 1, 9, 3]\n# Print the list sorted in ascending order\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "[1, 2, 3, 5, 8, 9]", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "[1, 2, 3, 5, 8, 9]", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Count Occurrences",
+        "description": (
+            "## Count Occurrences\n\n"
+            "A variable `numbers` holds `[1, 2, 2, 3, 2, 4]`. Print how many times the value "
+            "`2` appears in the list.\n\n"
+            "**Expected output:**\n```\n3\n```"
+        ),
+        "hint": "Lists have a `.count()` method that returns how many times a value appears: `numbers.count(2)`.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "lists",
+        "starter_code": "numbers = [1, 2, 2, 3, 2, 4]\n# Print how many times 2 appears\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "3", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "3", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Countdown with While",
+        "description": (
+            "## Countdown with While\n\n"
+            "Use a `while` loop to count down from `5` to `1`, printing each number on its own "
+            "line.\n\n"
+            "**Expected output:**\n```\n5\n4\n3\n2\n1\n```"
+        ),
+        "hint": "Start a variable at 5. While it is greater than or equal to 1, print it and then subtract 1 with `n -= 1`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "loops",
+        "starter_code": "# Use a while loop to count down from 5 to 1\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "5\n4\n3\n2\n1", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "5\n4\n3\n2\n1", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Sum of Even Numbers",
+        "description": (
+            "## Sum of Even Numbers\n\n"
+            "Calculate and print the sum of all even numbers from 1 to 10 (inclusive).\n\n"
+            "**Expected output:**\n```\n30\n```"
+        ),
+        "hint": "Loop through the numbers, and use `if n % 2 == 0:` to add only the even ones to a running total.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "loops",
+        "starter_code": "# Print the sum of even numbers from 1 to 10\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "30", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "30", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
 ]
 
 
@@ -972,6 +1109,150 @@ EXERCISE_GUIDES = {
             "body": "Print the entire list object, which will format with brackets and quotes.",
         },
     ],
+    "Maximum of Two Numbers": [
+        {
+            "kind": "nudge",
+            "title": "Compare, then return",
+            "body": "The function should decide which of its two inputs is larger and hand that value back.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Conditional return",
+            "body": "You can return different values based on a comparison, or lean on the built-in `max()`.",
+            "code": "def bigger(a, b):\n    if a > b:\n        return a\n    return b",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the value returned by the call, which should be 9.",
+        },
+    ],
+    "Default Parameter Value": [
+        {
+            "kind": "nudge",
+            "title": "Optional argument",
+            "body": "A default lets the caller skip an argument. When omitted, the default value is used.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Default in the signature",
+            "body": "Assign the default right in the parameter list.",
+            "code": "def scale(x, factor=2):\n    return x * factor\n\nprint(scale(5))",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Calling with one argument uses the default exponent, giving 25.",
+        },
+    ],
+    "Sum a List with a Function": [
+        {
+            "kind": "nudge",
+            "title": "Wrap the work in a function",
+            "body": "The summing logic lives inside the function; the printing happens where you call it.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Return a computed value",
+            "body": "`sum()` totals the list, and `return` sends that total to the caller.",
+            "code": "def total(numbers):\n    return sum(numbers)\n\nprint(total([1, 2, 3]))",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the returned total once, which should be 10.",
+        },
+    ],
+    "Recursive Factorial": [
+        {
+            "kind": "nudge",
+            "title": "Shrink the problem",
+            "body": "A factorial of n is n times the factorial of n - 1. Keep reducing until you hit the base case.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Base case plus recursion",
+            "body": "Stop the recursion at 1, otherwise call the function again with a smaller number.",
+            "code": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the result of calling the function with 5, which should be 120.",
+        },
+    ],
+    "Sort a List": [
+        {
+            "kind": "nudge",
+            "title": "Let Python order it",
+            "body": "You do not need to swap values by hand. A built-in returns a sorted copy.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Sorted copy",
+            "body": "`sorted()` returns a new list in ascending order and leaves the original untouched.",
+            "code": "ordered = sorted(values)\nprint(ordered)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the whole list with brackets, sorted smallest to largest.",
+        },
+    ],
+    "Count Occurrences": [
+        {
+            "kind": "nudge",
+            "title": "Ask the list",
+            "body": "The list itself can report how many times a value shows up.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Count method",
+            "body": "`.count()` returns how many times the given value appears.",
+            "code": "times = items.count(target)\nprint(times)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the count number only, which should be 3.",
+        },
+    ],
+    "Countdown with While": [
+        {
+            "kind": "nudge",
+            "title": "Loop while a condition holds",
+            "body": "A while loop keeps running until its condition becomes false, so update your counter each pass.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Decrement inside the loop",
+            "body": "Print first, then subtract so the loop eventually stops.",
+            "code": "n = 5\nwhile n >= 1:\n    print(n)\n    n -= 1",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Five lines from 5 down to 1, one per line.",
+        },
+    ],
+    "Sum of Even Numbers": [
+        {
+            "kind": "nudge",
+            "title": "Add only the evens",
+            "body": "Walk through the numbers and accumulate just the ones divisible by 2.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Conditional accumulation",
+            "body": "Use a running total and an `if` test inside the loop.",
+            "code": "total = 0\nfor n in range(1, 11):\n    if n % 2 == 0:\n        total += n\nprint(total)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the final total once, which should be 30.",
+        },
+    ],
 }
 
 
@@ -1103,6 +1384,38 @@ EXERCISE_SOLUTIONS = {
     "Append to a List": {
         "code": "fruits = [\"apple\", \"banana\"]\nfruits.append(\"orange\")\nprint(fruits)",
         "explanation": "The `.append()` method adds the new string to the end of the list, and then the updated list is printed.",
+    },
+    "Maximum of Two Numbers": {
+        "code": "def maximum(a, b):\n    if a > b:\n        return a\n    return b\n\nprint(maximum(3, 9))",
+        "explanation": "The function compares the two parameters and returns the larger one, which is then printed.",
+    },
+    "Default Parameter Value": {
+        "code": "def power(base, exponent=2):\n    return base ** exponent\n\nprint(power(5))",
+        "explanation": "Because `exponent` defaults to 2, calling `power(5)` squares the base to give 25.",
+    },
+    "Sum a List with a Function": {
+        "code": "def total(numbers):\n    return sum(numbers)\n\nprint(total([1, 2, 3, 4]))",
+        "explanation": "The function returns the sum of the list it receives, and the caller prints that total.",
+    },
+    "Recursive Factorial": {
+        "code": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))",
+        "explanation": "The base case stops recursion at 1, and each call multiplies n by the factorial of n - 1.",
+    },
+    "Sort a List": {
+        "code": "numbers = [5, 2, 8, 1, 9, 3]\nprint(sorted(numbers))",
+        "explanation": "`sorted()` returns a new list arranged in ascending order.",
+    },
+    "Count Occurrences": {
+        "code": "numbers = [1, 2, 2, 3, 2, 4]\nprint(numbers.count(2))",
+        "explanation": "The `.count()` method reports how many times the value 2 appears in the list.",
+    },
+    "Countdown with While": {
+        "code": "n = 5\nwhile n >= 1:\n    print(n)\n    n -= 1",
+        "explanation": "The loop prints the current value, then decreases it until the condition fails at 0.",
+    },
+    "Sum of Even Numbers": {
+        "code": "total = 0\nfor n in range(1, 11):\n    if n % 2 == 0:\n        total += n\nprint(total)",
+        "explanation": "Only even numbers are added to the running total, producing 2 + 4 + 6 + 8 + 10 = 30.",
     },
 }
 
