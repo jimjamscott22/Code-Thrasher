@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "@/api/client";
 import CodeEditor from "@/components/editor/CodeEditor";
 import ExerciseGuidePanel from "@/components/exercise/ExerciseGuidePanel";
-import { getPyodide, runPython } from "@/services/pyodide";
+import { getPyodide, runPythonTests } from "@/services/pyodide";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useProgressStore } from "@/store/useProgressStore";
 import type {
@@ -143,22 +143,23 @@ export default function ExerciseDetail() {
     setResult(null);
     setError(null);
     try {
-      const { stdout, stderr, durationMs } = await runPython(code);
-      const trimmedActual = stdout.trim();
+      const { results: testRuns, stdout, stderr, totalDurationMs } =
+        await runPythonTests(code, exercise.test_cases);
 
-      const testResults: TestCaseResult[] = exercise.test_cases.map((tc) => ({
-        test_case_id: tc.id,
-        passed: !stderr && trimmedActual === tc.expected_output.trim(),
-        expected: tc.expected_output,
-        actual: trimmedActual,
-        score_weight: tc.score_weight,
+      const testResults: TestCaseResult[] = testRuns.map((run) => ({
+        test_case_id: run.test_case_id,
+        passed: run.passed,
+        expected: run.expected,
+        actual: run.actual,
+        score_weight:
+          exercise.test_cases.find((tc) => tc.id === run.test_case_id)?.score_weight ?? 1,
       }));
 
       const serverResp = await api.post<SubmitResponse>("/submit/", {
         exercise_id: exercise.id,
         code,
         test_results: testResults,
-        time_taken_ms: durationMs,
+        time_taken_ms: totalDurationMs,
       });
 
       setResult({ ...serverResp.data, stdout, stderr });
