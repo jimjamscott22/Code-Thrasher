@@ -432,6 +432,74 @@ EXERCISES = [
             {"input_data": "", "expected_output": "3\n5\n7", "score_weight": 1.0, "is_hidden": True},
         ],
     },
+    {
+        "title": "Define a Function",
+        "description": (
+            "## Define a Function\n\n"
+            "Define a function named `greet` that prints `\"Hello from a function!\"`. "
+            "Then, call the function.\n\n"
+            "**Expected output:**\n```\nHello from a function!\n```"
+        ),
+        "hint": "Use the `def` keyword to define a function, and don't forget to call it afterwards with `greet()`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "functions",
+        "starter_code": "# Define and call your function here\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "Hello from a function!", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "Hello from a function!", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Function with Arguments",
+        "description": (
+            "## Function with Arguments\n\n"
+            "Define a function named `add_numbers` that takes two parameters, `a` and `b`, "
+            "and prints their sum. Then, call the function with the arguments `5` and `7`.\n\n"
+            "**Expected output:**\n```\n12\n```"
+        ),
+        "hint": "Put the parameters inside the parentheses when defining the function: `def add_numbers(a, b):`. Then call it with `add_numbers(5, 7)`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "functions",
+        "starter_code": "# Define add_numbers and call it with 5 and 7\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "12", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "12", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Return a Value",
+        "description": (
+            "## Return a Value\n\n"
+            "Define a function named `get_square` that takes one parameter, `n`, and "
+            "returns its square. Call the function with the argument `4` and print the returned value.\n\n"
+            "**Expected output:**\n```\n16\n```"
+        ),
+        "hint": "Use the `return` keyword inside the function to send the value back. Then print the result of the function call.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "functions",
+        "starter_code": "# Define get_square, call it with 4, and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "16", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "16", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Append to a List",
+        "description": (
+            "## Append to a List\n\n"
+            "A list `fruits` contains `[\"apple\", \"banana\"]`. Append `\"orange\"` to the list, "
+            "then print the entire list.\n\n"
+            "**Expected output:**\n```\n['apple', 'banana', 'orange']\n```"
+        ),
+        "hint": "Use the `.append()` method on the list to add a new item to the end.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "lists",
+        "starter_code": "fruits = [\"apple\", \"banana\"]\n# Append \"orange\" and print the list\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "['apple', 'banana', 'orange']", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "['apple', 'banana', 'orange']", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
 ]
 
 
@@ -832,6 +900,78 @@ EXERCISE_GUIDES = {
             "body": "Keep the original order and print each kept value on its own line.",
         },
     ],
+    "Define a Function": [
+        {
+            "kind": "nudge",
+            "title": "Two steps",
+            "body": "First you define the function, then you must call it for the code inside to run.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Function definition",
+            "body": "Use `def` to name the function, and indent the code that belongs inside it.",
+            "code": "def my_function():\n    print(\"Inside!\")\n\nmy_function()",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Ensure the printed string matches exactly, including the exclamation mark.",
+        },
+    ],
+    "Function with Arguments": [
+        {
+            "kind": "nudge",
+            "title": "Pass values in",
+            "body": "The function needs to accept variables in its definition, and you provide the actual numbers when calling it.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Parameters",
+            "body": "List the parameter names inside the parentheses.",
+            "code": "def show_sum(x, y):\n    print(x + y)\n\nshow_sum(3, 4)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print only the final sum, which should be 12.",
+        },
+    ],
+    "Return a Value": [
+        {
+            "kind": "nudge",
+            "title": "Return, don't print inside",
+            "body": "The function itself should hand the value back using `return`. The `print()` happens outside.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Returning data",
+            "body": "Use the `return` keyword to send a result back to the caller.",
+            "code": "def double(x):\n    return x * 2\n\nresult = double(5)\nprint(result)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the returned value, which should be 16.",
+        },
+    ],
+    "Append to a List": [
+        {
+            "kind": "nudge",
+            "title": "Modify in place",
+            "body": "The `.append()` method changes the list directly. You don't need to assign the result to a new variable.",
+        },
+        {
+            "kind": "pattern",
+            "title": "List append",
+            "body": "Call `.append()` on the list object with the new item in the parentheses.",
+            "code": "my_list.append(\"new_item\")",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the entire list object, which will format with brackets and quotes.",
+        },
+    ],
 }
 
 
@@ -947,6 +1087,22 @@ EXERCISE_SOLUTIONS = {
     "Filter Positive Numbers": {
         "code": "numbers = [-2, 3, -1, 5, 0, 7]\nfor n in numbers:\n    if n > 0:\n        print(n)",
         "explanation": "Only values strictly greater than zero are printed, preserving order.",
+    },
+    "Define a Function": {
+        "code": "def greet():\n    print(\"Hello from a function!\")\n\ngreet()",
+        "explanation": "The function is defined with `def` and then called by its name followed by parentheses.",
+    },
+    "Function with Arguments": {
+        "code": "def add_numbers(a, b):\n    print(a + b)\n\nadd_numbers(5, 7)",
+        "explanation": "The function takes two parameters and prints their sum. It is then called with the arguments 5 and 7.",
+    },
+    "Return a Value": {
+        "code": "def get_square(n):\n    return n ** 2\n\nprint(get_square(4))",
+        "explanation": "The function calculates the square and uses `return` to pass it back. The caller then prints the returned value.",
+    },
+    "Append to a List": {
+        "code": "fruits = [\"apple\", \"banana\"]\nfruits.append(\"orange\")\nprint(fruits)",
+        "explanation": "The `.append()` method adds the new string to the end of the list, and then the updated list is printed.",
     },
 }
 
