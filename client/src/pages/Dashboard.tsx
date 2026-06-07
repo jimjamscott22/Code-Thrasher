@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "@/api/client";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useProgressStore } from "@/store/useProgressStore";
 import type { ExerciseListItem, DifficultyLevel } from "@/types";
 import { useState } from "react";
@@ -15,7 +16,14 @@ export default function Dashboard() {
   const [exercises, setExercises] = useState<ExerciseListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { totalExercises, completedCount, exercises: progress, fetch: fetchProgress } = useProgressStore();
+  const user = useAuthStore((state) => state.user);
+  const {
+    totalExercises,
+    completedCount,
+    exercises: progress,
+    fetch: fetchProgress,
+    reset: resetProgress,
+  } = useProgressStore();
 
   useEffect(() => {
     api
@@ -23,9 +31,15 @@ export default function Dashboard() {
       .then((r) => setExercises(r.data))
       .catch(() => setError("Failed to load exercises."))
       .finally(() => setLoading(false));
+  }, []);
 
-    fetchProgress().catch(() => {/* progress is non-critical */});
-  }, [fetchProgress]);
+  useEffect(() => {
+    if (user) {
+      fetchProgress().catch(() => {/* progress is non-critical */});
+    } else {
+      resetProgress();
+    }
+  }, [fetchProgress, resetProgress, user]);
 
   if (loading)
     return (
@@ -60,7 +74,7 @@ export default function Dashboard() {
           <p className="text-gray-400">Pick a challenge and start thrashing.</p>
         </div>
 
-        {totalExercises > 0 && (
+        {user && totalExercises > 0 && (
           <div className="text-right">
             <p className="text-sm text-gray-400">
               <span className="font-semibold text-white">{completedCount}</span>
@@ -75,6 +89,34 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {!user && (
+        <div className="mb-8 rounded-2xl border border-brand-500/20 bg-gray-950 p-5">
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.28em] text-brand-500">
+            Progress sync
+          </p>
+          <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm leading-6 text-gray-400">
+              Browse every challenge freely. Log in before submitting to save solved badges,
+              attempts, and best scores to your account.
+            </p>
+            <div className="flex gap-2">
+              <Link
+                to="/login"
+                className="rounded-xl border border-gray-700 px-4 py-2 text-sm font-medium text-gray-300 transition hover:border-brand-500/60 hover:text-white"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="rounded-xl bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-600"
+              >
+                Register
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {Object.entries(grouped).map(([category, items]) => (
         <section key={category} className="mb-10">

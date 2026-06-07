@@ -34,3 +34,17 @@ async def client():
     ) as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def auth_headers(client: AsyncClient) -> dict[str, str]:
+    response = await client.post(
+        "/api/v1/auth/register",
+        json={
+            "username": "testuser",
+            "email": "test@example.com",
+            "password": "password123",
+        },
+    )
+    token = response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}

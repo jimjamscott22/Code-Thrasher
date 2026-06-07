@@ -4,6 +4,7 @@ import api from "@/api/client";
 import CodeEditor from "@/components/editor/CodeEditor";
 import ExerciseGuidePanel from "@/components/exercise/ExerciseGuidePanel";
 import { getPyodide, runPython } from "@/services/pyodide";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useProgressStore } from "@/store/useProgressStore";
 import type {
   ExerciseDetail as ExerciseDetailType,
@@ -72,7 +73,12 @@ export default function ExerciseDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pyodideReady, setPyodideReady] = useState(false);
-  const { exercises: progress, fetch: fetchProgress } = useProgressStore();
+  const user = useAuthStore((state) => state.user);
+  const {
+    exercises: progress,
+    fetch: fetchProgress,
+    reset: resetProgress,
+  } = useProgressStore();
   const exerciseProgress = id ? progress[Number(id)] : undefined;
   const currentExerciseId = id ? Number(id) : undefined;
   const currentIndex = useMemo(
@@ -112,9 +118,15 @@ export default function ExerciseDetail() {
       .then(() => setPyodideReady(true))
       .catch(() => {/* will surface as error on submit */});
 
-    fetchProgress().catch(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    if (user) {
+      fetchProgress().catch(() => {});
+    } else {
+      resetProgress();
+    }
+  }, [fetchProgress, resetProgress, user]);
 
   function goToExercise(exerciseId: number | undefined) {
     if (!exerciseId) return;
@@ -123,6 +135,10 @@ export default function ExerciseDetail() {
 
   async function handleSubmit() {
     if (!exercise) return;
+    if (!user) {
+      navigate("/login", { state: { from: `/exercise/${exercise.id}` } });
+      return;
+    }
     setSubmitting(true);
     setResult(null);
     setError(null);
@@ -268,6 +284,21 @@ export default function ExerciseDetail() {
         <div className="order-3 flex flex-col gap-4 xl:order-none">
           <CodeEditor value={code} onChange={setCode} height="480px" />
 
+          {!user && (
+            <div className="rounded-xl border border-brand-500/20 bg-gray-950 p-4 text-sm text-gray-400">
+              <p>
+                Log in before submitting to save this attempt and update your progress.
+              </p>
+              <Link
+                to="/login"
+                state={{ from: `/exercise/${exercise.id}` }}
+                className="mt-3 inline-flex rounded-lg bg-brand-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-600"
+              >
+                Login to submit
+              </Link>
+            </div>
+          )}
+
           <button
             onClick={handleSubmit}
             disabled={submitting}
@@ -288,7 +319,9 @@ export default function ExerciseDetail() {
               ? pyodideReady
                 ? "Running…"
                 : "Loading Python runtime…"
-              : "Run & Submit"}
+              : user
+                ? "Run & Submit"
+                : "Login to Submit"}
           </button>
 
           {error && (

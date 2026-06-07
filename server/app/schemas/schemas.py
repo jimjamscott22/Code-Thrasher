@@ -1,9 +1,55 @@
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.models.models import DifficultyLevel, SubmissionStatus
+
+
+# ── Users/Auth ────────────────────────────────────────────────────────────────
+
+class UserCreate(BaseModel):
+    username: Annotated[str, Field(min_length=3, max_length=50)]
+    email: EmailStr
+    password: Annotated[str, Field(min_length=8, max_length=128)]
+
+    @field_validator("username")
+    @classmethod
+    def username_not_blank(cls, v: str) -> str:
+        username = v.strip()
+        if not username:
+            raise ValueError("username must not be empty")
+        return username
+
+
+class UserLogin(BaseModel):
+    username_or_email: Annotated[str, Field(min_length=1, max_length=255)]
+    password: Annotated[str, Field(min_length=1, max_length=128)]
+
+    @field_validator("username_or_email")
+    @classmethod
+    def identifier_not_blank(cls, v: str) -> str:
+        identifier = v.strip()
+        if not identifier:
+            raise ValueError("username or email must not be empty")
+        return identifier
+
+
+class UserOut(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    total_score: int
+    streak: int
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserOut
 
 
 # ── Categories ────────────────────────────────────────────────────────────────

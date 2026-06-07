@@ -13,6 +13,7 @@ interface ProgressState {
   exercises: Record<number, ExerciseProgress>;
   loaded: boolean;
   fetch: () => Promise<void>;
+  reset: () => void;
 }
 
 export const useProgressStore = create<ProgressState>((set) => ({
@@ -33,4 +34,11 @@ export const useProgressStore = create<ProgressState>((set) => ({
       loaded: true,
     });
   },
+  reset: () =>
+    set({
+      totalExercises: 0,
+      completedCount: 0,
+      exercises: {},
+      loaded: false,
+    }),
 }));

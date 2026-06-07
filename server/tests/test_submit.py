@@ -21,9 +21,14 @@ def _result(tc_id: int, passed: bool, weight: float = 1.0):
     }
 
 
-async def test_submit_all_pass(client: AsyncClient, exercise_id: int):
+async def test_submit_all_pass(
+    client: AsyncClient,
+    exercise_id: int,
+    auth_headers: dict[str, str],
+):
     r = await client.post(
         "/api/v1/submit/",
+        headers=auth_headers,
         json={
             "exercise_id": exercise_id,
             "code": "print(42)",
@@ -40,9 +45,14 @@ async def test_submit_all_pass(client: AsyncClient, exercise_id: int):
     assert "submission_id" in data
 
 
-async def test_submit_partial_pass(client: AsyncClient, exercise_id: int):
+async def test_submit_partial_pass(
+    client: AsyncClient,
+    exercise_id: int,
+    auth_headers: dict[str, str],
+):
     r = await client.post(
         "/api/v1/submit/",
+        headers=auth_headers,
         json={
             "exercise_id": exercise_id,
             "code": "print(0)",
@@ -55,9 +65,14 @@ async def test_submit_partial_pass(client: AsyncClient, exercise_id: int):
     assert data["status"] == "failed"
 
 
-async def test_submit_all_fail(client: AsyncClient, exercise_id: int):
+async def test_submit_all_fail(
+    client: AsyncClient,
+    exercise_id: int,
+    auth_headers: dict[str, str],
+):
     r = await client.post(
         "/api/v1/submit/",
+        headers=auth_headers,
         json={
             "exercise_id": exercise_id,
             "code": "print('wrong')",
@@ -70,11 +85,16 @@ async def test_submit_all_fail(client: AsyncClient, exercise_id: int):
     assert data["status"] == "failed"
 
 
-async def test_submit_weighted_scoring(client: AsyncClient, exercise_id: int):
+async def test_submit_weighted_scoring(
+    client: AsyncClient,
+    exercise_id: int,
+    auth_headers: dict[str, str],
+):
     # Two tests: first has weight 1, second has weight 3. Only first passes.
     # Expected score: 1/4 * 100 = 25.0
     r = await client.post(
         "/api/v1/submit/",
+        headers=auth_headers,
         json={
             "exercise_id": exercise_id,
             "code": "...",
@@ -88,9 +108,13 @@ async def test_submit_weighted_scoring(client: AsyncClient, exercise_id: int):
     assert r.json()["score"] == 25.0
 
 
-async def test_submit_exercise_not_found(client: AsyncClient):
+async def test_submit_exercise_not_found(
+    client: AsyncClient,
+    auth_headers: dict[str, str],
+):
     r = await client.post(
         "/api/v1/submit/",
+        headers=auth_headers,
         json={
             "exercise_id": 999,
             "code": "print(1)",
@@ -100,9 +124,14 @@ async def test_submit_exercise_not_found(client: AsyncClient):
     assert r.status_code == 404
 
 
-async def test_submit_empty_code_rejected(client: AsyncClient, exercise_id: int):
+async def test_submit_empty_code_rejected(
+    client: AsyncClient,
+    exercise_id: int,
+    auth_headers: dict[str, str],
+):
     r = await client.post(
         "/api/v1/submit/",
+        headers=auth_headers,
         json={
             "exercise_id": exercise_id,
             "code": "   ",
@@ -110,3 +139,16 @@ async def test_submit_empty_code_rejected(client: AsyncClient, exercise_id: int)
         },
     )
     assert r.status_code == 422
+
+
+async def test_submit_requires_auth(client: AsyncClient, exercise_id: int):
+    r = await client.post(
+        "/api/v1/submit/",
+        json={
+            "exercise_id": exercise_id,
+            "code": "print(42)",
+            "test_results": [_result(1, True)],
+        },
+    )
+
+    assert r.status_code == 401

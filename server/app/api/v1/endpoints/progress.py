@@ -1,16 +1,22 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import get_current_user
 from app.db.database import get_db
-from app.models.models import Exercise, Submission
+from app.models.models import Exercise, Submission, User
 from app.schemas.schemas import ExerciseProgress, ProgressResponse
 
 router = APIRouter(prefix="/progress", tags=["progress"])
 
 
 @router.get("/", response_model=ProgressResponse)
-async def get_progress(db: AsyncSession = Depends(get_db)) -> ProgressResponse:
+async def get_progress(
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> ProgressResponse:
     total: int = (
         await db.execute(select(func.count()).select_from(Exercise))
     ).scalar() or 0
@@ -21,7 +27,9 @@ async def get_progress(db: AsyncSession = Depends(get_db)) -> ProgressResponse:
                 Submission.exercise_id,
                 func.count(Submission.id).label("attempts"),
                 func.max(Submission.score).label("best_score"),
-            ).group_by(Submission.exercise_id)
+            )
+            .where(Submission.user_id == current_user.id)
+            .group_by(Submission.exercise_id)
         )
     ).all()
 

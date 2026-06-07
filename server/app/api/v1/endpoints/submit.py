@@ -1,8 +1,11 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import get_current_user
 from app.db.database import get_db
-from app.models.models import Exercise, Submission, SubmissionStatus
+from app.models.models import Exercise, Submission, SubmissionStatus, User
 from app.schemas.schemas import SubmitRequest, SubmitResponse, TestCaseResult
 
 router = APIRouter(prefix="/submit", tags=["submit"])
@@ -11,7 +14,8 @@ router = APIRouter(prefix="/submit", tags=["submit"])
 @router.post("/", response_model=SubmitResponse)
 async def submit_code(
     payload: SubmitRequest,
-    db: AsyncSession = Depends(get_db),
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SubmitResponse:
     exercise = await db.get(Exercise, payload.exercise_id)
     if not exercise:
@@ -23,6 +27,7 @@ async def submit_code(
     sub_status = SubmissionStatus.completed if score == 100.0 else SubmissionStatus.failed
 
     submission = Submission(
+        user_id=current_user.id,
         exercise_id=payload.exercise_id,
         code=payload.code,
         status=sub_status,
