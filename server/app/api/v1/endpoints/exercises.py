@@ -1,16 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from typing import Annotated
 
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.api.dependencies import get_current_admin_user, get_current_user
+from app.core.rate_limit import get_user_or_remote_address, limiter
 from app.db.database import get_db
-from app.models.models import DifficultyLevel, Exercise
+from app.models.models import DifficultyLevel, Exercise, User
 from app.schemas.schemas import (
     ExerciseCreate,
     ExerciseDetail,
     ExerciseListItem,
     ExerciseSolution,
 )
+from app.services import exercises as exercise_service
 
 router = APIRouter(prefix="/exercises", tags=["exercises"])
 
@@ -21,63 +24,45 @@ async def list_exercises(
     category_id: int | None = Query(None),
     db: AsyncSession = Depends(get_db),
 ) -> list[Exercise]:
-    stmt = select(Exercise).options(selectinload(Exercise.category))
-    if difficulty:
-        stmt = stmt.where(Exercise.difficulty_level == difficulty)
-    if category_id:
-        stmt = stmt.where(Exercise.category_id == category_id)
-    result = await db.execute(stmt)
-    return list(result.scalars().all())
+    return await exercise_service.list_exercises(
+        db,
+        difficulty=difficulty,
+        category_id=category_id,
+    )
 
 
 @router.get("/{exercise_id}", response_model=ExerciseDetail)
-async def get_exercise(exercise_id: int, db: AsyncSession = Depends(get_db)) -> Exercise:
-    result = await db.execute(
-        select(Exercise)
-        .where(Exercise.id == exercise_id)
-        .options(
-            selectinload(Exercise.category),
-            selectinload(Exercise.test_cases),
-        )
-    )
-    exercise = result.scalar_one_or_none()
+async def get_exercise(
+    exercise_id: int,
+    db: AsyncSession = Depends(get_db),
+) -> ExerciseDetail:
+    exercise = await exercise_service.get_exercise_by_id(db, exercise_id)
     if not exercise:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
-    return exercise
+    return exercise_service.to_exercise_detail(exercise)
 
 
 @router.get("/{exercise_id}/solution", response_model=ExerciseSolution)
+@limiter.limit("10/minute", key_func=get_user_or_remote_address)
 async def get_exercise_solution(
+    request: Request,
     exercise_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncSession = Depends(get_db),
 ) -> ExerciseSolution:
-    result = await db.execute(select(Exercise).where(Exercise.id == exercise_id))
-    exercise = result.scalar_one_or_none()
-    if not exercise:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
-    if not exercise.solution_code or not exercise.solution_code.strip():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Solution not available")
-
-    return ExerciseSolution(
-        exercise_id=exercise.id,
-        code=exercise.solution_code,
-        explanation=exercise.solution_explanation,
-    )
+    try:
+        return await exercise_service.get_exercise_solution(db, exercise_id, current_user)
+    except LookupError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 
 
 @router.post("/", response_model=ExerciseDetail, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/minute")
 async def create_exercise(
+    request: Request,
     payload: ExerciseCreate,
+    _admin: Annotated[User, Depends(get_current_admin_user)],
     db: AsyncSession = Depends(get_db),
-) -> Exercise:
-    exercise = Exercise(**payload.model_dump())
-    db.add(exercise)
-    await db.commit()
-    await db.refresh(exercise)
-    # reload with relationships
-    result = await db.execute(
-        select(Exercise)
-        .where(Exercise.id == exercise.id)
-        .options(selectinload(Exercise.category), selectinload(Exercise.test_cases))
-    )
-    return result.scalar_one()
+) -> ExerciseDetail:
+    exercise = await exercise_service.create_exercise(db, payload)
+    return exercise_service.to_exercise_detail(exercise)

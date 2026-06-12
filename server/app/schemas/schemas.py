@@ -74,6 +74,14 @@ class TestCaseOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class TestCasePublicOut(BaseModel):
+    id: int
+    input_data: str
+    expected_output: str | None = None
+    score_weight: float
+    is_hidden: bool
+
+
 class ExerciseListItem(BaseModel):
     id: int
     title: str
@@ -100,9 +108,7 @@ class ExerciseDetail(BaseModel):
     difficulty_level: DifficultyLevel
     starter_code: str
     category: CategoryOut | None
-    test_cases: list[TestCaseOut]
-
-    model_config = {"from_attributes": True}
+    test_cases: list[TestCasePublicOut]
 
 
 class ExerciseSolution(BaseModel):
@@ -136,8 +142,7 @@ class TestCaseResult(BaseModel):
 class SubmitRequest(BaseModel):
     exercise_id: int
     code: Annotated[str, Field(max_length=50_000)]
-    test_results: list[TestCaseResult]
-    time_taken_ms: int = 0
+    time_taken_ms: Annotated[int, Field(ge=0, le=3_600_000)] = 0
 
     @field_validator("code")
     @classmethod

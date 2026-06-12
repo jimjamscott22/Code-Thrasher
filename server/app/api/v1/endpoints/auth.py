@@ -1,10 +1,11 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_current_user
+from app.core.rate_limit import limiter
 from app.core.security import create_access_token, get_password_hash, verify_password
 from app.db.database import get_db
 from app.models.models import User
@@ -22,7 +23,9 @@ def build_token_response(user: User) -> Token:
 
 
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute")
 async def register(
+    request: Request,
     payload: UserCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> Token:
@@ -57,7 +60,9 @@ async def register(
 
 
 @router.post("/login", response_model=Token)
+@limiter.limit("10/minute")
 async def login(
+    request: Request,
     payload: UserLogin,
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> Token:

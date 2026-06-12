@@ -1,37 +1,42 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_current_user
+from app.core.rate_limit import get_user_or_remote_address, limiter
 from app.db.database import get_db
-from app.models.models import Exercise, Submission, SubmissionStatus, User
+from app.models.models import Submission, User
 from app.schemas.schemas import SubmitRequest, SubmitResponse, TestCaseResult
+from app.services.grading import grade_submission
+from app.services.user_stats import update_user_stats
 
 router = APIRouter(prefix="/submit", tags=["submit"])
 
 
 @router.post("/", response_model=SubmitResponse)
+@limiter.limit("20/minute", key_func=get_user_or_remote_address)
 async def submit_code(
+    request: Request,
     payload: SubmitRequest,
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> SubmitResponse:
-    exercise = await db.get(Exercise, payload.exercise_id)
-    if not exercise:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exercise not found")
+    try:
+        grading = await grade_submission(db, payload.exercise_id, payload.code)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 
-    total_weight = sum(r.score_weight for r in payload.test_results)
-    earned_weight = sum(r.score_weight for r in payload.test_results if r.passed)
-    score = round((earned_weight / total_weight) * 100, 2) if total_weight else 0.0
-    sub_status = SubmissionStatus.completed if score == 100.0 else SubmissionStatus.failed
+    await update_user_stats(db, current_user, grading.score)
 
     submission = Submission(
         user_id=current_user.id,
         exercise_id=payload.exercise_id,
         code=payload.code,
-        status=sub_status,
-        score=score,
+        status=grading.status,
+        score=grading.score,
+        stdout=grading.stdout,
+        stderr=grading.stderr,
         time_taken_ms=payload.time_taken_ms,
     )
     db.add(submission)
@@ -40,10 +45,10 @@ async def submit_code(
 
     return SubmitResponse(
         submission_id=submission.id,
-        status=sub_status,
-        score=score,
-        stdout="",
-        stderr="",
+        status=grading.status,
+        score=grading.score,
+        stdout=grading.stdout,
+        stderr=grading.stderr,
         time_taken_ms=payload.time_taken_ms,
-        test_results=[TestCaseResult(**r.model_dump()) for r in payload.test_results],
+        test_results=[TestCaseResult(**r.model_dump()) for r in grading.test_results],
     )

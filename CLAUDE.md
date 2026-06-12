@@ -63,27 +63,29 @@ docker compose up --build
 
 ### Code Execution Flow
 
-The key non-obvious design: **user code runs in the browser**, not the server.
+**Authoritative grading happens on the server.** Client-side Pyodide is for preview feedback on visible tests only.
 
-1. `client/src/services/pyodide.ts` — lazy-loads Pyodide (~10 MB) from CDN, runs Python in a fresh namespace via `exec()`, captures stdout/stderr
-2. `ExerciseDetail.tsx` — runs each test case through Pyodide, compares output to `expected_output`, builds `TestCaseResult[]`
-3. The frontend calls `POST /api/v1/submit/` with the pre-evaluated results (scores already computed)
-4. `server/app/api/v1/endpoints/submit.py` — trusts the client's `test_results`, calculates final score, persists `Submission`
+1. `client/src/services/pyodide.ts` — Web Worker loads Pyodide from CDN; runs visible test cases for local stdout preview
+2. `ExerciseDetail.tsx` — posts `code` + `exercise_id` to `POST /api/v1/submit/` (no client-reported scores)
+3. `server/app/services/grading.py` — loads all test cases from DB (including hidden), runs each via `sandbox.py`
+4. `server/app/services/sandbox.py` — subprocess runner enforcing `SANDBOX_*` limits from `app/core/config.py`
+5. `server/app/api/v1/endpoints/submit.py` — persists `Submission` with server-computed score and updates user stats
 
-This means the server-side `SANDBOX_*` config settings in `app/core/config.py` are currently unused — there is no server-side execution.
+Hidden test `expected_output` is never sent to the client (`TestCasePublicOut` in exercise detail responses).
 
 ### Backend Structure
 
-- `app/main.py` — FastAPI app, CORS (localhost:5173 only), rate limiting via slowapi, security headers
+- `app/main.py` — FastAPI app, configurable CORS (`CORS_ORIGINS`), rate limiting via slowapi, security + CSP headers
+- `app/services/` — grading, sandbox, exercises, progress, user_stats business logic
 - `app/core/config.py` — `Settings` loaded from `.env` via pydantic-settings
 - `app/db/database.py` — async SQLAlchemy engine + `get_db` dependency
 - `app/models/models.py` — ORM models: `User`, `Category`, `Exercise`, `TestCase`, `Submission`
 - `app/schemas/schemas.py` — Pydantic v2 request/response schemas
-- `app/api/v1/endpoints/` — three routers: `exercises`, `submit`, `progress`
+- `app/api/v1/endpoints/` — routers: `auth`, `exercises`, `submit`, `progress`
 - `app/api/v1/endpoints/exercises.py` — exercise list/detail plus explicit `GET /exercises/{id}/solution`; default detail responses include `guide` + `has_solution`, never solution text
 - `alembic/` — migration history; `alembic.ini` points to `server/` as base dir
 
-There is no auth middleware wired into endpoints yet — `user_id` on `Submission` is nullable and the submit endpoint does not require a JWT.
+JWT auth is required for submit, progress, and solution reveal. `POST /exercises/` requires an admin user (`is_admin` on `User`). Browse endpoints remain public.
 
 ### Frontend Structure
 
@@ -102,8 +104,8 @@ There is no auth middleware wired into endpoints yet — `user_id` on `Submissio
 
 ## Key Constraints
 
-- **Vite proxy**: The `vite.config.ts` proxies `/api` to `http://localhost:8000`. The CORS allow-list in `app/main.py` is hardcoded to `http://localhost:5173`.
+- **Vite proxy**: The `vite.config.ts` proxies `/api` to `http://localhost:8000`. CORS origins default to `http://localhost:5173` via `CORS_ORIGINS` in `.env`.
 - **Test isolation**: `server/tests/conftest.py` overrides `get_db` with an async SQLite session; every test gets a fresh schema via `autouse` fixture.
 - **`asyncio_mode = "auto"`** is set in `pyproject.toml` — all test functions can be `async def` without decorators.
-- **Guidance reveal**: solution reveal is currently anonymous because auth is not wired into exercise endpoints; future per-user reveal tracking should wait for auth.
+- **Guidance reveal**: `GET /exercises/{id}/solution` requires JWT; reveals are tracked in `solution_reveals`.
 - **Frontend validation**: `npm run lint` requires `client/.eslintrc.cjs`; `npm run build` may emit TypeScript build artifacts if not ignored/cleaned.

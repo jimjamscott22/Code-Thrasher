@@ -15,8 +15,8 @@ Users register, browse exercises filtered by difficulty or category, write Pytho
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS, Monaco Editor, Zustand |
 | Backend | FastAPI (Python 3.12), SQLAlchemy 2 (async), Alembic, Pydantic v2 |
 | Database | PostgreSQL 16 |
-| Auth | JWT (python-jose + passlib/bcrypt) |
-| Code execution | Sandboxed subprocess with AST pre-scan and resource limits |
+| Auth | JWT (python-jose + pbkdf2_sha256) |
+| Code execution | Client Pyodide preview + server-side subprocess grading |
 | Containerisation | Docker + Docker Compose |
 
 ---
@@ -26,11 +26,12 @@ Users register, browse exercises filtered by difficulty or category, write Pytho
 - **User accounts** — register, log in, and track personal score and streak
 - **Exercise library** — filterable by difficulty (`beginner`, `intermediate`, `advanced`) and category
 - **In-browser code editor** — Monaco Editor with Python syntax highlighting and starter code
-- **In-browser Python execution** — user code runs client-side in Pyodide; the backend records reported submission results
+- **In-browser Python preview** — visible tests run in Pyodide for instant feedback; final scoring happens server-side
 - **Progressive challenge guidance** — each exercise can provide staged guide cards, small snippets, and an explicit full-solution reveal
 - **Automated test cases** — submissions are scored against hidden and visible test cases; partial credit is supported via per-case score weights
 - **Interactive dashboard** — lists all exercises with completion status and score breakdown
-- **Rate limiting** — API endpoints are protected with slowapi to prevent abuse
+- **Rate limiting** — auth, submit, solution reveal, and admin create endpoints are rate-limited via slowapi
+- **Admin content controls** — exercise creation requires an admin account (`is_admin` on the user model)
 - **Interactive API docs** — Swagger UI at `/api/docs`, ReDoc at `/api/redoc`
 
 ---

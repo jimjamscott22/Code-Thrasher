@@ -11,6 +11,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -39,6 +40,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     total_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     streak: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    is_admin: Mapped[bool] = mapped_column(default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -47,6 +49,7 @@ class User(Base):
     )
 
     submissions: Mapped[list["Submission"]] = relationship(back_populates="user")
+    solution_reveals: Mapped[list["SolutionReveal"]] = relationship(back_populates="user")
 
 
 class Category(Base):
@@ -98,6 +101,21 @@ class TestCase(Base):
     is_hidden: Mapped[bool] = mapped_column(default=False)
 
     exercise: Mapped["Exercise"] = relationship(back_populates="test_cases")
+
+
+class SolutionReveal(Base):
+    __tablename__ = "solution_reveals"
+    __table_args__ = (UniqueConstraint("user_id", "exercise_id", name="uq_solution_reveal_user_exercise"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    exercise_id: Mapped[int] = mapped_column(ForeignKey("exercises.id"), nullable=False, index=True)
+    revealed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    user: Mapped["User"] = relationship(back_populates="solution_reveals")
+    exercise: Mapped["Exercise"] = relationship()
 
 
 class Submission(Base):

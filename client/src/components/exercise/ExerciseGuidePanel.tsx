@@ -85,8 +85,13 @@ export default function ExerciseGuidePanel({
     try {
       const response = await api.get<ExerciseSolution>(`/exercises/${exerciseId}/solution`);
       setSolution(response.data);
-    } catch {
-      setSolutionError("The reference solution is not available for this challenge yet.");
+    } catch (error: unknown) {
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      if (status === 401) {
+        setSolutionError("Log in to reveal the reference solution.");
+      } else {
+        setSolutionError("The reference solution is not available for this challenge yet.");
+      }
     } finally {
       setSolutionLoading(false);
     }

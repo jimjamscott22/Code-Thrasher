@@ -43,7 +43,7 @@ export interface ExerciseListItem {
 export interface TestCase {
   id: number;
   input_data: string;
-  expected_output: string;
+  expected_output: string | null;
   score_weight: number;
   is_hidden: boolean;
 }

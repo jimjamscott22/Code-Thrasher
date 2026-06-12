@@ -1,5 +1,15 @@
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from app.models.models import Exercise
+from app.models.models import TestCase as ExerciseTestCase
+
+TEST_DB_URL = "sqlite+aiosqlite:///./test.db"
+TestingSession = async_sessionmaker(
+    create_async_engine(TEST_DB_URL, connect_args={"check_same_thread": False}),
+    expire_on_commit=False,
+)
 
 
 @pytest.fixture
@@ -18,8 +28,17 @@ async def test_list_exercises_empty(client: AsyncClient):
     assert r.json() == []
 
 
-async def test_create_exercise(client: AsyncClient, new_exercise):
-    r = await client.post("/api/v1/exercises/", json=new_exercise)
+async def test_create_exercise_requires_admin(
+    client: AsyncClient,
+    new_exercise,
+    auth_headers: dict[str, str],
+):
+    r = await client.post("/api/v1/exercises/", json=new_exercise, headers=auth_headers)
+    assert r.status_code == 403
+
+
+async def test_create_exercise(client: AsyncClient, new_exercise, admin_headers: dict[str, str]):
+    r = await client.post("/api/v1/exercises/", json=new_exercise, headers=admin_headers)
     assert r.status_code == 201
     data = r.json()
     assert data["title"] == new_exercise["title"]
@@ -30,17 +49,31 @@ async def test_create_exercise(client: AsyncClient, new_exercise):
     assert "id" in data
 
 
-async def test_list_exercises_after_create(client: AsyncClient, new_exercise):
-    await client.post("/api/v1/exercises/", json=new_exercise)
-    await client.post("/api/v1/exercises/", json={**new_exercise, "title": "Second"})
+async def test_list_exercises_after_create(
+    client: AsyncClient,
+    new_exercise,
+    admin_headers: dict[str, str],
+):
+    await client.post("/api/v1/exercises/", json=new_exercise, headers=admin_headers)
+    await client.post(
+        "/api/v1/exercises/",
+        json={**new_exercise, "title": "Second"},
+        headers=admin_headers,
+    )
 
     r = await client.get("/api/v1/exercises/")
     assert r.status_code == 200
     assert len(r.json()) == 2
 
 
-async def test_get_exercise_by_id(client: AsyncClient, new_exercise):
-    created = (await client.post("/api/v1/exercises/", json=new_exercise)).json()
+async def test_get_exercise_by_id(
+    client: AsyncClient,
+    new_exercise,
+    admin_headers: dict[str, str],
+):
+    created = (
+        await client.post("/api/v1/exercises/", json=new_exercise, headers=admin_headers)
+    ).json()
     ex_id = created["id"]
 
     r = await client.get(f"/api/v1/exercises/{ex_id}")
@@ -54,7 +87,64 @@ async def test_get_exercise_by_id(client: AsyncClient, new_exercise):
     assert isinstance(data["test_cases"], list)
 
 
-async def test_get_exercise_solution_requires_reveal(client: AsyncClient, new_exercise):
+async def test_hidden_test_case_omits_expected_output(client: AsyncClient):
+    async with TestingSession() as session:
+        exercise = Exercise(
+            title="Hidden Case",
+            description="desc",
+            starter_code="",
+        )
+        session.add(exercise)
+        await session.flush()
+        session.add_all(
+            [
+                ExerciseTestCase(
+                    exercise_id=exercise.id,
+                    expected_output="visible",
+                    is_hidden=False,
+                ),
+                ExerciseTestCase(
+                    exercise_id=exercise.id,
+                    expected_output="secret",
+                    is_hidden=True,
+                ),
+            ]
+        )
+        await session.commit()
+        exercise_id = exercise.id
+
+    r = await client.get(f"/api/v1/exercises/{exercise_id}")
+    assert r.status_code == 200
+    test_cases = r.json()["test_cases"]
+    visible = next(tc for tc in test_cases if not tc["is_hidden"])
+    hidden = next(tc for tc in test_cases if tc["is_hidden"])
+    assert visible["expected_output"] == "visible"
+    assert hidden["expected_output"] is None
+
+
+async def test_get_exercise_solution_requires_auth(
+    client: AsyncClient,
+    new_exercise,
+    admin_headers: dict[str, str],
+):
+    created = (
+        await client.post(
+            "/api/v1/exercises/",
+            json={**new_exercise, "solution_code": 'print("hello")'},
+            headers=admin_headers,
+        )
+    ).json()
+
+    r = await client.get(f"/api/v1/exercises/{created['id']}/solution")
+    assert r.status_code == 401
+
+
+async def test_get_exercise_solution_requires_reveal(
+    client: AsyncClient,
+    new_exercise,
+    admin_headers: dict[str, str],
+    auth_headers: dict[str, str],
+):
     guide = [
         {
             "kind": "nudge",
@@ -71,6 +161,7 @@ async def test_get_exercise_solution_requires_reveal(client: AsyncClient, new_ex
                 "solution_code": 'print("hello")',
                 "solution_explanation": "Printing the string satisfies the expected output.",
             },
+            headers=admin_headers,
         )
     ).json()
 
@@ -81,7 +172,10 @@ async def test_get_exercise_solution_requires_reveal(client: AsyncClient, new_ex
     assert detail_data["has_solution"] is True
     assert "solution_code" not in detail_data
 
-    solution = await client.get(f"/api/v1/exercises/{created['id']}/solution")
+    solution = await client.get(
+        f"/api/v1/exercises/{created['id']}/solution",
+        headers=auth_headers,
+    )
     assert solution.status_code == 200
     assert solution.json() == {
         "exercise_id": created["id"],
@@ -90,10 +184,20 @@ async def test_get_exercise_solution_requires_reveal(client: AsyncClient, new_ex
     }
 
 
-async def test_get_exercise_solution_not_available(client: AsyncClient, new_exercise):
-    created = (await client.post("/api/v1/exercises/", json=new_exercise)).json()
+async def test_get_exercise_solution_not_available(
+    client: AsyncClient,
+    new_exercise,
+    admin_headers: dict[str, str],
+    auth_headers: dict[str, str],
+):
+    created = (
+        await client.post("/api/v1/exercises/", json=new_exercise, headers=admin_headers)
+    ).json()
 
-    r = await client.get(f"/api/v1/exercises/{created['id']}/solution")
+    r = await client.get(
+        f"/api/v1/exercises/{created['id']}/solution",
+        headers=auth_headers,
+    )
     assert r.status_code == 404
 
 
@@ -102,11 +206,16 @@ async def test_get_exercise_not_found(client: AsyncClient):
     assert r.status_code == 404
 
 
-async def test_list_exercises_filter_by_difficulty(client: AsyncClient, new_exercise):
-    await client.post("/api/v1/exercises/", json=new_exercise)
+async def test_list_exercises_filter_by_difficulty(
+    client: AsyncClient,
+    new_exercise,
+    admin_headers: dict[str, str],
+):
+    await client.post("/api/v1/exercises/", json=new_exercise, headers=admin_headers)
     await client.post(
         "/api/v1/exercises/",
         json={**new_exercise, "title": "Hard one", "difficulty_level": "advanced"},
+        headers=admin_headers,
     )
 
     r = await client.get("/api/v1/exercises/?difficulty=beginner")

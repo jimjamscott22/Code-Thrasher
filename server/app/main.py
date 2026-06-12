@@ -1,13 +1,30 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from app.api.v1.endpoints import auth, exercises, progress, submit
+from app.core.config import settings
+from app.core.rate_limit import limiter
 
-limiter = Limiter(key_func=get_remote_address)
+CSP_HEADER = (
+    "default-src 'self'; "
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+    "connect-src 'self' https://cdn.jsdelivr.net; "
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+    "font-src 'self' https://fonts.gstatic.com; "
+    "img-src 'self' data:; "
+    "worker-src 'self' blob:;"
+)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    settings.validate_production_settings()
+    yield
+
 
 app = FastAPI(
     title="Code-Thrasher API",
@@ -16,6 +33,7 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
+    lifespan=lifespan,
 )
 
 app.state.limiter = limiter
@@ -23,7 +41,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # ty
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Vite dev server
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,6 +54,7 @@ async def security_headers(request: Request, call_next):  # type: ignore[no-unty
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = CSP_HEADER
     return response
 
 

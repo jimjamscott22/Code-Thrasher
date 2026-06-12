@@ -143,26 +143,28 @@ export default function ExerciseDetail() {
     setResult(null);
     setError(null);
     try {
-      const { results: testRuns, stdout, stderr, totalDurationMs } =
-        await runPythonTests(code, exercise.test_cases);
-
-      const testResults: TestCaseResult[] = testRuns.map((run) => ({
-        test_case_id: run.test_case_id,
-        passed: run.passed,
-        expected: run.expected,
-        actual: run.actual,
-        score_weight:
-          exercise.test_cases.find((tc) => tc.id === run.test_case_id)?.score_weight ?? 1,
-      }));
+      const visibleTests = exercise.test_cases.filter(
+        (testCase) => testCase.expected_output != null,
+      );
+      const preview = visibleTests.length
+        ? await runPythonTests(
+            code,
+            visibleTests.map((testCase) => ({
+              id: testCase.id,
+              input_data: testCase.input_data,
+              expected_output: testCase.expected_output as string,
+              score_weight: testCase.score_weight,
+            })),
+          )
+        : { stdout: "", stderr: "", totalDurationMs: 0 };
 
       const serverResp = await api.post<SubmitResponse>("/submit/", {
         exercise_id: exercise.id,
         code,
-        test_results: testResults,
-        time_taken_ms: totalDurationMs,
+        time_taken_ms: preview.totalDurationMs,
       });
 
-      setResult({ ...serverResp.data, stdout, stderr });
+      setResult({ ...serverResp.data, stdout: preview.stdout, stderr: preview.stderr });
       fetchProgress().catch(() => {});
     } catch (e: unknown) {
       const msg =
