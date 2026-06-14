@@ -173,6 +173,40 @@ class SubmissionHistory(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── Resources ─────────────────────────────────────────────────────────────────
+
+class ResourceSection(BaseModel):
+    heading: str
+    body: str
+    code: str | None = None
+    output: str | None = None
+
+
+class ResourceListItem(BaseModel):
+    id: int
+    title: str
+    slug: str
+    topic_area: str
+    difficulty_level: DifficultyLevel
+    summary: str
+    order: int
+
+    model_config = {"from_attributes": True}
+
+
+class ResourceDetail(BaseModel):
+    id: int
+    title: str
+    slug: str
+    topic_area: str
+    difficulty_level: DifficultyLevel
+    summary: str
+    sections: list[ResourceSection]
+    order: int
+
+    model_config = {"from_attributes": True}
+
+
 # ── Progress ──────────────────────────────────────────────────────────────────
 
 class ExerciseProgress(BaseModel):

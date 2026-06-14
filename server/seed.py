@@ -10,7 +10,7 @@ import asyncio
 from sqlalchemy import select
 
 from app.db.database import AsyncSessionLocal
-from app.models.models import Category, DifficultyLevel, Exercise, TestCase
+from app.models.models import Category, DifficultyLevel, Exercise, Resource, TestCase
 
 CATEGORIES = [
     {"name": "Basics", "slug": "basics"},
@@ -1420,6 +1420,576 @@ EXERCISE_SOLUTIONS = {
 }
 
 
+RESOURCES = [
+    {
+        "title": "Variables & Data Types",
+        "slug": "variables-and-data-types",
+        "topic_area": "Basics",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Learn how Python stores data in variables and explore the core built-in types: int, float, str, and bool.",
+        "order": 1,
+        "sections": [
+            {
+                "heading": "What is a Variable?",
+                "body": "A variable is a named container that holds a value. In Python you create one by assigning a value to a name with the = operator. There is no need to declare a type first — Python figures it out automatically.",
+                "code": "age = 25\nname = \"Alice\"\npi = 3.14159\nis_active = True\n\nprint(age, name, pi, is_active)",
+                "output": "25 Alice 3.14159 True",
+            },
+            {
+                "heading": "Core Data Types",
+                "body": "Python has four primary scalar types:\n\n• int — whole numbers (42, -7, 0)\n• float — decimal numbers (3.14, -0.5)\n• str — text wrapped in quotes (\"hello\", 'world')\n• bool — either True or False\n\nUse the built-in type() function to inspect any value.",
+                "code": "print(type(42))       # <class 'int'>\nprint(type(3.14))     # <class 'float'>\nprint(type(\"hello\"))  # <class 'str'>\nprint(type(True))     # <class 'bool'>",
+                "output": "<class 'int'>\n<class 'float'>\n<class 'str'>\n<class 'bool'>",
+            },
+            {
+                "heading": "Type Conversion",
+                "body": "Python provides built-in functions to convert between types. This is useful when you need arithmetic on user input (which is always a string) or when you want a whole number from a float.",
+                "code": "num = int(\"42\")\nprint(num + 8)       # 50\n\ntag = str(100)\nprint(\"Item \" + tag)  # Item 100\n\nprint(int(9.99))     # 9 — truncates, does not round",
+                "output": "50\nItem 100\n9",
+            },
+            {
+                "heading": "Naming Conventions",
+                "body": "Variable names must start with a letter or underscore, can contain letters, digits, and underscores, and are case-sensitive. Python programmers conventionally use snake_case — lowercase words joined with underscores.",
+                "code": "user_age = 30\nmax_score = 100\n_internal = True\n\n# These would cause errors:\n# 2cool = True       # starts with a digit\n# my-var = 5         # hyphens are not allowed\n# class = \"Python\"   # 'class' is a reserved keyword",
+            },
+        ],
+    },
+    {
+        "title": "Strings & String Methods",
+        "slug": "strings-and-string-methods",
+        "topic_area": "Strings",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Explore Python strings: creation, indexing, slicing, formatting with f-strings, and the most useful built-in string methods.",
+        "order": 2,
+        "sections": [
+            {
+                "heading": "Creating Strings",
+                "body": "Strings are sequences of characters enclosed in single quotes, double quotes, or triple quotes. Triple-quoted strings can span multiple lines.",
+                "code": "greeting = \"Hello, World!\"\npath = 'C:\\\\Users\\\\alice'\nmultiline = \"\"\"Line one\nLine two\nLine three\"\"\"\n\nprint(len(greeting))  # 13",
+                "output": "13",
+            },
+            {
+                "heading": "Indexing and Slicing",
+                "body": "Individual characters are accessed with bracket notation. Indices start at 0. Negative indices count from the end. Slicing extracts a substring with [start:stop:step].",
+                "code": "s = \"Python\"\nprint(s[0])     # P\nprint(s[-1])    # n\nprint(s[1:4])   # yth\nprint(s[::-1])  # nohtyP",
+                "output": "P\nn\nyth\nnohtyP",
+            },
+            {
+                "heading": "f-Strings",
+                "body": "f-strings (formatted string literals) let you embed expressions directly inside a string by prefixing it with f and wrapping variables or expressions in {}.",
+                "code": "name = \"Ada\"\nage = 36\nprint(f\"Hello, {name}! You are {age} years old.\")\nprint(f\"Next year you will be {age + 1}.\")",
+                "output": "Hello, Ada! You are 36 years old.\nNext year you will be 37.",
+            },
+            {
+                "heading": "Common String Methods",
+                "body": "String methods return new strings without modifying the original. The most frequently used ones are shown below.",
+                "code": "text = \"  Hello, World!  \"\nprint(text.strip())          # remove surrounding whitespace\nprint(text.lower())          # lowercase\nprint(text.upper())          # uppercase\nprint(text.replace(\"World\", \"Python\"))\nprint(\"a,b,c\".split(\",\"))    # ['a', 'b', 'c']\nprint(\"-\".join([\"a\", \"b\", \"c\"]))  # a-b-c",
+                "output": "Hello, World!\n  hello, world!  \n  HELLO, WORLD!  \n  Hello, Python!  \n['a', 'b', 'c']\na-b-c",
+            },
+        ],
+    },
+    {
+        "title": "Lists & List Operations",
+        "slug": "lists-and-list-operations",
+        "topic_area": "Lists",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Master Python lists: creating, indexing, slicing, mutating, sorting, and the most useful list methods.",
+        "order": 3,
+        "sections": [
+            {
+                "heading": "Creating Lists",
+                "body": "A list is an ordered, mutable collection of items. Items can be of any type and you can mix types in the same list. Create a list with square brackets.",
+                "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\nnumbers = [1, 2, 3, 4, 5]\nmixed = [42, \"hello\", True, 3.14]\nempty = []\n\nprint(len(fruits))  # 3",
+                "output": "3",
+            },
+            {
+                "heading": "Indexing and Slicing",
+                "body": "Access elements by position. Negative indices count from the end. Slices return a new list.",
+                "code": "items = [10, 20, 30, 40, 50]\nprint(items[0])    # 10\nprint(items[-1])   # 50\nprint(items[1:3])  # [20, 30]\nprint(items[::2])  # [10, 30, 50]",
+                "output": "10\n50\n[20, 30]\n[10, 30, 50]",
+            },
+            {
+                "heading": "Mutating a List",
+                "body": "Lists are mutable — you can add, remove, and change elements in place.",
+                "code": "fruits = [\"apple\", \"banana\"]\nfruits.append(\"cherry\")       # add to end\nfruits.insert(1, \"blueberry\") # insert at index 1\nfruits.remove(\"banana\")       # remove first match\npopped = fruits.pop()         # remove and return last\nprint(fruits)\nprint(popped)",
+                "output": "['apple', 'blueberry', 'cherry']\ncherry",
+            },
+            {
+                "heading": "Sorting and Searching",
+                "body": "sorted() returns a new sorted list; list.sort() sorts in place. Use in to check membership and index() to find position.",
+                "code": "nums = [3, 1, 4, 1, 5, 9, 2, 6]\nprint(sorted(nums))          # ascending copy\nprint(sorted(nums, reverse=True))  # descending copy\nprint(5 in nums)             # True\nprint(nums.index(4))         # 2\nprint(nums.count(1))         # 2",
+                "output": "[1, 1, 2, 3, 4, 5, 6, 9]\n[9, 6, 5, 4, 3, 2, 1, 1]\nTrue\n2\n2",
+            },
+        ],
+    },
+    {
+        "title": "Dictionaries",
+        "slug": "dictionaries",
+        "topic_area": "Data Structures",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Learn Python dictionaries: creating key-value stores, reading and updating entries, and iterating over them.",
+        "order": 4,
+        "sections": [
+            {
+                "heading": "Creating Dictionaries",
+                "body": "A dictionary maps keys to values. Keys must be immutable (strings, numbers, tuples). Values can be anything. Create one with curly braces and colons.",
+                "code": "person = {\n    \"name\": \"Alice\",\n    \"age\": 30,\n    \"city\": \"London\",\n}\nprint(person[\"name\"])   # Alice\nprint(len(person))      # 3",
+                "output": "Alice\n3",
+            },
+            {
+                "heading": "Reading and Writing Entries",
+                "body": "Access values with d[key]. Use .get() to supply a default when the key might be absent. Add or update entries with d[key] = value. Remove with del or .pop().",
+                "code": "d = {\"x\": 10, \"y\": 20}\nprint(d.get(\"z\", 0))  # 0 — safe default\nd[\"z\"] = 30           # add new key\nd[\"x\"] = 99           # update existing\ndel d[\"y\"]\nprint(d)",
+                "output": "0\n{'x': 99, 'z': 30}",
+            },
+            {
+                "heading": "Iterating",
+                "body": "Dictionaries expose three views: .keys(), .values(), and .items(). The .items() view is the most useful because it gives both key and value at once.",
+                "code": "scores = {\"Alice\": 95, \"Bob\": 87, \"Carol\": 92}\nfor name, score in scores.items():\n    print(f\"{name}: {score}\")",
+                "output": "Alice: 95\nBob: 87\nCarol: 92",
+            },
+            {
+                "heading": "Useful Dict Methods",
+                "body": "Key membership testing with in is O(1) — much faster than scanning a list. dict.update() merges another dict into the current one.",
+                "code": "config = {\"debug\": True, \"port\": 8080}\noverrides = {\"port\": 9090, \"host\": \"localhost\"}\nconfig.update(overrides)\nprint(config)\nprint(\"debug\" in config)   # True\nprint(\"ssl\" in config)     # False",
+                "output": "{'debug': True, 'port': 9090, 'host': 'localhost'}\nTrue\nFalse",
+            },
+        ],
+    },
+    {
+        "title": "Tuples & Sets",
+        "slug": "tuples-and-sets",
+        "topic_area": "Data Structures",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Understand Python tuples (immutable sequences) and sets (unordered collections of unique values), and when to use each.",
+        "order": 5,
+        "sections": [
+            {
+                "heading": "Tuples",
+                "body": "A tuple is an immutable ordered sequence. Use parentheses (or no brackets at all). Because tuples cannot change, they are safe to use as dictionary keys and convey intent that data should not be modified.",
+                "code": "point = (3, 7)\nrgb = (255, 128, 0)\nsingle = (42,)   # trailing comma makes it a tuple, not grouping\n\nx, y = point     # tuple unpacking\nprint(x, y)\nprint(point[0])",
+                "output": "3 7\n3",
+            },
+            {
+                "heading": "Sets",
+                "body": "A set is an unordered collection of unique values. Duplicate entries are silently dropped. Sets support fast membership tests and set algebra (union, intersection, difference).",
+                "code": "nums = {1, 2, 3, 2, 1}\nprint(nums)          # {1, 2, 3} — duplicates removed\nnums.add(4)\nnums.discard(2)\nprint(nums)\nprint(3 in nums)     # True",
+                "output": "{1, 2, 3}\n{1, 3, 4}\nTrue",
+            },
+            {
+                "heading": "Set Operations",
+                "body": "Sets support mathematical set operations. These are especially useful for finding common elements or differences between two collections.",
+                "code": "a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\n\nprint(a | b)   # union:        {1, 2, 3, 4, 5, 6}\nprint(a & b)   # intersection: {3, 4}\nprint(a - b)   # difference:   {1, 2}\nprint(a ^ b)   # symmetric diff: {1, 2, 5, 6}",
+                "output": "{1, 2, 3, 4, 5, 6}\n{3, 4}\n{1, 2}\n{1, 2, 5, 6}",
+            },
+        ],
+    },
+    {
+        "title": "Conditional Logic",
+        "slug": "conditional-logic",
+        "topic_area": "Control Flow",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Control program flow using if, elif, and else statements, comparison operators, and logical operators.",
+        "order": 6,
+        "sections": [
+            {
+                "heading": "if / elif / else",
+                "body": "Python executes only the block whose condition is True. Use elif to test multiple conditions in sequence and else as a fallback.",
+                "code": "score = 72\n\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\n\nprint(grade)",
+                "output": "C",
+            },
+            {
+                "heading": "Comparison Operators",
+                "body": "Comparisons return True or False. Python uses == for equality (not = which is assignment) and != for inequality. All six operators: ==, !=, <, >, <=, >=.",
+                "code": "print(5 == 5)    # True\nprint(5 != 3)    # True\nprint(10 > 3)    # True\nprint(2 >= 2)    # True\nprint(\"abc\" < \"abd\")  # True — lexicographic",
+                "output": "True\nTrue\nTrue\nTrue\nTrue",
+            },
+            {
+                "heading": "Logical Operators",
+                "body": "Combine conditions with and, or, and not. Python evaluates them lazily: and stops as soon as it finds a False, or stops as soon as it finds a True.",
+                "code": "age = 25\nhas_ticket = True\n\nif age >= 18 and has_ticket:\n    print(\"Entry allowed\")\n\nif age < 13 or age > 65:\n    print(\"Discount applies\")\nelse:\n    print(\"Full price\")",
+                "output": "Entry allowed\nFull price",
+            },
+            {
+                "heading": "Truthiness",
+                "body": "In Python, many values evaluate as False in a boolean context: 0, 0.0, empty string \"\", empty list [], empty dict {}, and None. Everything else is truthy. This lets you write concise guards.",
+                "code": "items = []\nif not items:\n    print(\"List is empty\")\n\nname = \"Alice\"\nif name:\n    print(f\"Hello, {name}!\")",
+                "output": "List is empty\nHello, Alice!",
+            },
+        ],
+    },
+    {
+        "title": "Loops",
+        "slug": "loops",
+        "topic_area": "Control Flow",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Repeat work efficiently using for loops over sequences and range(), while loops for condition-driven repetition, and flow control with break and continue.",
+        "order": 7,
+        "sections": [
+            {
+                "heading": "for Loops",
+                "body": "A for loop iterates over any sequence — a list, string, range, or any iterable. The loop variable takes each value in turn.",
+                "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\nfor fruit in fruits:\n    print(fruit)\n\nfor i in range(1, 4):\n    print(i)",
+                "output": "apple\nbanana\ncherry\n1\n2\n3",
+            },
+            {
+                "heading": "while Loops",
+                "body": "A while loop keeps running as long as its condition is True. You must update the condition inside the loop or you get an infinite loop.",
+                "code": "count = 5\nwhile count > 0:\n    print(count)\n    count -= 1\nprint(\"Done\")",
+                "output": "5\n4\n3\n2\n1\nDone",
+            },
+            {
+                "heading": "break and continue",
+                "body": "break exits the loop immediately. continue skips the rest of the current iteration and moves to the next one.",
+                "code": "for n in range(1, 10):\n    if n == 5:\n        break          # stop at 5\n    if n % 2 == 0:\n        continue       # skip even numbers\n    print(n)",
+                "output": "1\n3",
+            },
+            {
+                "heading": "enumerate and zip",
+                "body": "enumerate() pairs each item with its index, eliminating manual index tracking. zip() pairs items from two or more iterables together.",
+                "code": "names = [\"Alice\", \"Bob\", \"Carol\"]\nfor i, name in enumerate(names, start=1):\n    print(f\"{i}. {name}\")\n\nscores = [95, 87, 92]\nfor name, score in zip(names, scores):\n    print(f\"{name}: {score}\")",
+                "output": "1. Alice\n2. Bob\n3. Carol\nAlice: 95\nBob: 87\nCarol: 92",
+            },
+        ],
+    },
+    {
+        "title": "Functions",
+        "slug": "functions",
+        "topic_area": "Functions",
+        "difficulty_level": DifficultyLevel.beginner,
+        "summary": "Write reusable blocks of code with def, pass arguments and defaults, and use return to send results back to the caller.",
+        "order": 8,
+        "sections": [
+            {
+                "heading": "Defining and Calling",
+                "body": "Use def to define a function. The indented block is its body. A function only executes when called by its name followed by parentheses.",
+                "code": "def greet():\n    print(\"Hello from a function!\")\n\ngreet()   # call it\ngreet()   # call it again",
+                "output": "Hello from a function!\nHello from a function!",
+            },
+            {
+                "heading": "Parameters and Arguments",
+                "body": "Parameters are the names in the function definition. Arguments are the actual values you pass when calling the function.",
+                "code": "def add(a, b):\n    print(a + b)\n\nadd(3, 7)    # 10\nadd(10, 20)  # 30",
+                "output": "10\n30",
+            },
+            {
+                "heading": "Return Values",
+                "body": "Use return to send a value back to the caller. A function without an explicit return statement returns None.",
+                "code": "def square(n):\n    return n ** 2\n\nresult = square(9)\nprint(result)           # 81\nprint(square(4) + 1)    # 17",
+                "output": "81\n17",
+            },
+            {
+                "heading": "Default and Keyword Arguments",
+                "body": "Parameters can have default values, making them optional. You can also pass arguments by name (keyword arguments) to improve readability.",
+                "code": "def power(base, exponent=2):\n    return base ** exponent\n\nprint(power(5))          # 25 — uses default\nprint(power(2, 10))      # 1024\nprint(power(exponent=3, base=4))  # 64 — keyword args",
+                "output": "25\n1024\n64",
+            },
+        ],
+    },
+    {
+        "title": "List & Dictionary Comprehensions",
+        "slug": "list-and-dict-comprehensions",
+        "topic_area": "Advanced Collections",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Write concise, expressive transformations over collections using list comprehensions, dict comprehensions, and set comprehensions.",
+        "order": 9,
+        "sections": [
+            {
+                "heading": "List Comprehensions",
+                "body": "A list comprehension builds a new list by applying an expression to each item in an iterable, optionally filtering with a condition. It replaces a for loop + append pattern with a single readable line.",
+                "code": "# Traditional approach\nsquares = []\nfor n in range(1, 6):\n    squares.append(n ** 2)\n\n# Comprehension\nsquares = [n ** 2 for n in range(1, 6)]\nprint(squares)",
+                "output": "[1, 4, 9, 16, 25]",
+            },
+            {
+                "heading": "Filtering with a Condition",
+                "body": "Add an if clause to keep only items that satisfy a condition. The expression, loop, and filter are read left to right.",
+                "code": "evens = [n for n in range(1, 11) if n % 2 == 0]\nprint(evens)\n\nlong_words = [w for w in [\"cat\", \"elephant\", \"ox\", \"giraffe\"] if len(w) > 3]\nprint(long_words)",
+                "output": "[2, 4, 6, 8, 10]\n['elephant', 'giraffe']",
+            },
+            {
+                "heading": "Dict Comprehensions",
+                "body": "Dict comprehensions build dictionaries from iterables using {key_expr: value_expr for item in iterable}.",
+                "code": "words = [\"apple\", \"banana\", \"cherry\"]\nlengths = {word: len(word) for word in words}\nprint(lengths)\n\nsquare_map = {n: n ** 2 for n in range(1, 6)}\nprint(square_map)",
+                "output": "{'apple': 5, 'banana': 6, 'cherry': 6}\n{1: 1, 2: 4, 3: 9, 4: 16, 5: 25}",
+            },
+            {
+                "heading": "Set Comprehensions",
+                "body": "Set comprehensions use curly braces without colons. Duplicates are automatically removed — useful for extracting unique values.",
+                "code": "text = \"hello world\"\nunique_chars = {ch for ch in text if ch != \" \"}\nprint(sorted(unique_chars))",
+                "output": "['d', 'e', 'h', 'l', 'o', 'r', 'w']",
+            },
+        ],
+    },
+    {
+        "title": "Error Handling",
+        "slug": "error-handling",
+        "topic_area": "Error Handling",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Catch and handle exceptions gracefully with try/except/else/finally, raise your own errors, and learn which exception types to use.",
+        "order": 10,
+        "sections": [
+            {
+                "heading": "try / except",
+                "body": "Wrap code that might fail in a try block. If an exception occurs, Python jumps to the matching except block instead of crashing.",
+                "code": "try:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print(\"Cannot divide by zero\")\n\ntry:\n    num = int(\"abc\")\nexcept ValueError as e:\n    print(f\"Error: {e}\")",
+                "output": "Cannot divide by zero\nError: invalid literal for int() with base 10: 'abc'",
+            },
+            {
+                "heading": "else and finally",
+                "body": "The else block runs only if no exception was raised. The finally block always runs — useful for cleanup such as closing files or releasing resources.",
+                "code": "try:\n    result = 10 / 2\nexcept ZeroDivisionError:\n    print(\"Division failed\")\nelse:\n    print(f\"Result: {result}\")\nfinally:\n    print(\"Always runs\")",
+                "output": "Result: 5.0\nAlways runs",
+            },
+            {
+                "heading": "Catching Multiple Exceptions",
+                "body": "List multiple exception types in a tuple to handle them the same way. Use a bare except Exception as e to catch any exception and inspect it.",
+                "code": "def safe_divide(a, b):\n    try:\n        return a / b\n    except (TypeError, ZeroDivisionError) as e:\n        print(f\"Caught: {e}\")\n        return None\n\nprint(safe_divide(10, 2))\nprint(safe_divide(10, 0))\nprint(safe_divide(10, \"x\"))",
+                "output": "5.0\nCaught: division by zero\nNone\nCaught: unsupported operand type(s) for /: 'int' and 'str'\nNone",
+            },
+            {
+                "heading": "Raising Exceptions",
+                "body": "Use raise to signal that something went wrong. You can raise built-in exceptions or define your own by subclassing Exception.",
+                "code": "def set_age(age):\n    if age < 0:\n        raise ValueError(f\"Age cannot be negative: {age}\")\n    return age\n\ntry:\n    set_age(-5)\nexcept ValueError as e:\n    print(e)",
+                "output": "Age cannot be negative: -5",
+            },
+        ],
+    },
+    {
+        "title": "File I/O",
+        "slug": "file-io",
+        "topic_area": "File Operations",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Read from and write to files using open(), context managers, and common patterns for working with text and CSV data.",
+        "order": 11,
+        "sections": [
+            {
+                "heading": "Opening and Reading Files",
+                "body": "Use open() with a context manager (with statement) so the file is automatically closed even if an error occurs. Modes: 'r' = read (default), 'w' = write, 'a' = append.",
+                "code": "# Write a sample file first\nwith open(\"notes.txt\", \"w\") as f:\n    f.write(\"Line one\\n\")\n    f.write(\"Line two\\n\")\n\n# Read the entire file at once\nwith open(\"notes.txt\") as f:\n    content = f.read()\nprint(content)",
+                "output": "Line one\nLine two\n",
+            },
+            {
+                "heading": "Reading Line by Line",
+                "body": "Iterating over a file object yields one line at a time, including the trailing newline. Use .strip() to remove it. readlines() returns a list of all lines.",
+                "code": "with open(\"notes.txt\") as f:\n    for line in f:\n        print(line.strip())\n\n# Or get a list\nwith open(\"notes.txt\") as f:\n    lines = f.readlines()\nprint(lines)",
+                "output": "Line one\nLine two\n['Line one\\n', 'Line two\\n']",
+            },
+            {
+                "heading": "Writing and Appending",
+                "body": "Mode 'w' creates the file or overwrites it. Mode 'a' appends without erasing existing content. Use print(..., file=f) as an alternative to f.write().",
+                "code": "with open(\"log.txt\", \"a\") as f:\n    f.write(\"New entry\\n\")\n\nwith open(\"log.txt\", \"w\") as f:\n    print(\"Hello\", file=f)\n    print(\"World\", file=f)",
+            },
+            {
+                "heading": "Handling Missing Files",
+                "body": "Opening a file that doesn't exist raises FileNotFoundError. Always check for this when reading user-specified paths.",
+                "code": "try:\n    with open(\"missing.txt\") as f:\n        print(f.read())\nexcept FileNotFoundError:\n    print(\"File not found\")",
+                "output": "File not found",
+            },
+        ],
+    },
+    {
+        "title": "Classes & OOP",
+        "slug": "classes-and-oop",
+        "topic_area": "OOP",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Model real-world entities with classes, define behaviour with methods, share state with attributes, and understand inheritance.",
+        "order": 12,
+        "sections": [
+            {
+                "heading": "Defining a Class",
+                "body": "__init__ is the constructor — it runs when you create an instance. self refers to the specific instance. Instance attributes are set on self.",
+                "code": "class Dog:\n    def __init__(self, name, breed):\n        self.name = name\n        self.breed = breed\n\n    def bark(self):\n        print(f\"{self.name} says: Woof!\")\n\nfido = Dog(\"Fido\", \"Labrador\")\nfido.bark()\nprint(fido.name)",
+                "output": "Fido says: Woof!\nFido",
+            },
+            {
+                "heading": "Class vs Instance Attributes",
+                "body": "Class attributes are shared by all instances. Instance attributes (set on self) are unique to each object.",
+                "code": "class Counter:\n    count = 0   # class attribute\n\n    def __init__(self, name):\n        self.name = name       # instance attribute\n        Counter.count += 1\n\na = Counter(\"a\")\nb = Counter(\"b\")\nprint(Counter.count)   # 2 — shared",
+                "output": "2",
+            },
+            {
+                "heading": "Inheritance",
+                "body": "A subclass inherits all methods and attributes from the parent class. Use super() to call the parent's __init__ or any overridden method.",
+                "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        return \"...\"\n\nclass Cat(Animal):\n    def speak(self):\n        return f\"{self.name} says: Meow!\"\n\nclass Duck(Animal):\n    def speak(self):\n        return f\"{self.name} says: Quack!\"\n\nfor animal in [Cat(\"Whiskers\"), Duck(\"Donald\")]:\n    print(animal.speak())",
+                "output": "Whiskers says: Meow!\nDonald says: Quack!",
+            },
+            {
+                "heading": "Special Methods (Dunder Methods)",
+                "body": "Double-underscore methods let you define how your objects behave with Python operators and built-ins. __str__ controls what print() shows. __len__ enables len(). __eq__ enables == comparison.",
+                "code": "class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __str__(self):\n        return f\"Point({self.x}, {self.y})\"\n\n    def __add__(self, other):\n        return Point(self.x + other.x, self.y + other.y)\n\np1 = Point(1, 2)\np2 = Point(3, 4)\nprint(p1 + p2)",
+                "output": "Point(4, 6)",
+            },
+        ],
+    },
+    {
+        "title": "Modules & Imports",
+        "slug": "modules-and-imports",
+        "topic_area": "Modules",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Organise code across files with Python's module system, import from the standard library, and understand packages.",
+        "order": 13,
+        "sections": [
+            {
+                "heading": "Importing Modules",
+                "body": "A module is any Python file. Import it with import or grab specific names with from ... import. The standard library ships hundreds of useful modules.",
+                "code": "import math\nprint(math.sqrt(144))    # 12.0\nprint(math.pi)           # 3.141592...\n\nfrom math import factorial\nprint(factorial(5))       # 120",
+                "output": "12.0\n3.141592653589793\n120",
+            },
+            {
+                "heading": "Useful Standard Library Modules",
+                "body": "Python's standard library covers a vast range of tasks. Here are the most commonly used modules you should know.",
+                "code": "import random\nimport datetime\nimport os\nimport json\n\nprint(random.randint(1, 10))       # random integer\nprint(datetime.date.today())        # today's date\nprint(os.getcwd())                  # current directory\n\ndata = {\"key\": \"value\"}\nprint(json.dumps(data))            # serialize to JSON string",
+            },
+            {
+                "heading": "Creating Your Own Module",
+                "body": "Any .py file is a module. Place it in the same directory and import it by filename (without .py). The if __name__ == '__main__': guard lets a file run standalone OR be imported without executing its script-level code.",
+                "code": "# mathutils.py\ndef double(n):\n    return n * 2\n\nif __name__ == \"__main__\":\n    print(double(5))   # only runs when executed directly\n\n# main.py\n# import mathutils\n# print(mathutils.double(7))   # 14",
+            },
+            {
+                "heading": "Packages",
+                "body": "A package is a directory containing an __init__.py file and one or more module files. Python will treat it as a namespace, allowing hierarchical imports like from mypackage.utils import helper.",
+                "code": "# Directory structure:\n# mypackage/\n#   __init__.py\n#   utils.py\n#   models.py\n\n# Import from a package:\n# from mypackage.utils import some_function",
+            },
+        ],
+    },
+    {
+        "title": "Slicing & Unpacking",
+        "slug": "slicing-and-unpacking",
+        "topic_area": "Data Manipulation",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Master Python's powerful slice syntax, starred unpacking, and tuple unpacking to work with sequences concisely.",
+        "order": 14,
+        "sections": [
+            {
+                "heading": "Slice Syntax",
+                "body": "Slices take the form [start:stop:step]. Omitting start defaults to 0, omitting stop defaults to the end, and step defaults to 1. Negative step reverses direction.",
+                "code": "s = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\nprint(s[2:5])    # [2, 3, 4]\nprint(s[:3])     # [0, 1, 2]\nprint(s[7:])     # [7, 8, 9]\nprint(s[::2])    # [0, 2, 4, 6, 8]\nprint(s[::-1])   # reversed",
+                "output": "[2, 3, 4]\n[0, 1, 2]\n[7, 8, 9]\n[0, 2, 4, 6, 8]\n[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]",
+            },
+            {
+                "heading": "Tuple Unpacking",
+                "body": "Any iterable on the right side of an assignment can be unpacked into multiple variables on the left side. The number of variables must match the number of items.",
+                "code": "x, y, z = (1, 2, 3)\nprint(x, y, z)\n\nfirst, second = \"hi\"\nprint(first, second)\n\na, b = b, a  # swap without temp variable (a=2, b=1 after)\nprint(a, b)",
+                "output": "1 2 3\nh i\n2 1",
+            },
+            {
+                "heading": "Starred Unpacking",
+                "body": "The * prefix in an assignment collects the remaining items into a list. It can appear at the start, middle, or end.",
+                "code": "first, *rest = [1, 2, 3, 4, 5]\nprint(first)   # 1\nprint(rest)    # [2, 3, 4, 5]\n\n*head, last = [10, 20, 30]\nprint(head)    # [10, 20]\nprint(last)    # 30",
+                "output": "1\n[2, 3, 4, 5]\n[10, 20]\n30",
+            },
+            {
+                "heading": "Unpacking in Loops and Function Calls",
+                "body": "Unpacking works inside for loops (e.g. for k, v in d.items()) and when spreading iterables into function arguments with * (spread) and ** (dict spread).",
+                "code": "pairs = [(\"a\", 1), (\"b\", 2), (\"c\", 3)]\nfor letter, number in pairs:\n    print(letter, number)\n\ndef add(x, y):\n    return x + y\n\nargs = [3, 7]\nprint(add(*args))",
+                "output": "a 1\nb 2\nc 3\n10",
+            },
+        ],
+    },
+    {
+        "title": "Lambda & Higher-Order Functions",
+        "slug": "lambda-and-higher-order-functions",
+        "topic_area": "Functional Python",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Write concise anonymous functions with lambda, and use map(), filter(), and sorted() with key functions for expressive data pipelines.",
+        "order": 15,
+        "sections": [
+            {
+                "heading": "Lambda Functions",
+                "body": "A lambda is a short, anonymous function written as a single expression. It is most useful when you need a throwaway function to pass to another function.",
+                "code": "square = lambda n: n ** 2\nprint(square(5))   # 25\n\nadd = lambda a, b: a + b\nprint(add(3, 4))   # 7",
+                "output": "25\n7",
+            },
+            {
+                "heading": "sorted() with key=",
+                "body": "The key parameter of sorted() (and list.sort()) accepts a function that is called on each item to produce its sort key. Lambda makes this concise.",
+                "code": "words = [\"banana\", \"apple\", \"cherry\", \"fig\"]\nprint(sorted(words))                  # alphabetical\nprint(sorted(words, key=len))         # by length\nprint(sorted(words, key=lambda w: w[-1]))  # by last char",
+                "output": "['apple', 'banana', 'cherry', 'fig']\n['fig', 'apple', 'banana', 'cherry']\n['banana', 'apple', 'fig', 'cherry']",
+            },
+            {
+                "heading": "map() and filter()",
+                "body": "map(fn, iterable) applies a function to every item, returning a lazy iterator. filter(fn, iterable) keeps only items for which fn returns True. Wrap with list() to materialise.",
+                "code": "nums = [1, 2, 3, 4, 5]\nsquared = list(map(lambda n: n ** 2, nums))\nprint(squared)\n\nevens = list(filter(lambda n: n % 2 == 0, nums))\nprint(evens)",
+                "output": "[1, 4, 9, 16, 25]\n[2, 4]",
+            },
+            {
+                "heading": "Functions as First-Class Objects",
+                "body": "In Python, functions are objects. You can pass them as arguments, return them from other functions, and store them in variables or data structures. This is the foundation of higher-order programming.",
+                "code": "def apply(fn, values):\n    return [fn(v) for v in values]\n\ndef double(n):\n    return n * 2\n\nprint(apply(double, [1, 2, 3, 4]))\nprint(apply(str, [10, 20, 30]))",
+                "output": "[2, 4, 6, 8]\n['10', '20', '30']",
+            },
+        ],
+    },
+    {
+        "title": "Generators & Iterators",
+        "slug": "generators-and-iterators",
+        "topic_area": "Iterators",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Produce values lazily with generator functions and expressions to avoid materialising large sequences in memory.",
+        "order": 16,
+        "sections": [
+            {
+                "heading": "The Iterator Protocol",
+                "body": "Any object with __iter__ and __next__ methods is an iterator. Calling next() on it yields the next value. StopIteration signals the end. For loops use this protocol internally.",
+                "code": "nums = iter([10, 20, 30])\nprint(next(nums))   # 10\nprint(next(nums))   # 20\nprint(next(nums))   # 30\n# next(nums) would raise StopIteration",
+                "output": "10\n20\n30",
+            },
+            {
+                "heading": "Generator Functions",
+                "body": "Replace return with yield to turn a function into a generator. Each call to next() resumes execution until the next yield. The function's local state is preserved between calls.",
+                "code": "def count_up(start, stop):\n    current = start\n    while current <= stop:\n        yield current\n        current += 1\n\nfor n in count_up(1, 5):\n    print(n)",
+                "output": "1\n2\n3\n4\n5",
+            },
+            {
+                "heading": "Generator Expressions",
+                "body": "Generator expressions look like list comprehensions but use parentheses instead of brackets. They are lazy — values are computed on demand, saving memory.",
+                "code": "# List comprehension — builds entire list in memory\nall_squares = [n ** 2 for n in range(1_000_000)]\n\n# Generator expression — computes one value at a time\ngen_squares = (n ** 2 for n in range(1_000_000))\n\n# Take only what you need\nprint(next(gen_squares))   # 0\nprint(next(gen_squares))   # 1",
+                "output": "0\n1",
+            },
+            {
+                "heading": "Practical Use: Large Files",
+                "body": "Generators shine when processing data that doesn't fit in memory. Iterating a file object line by line is itself a generator pattern — only one line is in memory at a time.",
+                "code": "def read_large_file(path):\n    with open(path) as f:\n        for line in f:         # lazy: one line at a time\n            yield line.strip()\n\n# Usage:\n# for line in read_large_file(\"huge.log\"):\n#     process(line)",
+            },
+        ],
+    },
+    {
+        "title": "Decorators",
+        "slug": "decorators",
+        "topic_area": "Advanced Functions",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "summary": "Extend or modify function behaviour without changing its source using Python's decorator syntax and the functools.wraps helper.",
+        "order": 17,
+        "sections": [
+            {
+                "heading": "Functions Returning Functions",
+                "body": "A decorator is just a function that takes a function and returns a new function. Understanding closures is the key: the inner function 'closes over' the original function.",
+                "code": "def shout(fn):\n    def wrapper(*args, **kwargs):\n        result = fn(*args, **kwargs)\n        return str(result).upper()\n    return wrapper\n\ndef greet(name):\n    return f\"hello, {name}\"\n\nlouder = shout(greet)\nprint(louder(\"alice\"))",
+                "output": "HELLO, ALICE",
+            },
+            {
+                "heading": "The @ Syntax",
+                "body": "The @ symbol is syntactic sugar for applying a decorator. @decorator placed above a function definition is equivalent to fn = decorator(fn).",
+                "code": "from functools import wraps\n\ndef log_calls(fn):\n    @wraps(fn)   # preserves fn.__name__ and __doc__\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {fn.__name__}\")\n        return fn(*args, **kwargs)\n    return wrapper\n\n@log_calls\ndef add(a, b):\n    return a + b\n\nresult = add(3, 4)\nprint(result)",
+                "output": "Calling add\n7",
+            },
+            {
+                "heading": "Decorators with Arguments",
+                "body": "To pass arguments to a decorator, add another wrapper layer. The outermost function takes the decorator arguments and returns the actual decorator.",
+                "code": "def repeat(times):\n    def decorator(fn):\n        @wraps(fn)\n        def wrapper(*args, **kwargs):\n            for _ in range(times):\n                fn(*args, **kwargs)\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef hello():\n    print(\"Hello!\")\n\nhello()",
+                "output": "Hello!\nHello!\nHello!",
+            },
+            {
+                "heading": "Common Built-in Decorators",
+                "body": "Python ships several useful decorators in the standard library. @staticmethod and @classmethod modify method binding in classes. @property turns a method into a computed attribute. @functools.cache memoizes expensive function calls.",
+                "code": "class Circle:\n    def __init__(self, radius):\n        self.radius = radius\n\n    @property\n    def area(self):\n        import math\n        return math.pi * self.radius ** 2\n\nc = Circle(5)\nprint(f\"{c.area:.2f}\")   # access like attribute, no ()",
+                "output": "78.54",
+            },
+        ],
+    },
+]
+
+
 async def seed() -> None:
     async with AsyncSessionLocal() as db:
         # Upsert categories and build a slug → model map
@@ -1471,6 +2041,20 @@ async def seed() -> None:
                 db.add(TestCase(exercise_id=exercise.id, **tc_data))
 
             print(f"  Created exercise: {exercise.title}")
+
+        # Upsert resources
+        for res_data in RESOURCES:
+            result = await db.execute(select(Resource).where(Resource.slug == res_data["slug"]))
+            existing = result.scalar_one_or_none()
+            if existing:
+                existing.title = res_data["title"]
+                existing.summary = res_data["summary"]
+                existing.sections = res_data["sections"]
+                existing.order = res_data["order"]
+                print(f"  Updated resource: {res_data['title']}")
+            else:
+                db.add(Resource(**res_data))
+                print(f"  Created resource: {res_data['title']}")
 
         await db.commit()
         print("\nSeeding complete.")
