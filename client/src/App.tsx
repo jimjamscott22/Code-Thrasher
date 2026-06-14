@@ -6,6 +6,8 @@ import Dashboard from "@/pages/Dashboard";
 import ExerciseDetail from "@/pages/ExerciseDetail";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Resources from "@/pages/Resources";
+import ResourceDetail from "@/pages/ResourceDetail";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export default function App() {
@@ -24,6 +26,8 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/exercise/:id" element={<ExerciseDetail />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/resources/:slug" element={<ResourceDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

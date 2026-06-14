@@ -118,6 +118,24 @@ class SolutionReveal(Base):
     exercise: Mapped["Exercise"] = relationship()
 
 
+class Resource(Base):
+    __tablename__ = "resources"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    slug: Mapped[str] = mapped_column(String(200), unique=True, nullable=False, index=True)
+    topic_area: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    difficulty_level: Mapped[DifficultyLevel] = mapped_column(
+        Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.beginner
+    )
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    sections: Mapped[list[dict]] = mapped_column(JSON, default=list, nullable=False)
+    order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
 class Submission(Base):
     __tablename__ = "submissions"
     __table_args__ = (

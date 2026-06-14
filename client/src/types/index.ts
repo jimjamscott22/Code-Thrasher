@@ -91,3 +91,24 @@ export interface ExerciseSolution {
   code: string;
   explanation: string | null;
 }
+
+export interface ResourceSection {
+  heading: string;
+  body: string;
+  code?: string | null;
+  output?: string | null;
+}
+
+export interface ResourceListItem {
+  id: number;
+  title: string;
+  slug: string;
+  topic_area: string;
+  difficulty_level: DifficultyLevel;
+  summary: string;
+  order: number;
+}
+
+export interface ResourceDetail extends ResourceListItem {
+  sections: ResourceSection[];
+}

@@ -20,6 +20,14 @@ export default function Navbar() {
         >
           {"<CodeThrasher />"}
         </Link>
+        <div className="flex items-center gap-6">
+          <Link
+            to="/resources"
+            className="text-sm font-medium text-gray-400 transition hover:text-white"
+          >
+            Resources
+          </Link>
+        </div>
         <div className="flex items-center gap-3">
           {user ? (
             <>
