@@ -61,6 +61,9 @@ docker compose up --build
 
 # 4. Apply database migrations (first run only)
 docker compose exec api alembic upgrade head
+
+# 5. Seed the database with exercises (first run only)
+docker compose exec api python seed.py
 ```
 
 The API is now available at `http://localhost:8000`.
