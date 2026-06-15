@@ -73,6 +73,7 @@ export default function ExerciseDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pyodideReady, setPyodideReady] = useState(false);
+  const [pyodideError, setPyodideError] = useState(false);
   const user = useAuthStore((state) => state.user);
   const {
     exercises: progress,
@@ -113,10 +114,12 @@ export default function ExerciseDetail() {
       .then((r) => setNavExercises([...r.data].sort((a, b) => a.id - b.id)))
       .catch(() => setNavExercises([]));
 
+    setPyodideReady(false);
+    setPyodideError(false);
     // Kick off Pyodide download in the background while the user reads the problem
     getPyodide()
       .then(() => setPyodideReady(true))
-      .catch(() => {/* will surface as error on submit */});
+      .catch(() => setPyodideError(true));
 
   }, [id]);
 
@@ -146,8 +149,14 @@ export default function ExerciseDetail() {
       const visibleTests = exercise.test_cases.filter(
         (testCase) => testCase.expected_output != null,
       );
-      const preview = visibleTests.length
-        ? await runPythonTests(
+      let preview: { stdout: string; stderr: string; totalDurationMs: number } = {
+        stdout: "",
+        stderr: "",
+        totalDurationMs: 0,
+      };
+      if (visibleTests.length && pyodideReady) {
+        try {
+          preview = await runPythonTests(
             code,
             visibleTests.map((testCase) => ({
               id: testCase.id,
@@ -155,8 +164,11 @@ export default function ExerciseDetail() {
               expected_output: testCase.expected_output as string,
               score_weight: testCase.score_weight,
             })),
-          )
-        : { stdout: "", stderr: "", totalDurationMs: 0 };
+          );
+        } catch {
+          // Local preview failed; server grading still runs below
+        }
+      }
 
       const serverResp = await api.post<SubmitResponse>("/submit/", {
         exercise_id: exercise.id,
@@ -302,6 +314,18 @@ export default function ExerciseDetail() {
             </div>
           )}
 
+          {!pyodideReady && !pyodideError && !submitting && (
+            <p className="flex items-center gap-1.5 text-xs text-gray-500">
+              <span className="inline-block h-2.5 w-2.5 animate-spin rounded-full border border-gray-600 border-t-transparent" />
+              Loading Python runtime…
+            </p>
+          )}
+          {pyodideError && !submitting && (
+            <p className="text-xs text-yellow-600">
+              Python runtime failed to load — your submission will still be graded server-side.
+            </p>
+          )}
+
           <button
             onClick={handleSubmit}
             disabled={submitting}
@@ -321,7 +345,7 @@ export default function ExerciseDetail() {
             {submitting
               ? pyodideReady
                 ? "Running…"
-                : "Loading Python runtime…"
+                : "Submitting…"
               : user
                 ? "Run & Submit"
                 : "Login to Submit"}

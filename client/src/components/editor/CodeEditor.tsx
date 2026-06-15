@@ -1,4 +1,16 @@
-import Editor from "@monaco-editor/react";
+import Editor, { type Monaco } from "@monaco-editor/react";
+
+function defineTheme(monaco: Monaco) {
+  monaco.editor.defineTheme("code-thrasher-dark", {
+    base: "vs-dark",
+    inherit: true,
+    rules: [],
+    colors: {
+      "editorCursor.foreground": "#FFFFFF",
+      "editorCursor.background": "#000000",
+    },
+  });
+}
 
 interface CodeEditorProps {
   value: string;
@@ -24,7 +36,8 @@ export default function CodeEditor({
       <Editor
         height={height}
         defaultLanguage="python"
-        theme="vs-dark"
+        theme="code-thrasher-dark"
+        beforeMount={defineTheme}
         value={value}
         onChange={(v) => onChange(v ?? "")}
         options={{

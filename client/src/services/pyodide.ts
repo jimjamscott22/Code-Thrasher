@@ -23,6 +23,8 @@ interface PendingRun {
   timer: ReturnType<typeof setTimeout>;
 }
 
+const INIT_TIMEOUT_MS = 30_000;
+
 let worker: Worker | null = null;
 let readyPromise: Promise<void> | null = null;
 const pending = new Map<string, PendingRun>();
@@ -98,14 +100,23 @@ function initWorker(): Promise<void> {
 
     const onMessage = (event: MessageEvent<WorkerResponse>) => {
       if (event.data.type === "ready") {
+        clearTimeout(initTimer);
         instance.removeEventListener("message", onMessage);
         resolve();
       } else if (event.data.type === "error" && event.data.id === "init") {
+        clearTimeout(initTimer);
         instance.removeEventListener("message", onMessage);
         readyPromise = null;
         reject(new Error(event.data.message));
       }
     };
+
+    const initTimer = setTimeout(() => {
+      instance.removeEventListener("message", onMessage);
+      readyPromise = null;
+      terminateWorker();
+      reject(new Error("Python runtime took too long to load. Check your internet connection and try again."));
+    }, INIT_TIMEOUT_MS);
 
     instance.addEventListener("message", onMessage);
     instance.postMessage({ type: "init" } satisfies WorkerRequest);
