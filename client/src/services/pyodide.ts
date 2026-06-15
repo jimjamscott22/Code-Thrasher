@@ -74,7 +74,7 @@ function handleWorkerMessage(event: MessageEvent<WorkerResponse>) {
 function spawnWorker(): Worker {
   const instance = new Worker(
     new URL("./pyodide.worker.ts", import.meta.url),
-    { type: "classic" },
+    { type: "module" },
   );
   instance.onmessage = handleWorkerMessage;
   instance.onerror = () => {

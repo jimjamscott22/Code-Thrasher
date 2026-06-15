@@ -9,14 +9,13 @@ interface PyodideInstance {
   setStderr(options: { batched: (text: string) => void }): void;
 }
 
-declare function loadPyodide(config: { indexURL: string }): Promise<PyodideInstance>;
-declare function importScripts(...urls: string[]): void;
+type PyodideModule = { loadPyodide: (config: { indexURL: string }) => Promise<PyodideInstance> };
 
 let pyodide: PyodideInstance | null = null;
 
 async function ensurePyodide(): Promise<PyodideInstance> {
   if (pyodide) return pyodide;
-  importScripts(`${CDN_BASE}pyodide.js`);
+  const { loadPyodide } = (await import(/* @vite-ignore */ `${CDN_BASE}pyodide.mjs`)) as unknown as PyodideModule;
   pyodide = await loadPyodide({ indexURL: CDN_BASE });
   return pyodide;
 }
