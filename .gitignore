@@ -222,3 +222,4 @@ __marimo__/
 /client/node_modules/*
 /client/.vite/*
 /client/.vite/*
+.claude/settings.local.json
