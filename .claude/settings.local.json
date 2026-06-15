@@ -4,7 +4,14 @@
       "Bash(docker compose *)",
       "Bash(python -c \"import asyncio; import aiosqlite\")",
       "Bash(curl -s http://localhost:8000/api/v1/exercises/)",
-      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(f'{len\\(data\\)} exercises returned'\\); [print\\(f'  - {e[\\\\\"title\\\\\"]}'\\) for e in data[:5]]\")"
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\(f'{len\\(data\\)} exercises returned'\\); [print\\(f'  - {e[\\\\\"title\\\\\"]}'\\) for e in data[:5]]\")",
+      "Bash(cd /c/Users/jimja/github_repos/Python/Code-Thrasher/client && cat package.json | grep -i monaco)",
+      "Read(//c/c/Users/jimja/github_repos/Python/Code-Thrasher/client/**)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_close"
     ]
   },
   "enabledMcpjsonServers": [

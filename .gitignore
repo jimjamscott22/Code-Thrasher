@@ -223,3 +223,5 @@ __marimo__/
 /client/.vite/*
 /client/.vite/*
 .claude/settings.local.json
+.playwright-mcp/*
+.claude/*

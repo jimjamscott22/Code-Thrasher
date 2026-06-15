@@ -17,4 +17,16 @@
   ::-webkit-scrollbar-thumb {
     @apply bg-gray-700 rounded-full;
   }
+
+  /*
+   * Monaco keeps a hidden <textarea> at the caret for keyboard/IME input.
+   * Tailwind's preflight resets form-element font metrics, which makes that
+   * textarea expand to its intrinsic size and show the browser-default white
+   * background — a white block that also covers the caret. Force it back to
+   * invisible so the cursor and editor render correctly.
+   */
+  .monaco-editor textarea.ime-text-area,
+  .monaco-editor .inputarea {
+    @apply bg-transparent text-transparent;
+  }
 }
