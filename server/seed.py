@@ -637,6 +637,199 @@ EXERCISES = [
             {"input_data": "", "expected_output": "30", "score_weight": 1.0, "is_hidden": True},
         ],
     },
+    {
+        "title": "Celsius to Fahrenheit",
+        "description": (
+            "## Celsius to Fahrenheit\n\n"
+            "A variable `celsius` holds the temperature `37`. Convert it to Fahrenheit and print "
+            "the result. The formula is `F = C * 9 / 5 + 32`.\n\n"
+            "**Expected output:**\n```\n98.6\n```"
+        ),
+        "hint": "Apply the formula directly with the `celsius` variable. Dividing with `/` produces a decimal result.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "basics",
+        "starter_code": "celsius = 37\n# Convert to Fahrenheit and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "98.6", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "98.6", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Repeat a String",
+        "description": (
+            "## Repeat a String\n\n"
+            'A variable `word` holds the string `"ha"`. Print it repeated 3 times in a row to '
+            "form a single string.\n\n"
+            "**Expected output:**\n```\nhahaha\n```"
+        ),
+        "hint": "Python lets you multiply a string by an integer with `*` to repeat it.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "strings",
+        "starter_code": 'word = "ha"\n# Print the word repeated 3 times\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "hahaha", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "hahaha", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "First and Last Elements",
+        "description": (
+            "## First and Last Elements\n\n"
+            "A variable `numbers` holds `[10, 20, 30, 40, 50]`. Print the first element, then the "
+            "last element, each on its own line.\n\n"
+            "**Expected output:**\n```\n10\n50\n```"
+        ),
+        "hint": "Index `[0]` gives the first item. The negative index `[-1]` gives the last item without needing its length.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "lists",
+        "starter_code": "numbers = [10, 20, 30, 40, 50]\n# Print the first and then the last element\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "10\n50", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "10\n50", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Count Down by Twos",
+        "description": (
+            "## Count Down by Twos\n\n"
+            "Print every second number counting down from `10` to `2` (inclusive), one per line: "
+            "`10, 8, 6, 4, 2`.\n\n"
+            "**Expected output:**\n```\n10\n8\n6\n4\n2\n```"
+        ),
+        "hint": "`range()` accepts a third step argument. A negative step like `-2` counts downward.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "loops",
+        "starter_code": "# Print 10, 8, 6, 4, 2 — one number per line\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "10\n8\n6\n4\n2", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "10\n8\n6\n4\n2", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Sum of Digits",
+        "description": (
+            "## Sum of Digits\n\n"
+            "A variable `number` holds the integer `12345`. Add up its individual digits "
+            "(1 + 2 + 3 + 4 + 5) and print the total.\n\n"
+            "**Expected output:**\n```\n15\n```"
+        ),
+        "hint": "Convert the number to a string with `str()` so you can loop over each character, then turn each one back into an int with `int()`.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "loops",
+        "starter_code": "number = 12345\n# Add up the digits and print the total\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Remove Duplicates",
+        "description": (
+            "## Remove Duplicates\n\n"
+            "A variable `values` holds `[3, 1, 2, 3, 1, 4]`. Print a list of its unique values "
+            "sorted in ascending order.\n\n"
+            "**Expected output:**\n```\n[1, 2, 3, 4]\n```"
+        ),
+        "hint": "A `set` automatically discards duplicates. Wrap the result in `sorted()` to get an ordered list back.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "lists",
+        "starter_code": "values = [3, 1, 2, 3, 1, 4]\n# Print the sorted list of unique values\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "[1, 2, 3, 4]", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "[1, 2, 3, 4]", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Title Case a Sentence",
+        "description": (
+            "## Title Case a Sentence\n\n"
+            'A variable `sentence` holds `"hello world from python"`. Print it with the first '
+            "letter of every word capitalized.\n\n"
+            "**Expected output:**\n```\nHello World From Python\n```"
+        ),
+        "hint": "Strings have a `.title()` method that capitalizes the first letter of each word for you.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "strings",
+        "starter_code": 'sentence = "hello world from python"\n# Print the sentence in title case\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "Hello World From Python", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "Hello World From Python", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Prime Numbers",
+        "description": (
+            "## Prime Numbers\n\n"
+            "Print every prime number from `2` up to and including `20`, one per line. A prime "
+            "number is greater than 1 and divisible only by 1 and itself.\n\n"
+            "**Expected output:**\n```\n2\n3\n5\n7\n11\n13\n17\n19\n```"
+        ),
+        "hint": (
+            "For each candidate number, test whether any smaller number divides it evenly. "
+            "If none do, it is prime. A flag variable or a `for`/`else` loop both work well here."
+        ),
+        "difficulty_level": DifficultyLevel.advanced,
+        "category_slug": "loops",
+        "starter_code": "# Print each prime number from 2 to 20, one per line\n",
+        "test_cases": [
+            {
+                "input_data": "",
+                "expected_output": "2\n3\n5\n7\n11\n13\n17\n19",
+                "score_weight": 1.0,
+                "is_hidden": False,
+            },
+            {
+                "input_data": "",
+                "expected_output": "2\n3\n5\n7\n11\n13\n17\n19",
+                "score_weight": 1.0,
+                "is_hidden": True,
+            },
+        ],
+    },
+    {
+        "title": "Recursive GCD",
+        "description": (
+            "## Recursive GCD\n\n"
+            "The greatest common divisor (GCD) is the largest number that divides two integers "
+            "evenly. Define a recursive function `gcd(a, b)` using the Euclidean algorithm, call "
+            "it with `48` and `36`, and print the result.\n\n"
+            "The Euclidean algorithm says: when `b` is `0` the answer is `a`; otherwise the GCD "
+            "of `a` and `b` equals the GCD of `b` and `a % b`.\n\n"
+            "**Expected output:**\n```\n12\n```"
+        ),
+        "hint": (
+            "Base case: `if b == 0: return a`. Recursive case: `return gcd(b, a % b)`. "
+            "Each call shrinks the problem until `b` reaches 0."
+        ),
+        "difficulty_level": DifficultyLevel.advanced,
+        "category_slug": "functions",
+        "starter_code": "# Define a recursive gcd(a, b), call gcd(48, 36), and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "12", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "12", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Merge Two Sorted Lists",
+        "description": (
+            "## Merge Two Sorted Lists\n\n"
+            "Two already-sorted lists are given: `a = [1, 3, 5]` and `b = [2, 4, 6]`. Merge them "
+            "into a single sorted list and print it. Try to walk both lists with index pointers "
+            "rather than concatenating and re-sorting.\n\n"
+            "**Expected output:**\n```\n[1, 2, 3, 4, 5, 6]\n```"
+        ),
+        "hint": (
+            "Keep one index for each list. Compare the current item from each, append the smaller, "
+            "and advance that list's pointer. When one list runs out, append whatever remains in the other."
+        ),
+        "difficulty_level": DifficultyLevel.advanced,
+        "category_slug": "lists",
+        "starter_code": "a = [1, 3, 5]\nb = [2, 4, 6]\n# Merge the two sorted lists and print the result\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "[1, 2, 3, 4, 5, 6]", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "[1, 2, 3, 4, 5, 6]", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
 ]
 
 
@@ -1253,6 +1446,204 @@ EXERCISE_GUIDES = {
             "body": "Print the final total once, which should be 30.",
         },
     ],
+    "Celsius to Fahrenheit": [
+        {
+            "kind": "nudge",
+            "title": "Plug into the formula",
+            "body": "The formula is given. Replace `C` with the `celsius` variable and let Python do the arithmetic.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Order of operations",
+            "body": "Python multiplies and divides before adding, so the formula translates almost directly.",
+            "code": "fahrenheit = celsius * 9 / 5 + 32\nprint(fahrenheit)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Dividing with `/` keeps the decimal, so the result prints as 98.6.",
+        },
+    ],
+    "Repeat a String": [
+        {
+            "kind": "nudge",
+            "title": "Multiply, don't loop",
+            "body": "You can build the repeated text in a single expression instead of looping.",
+        },
+        {
+            "kind": "pattern",
+            "title": "String repetition",
+            "body": "Multiplying a string by an integer concatenates that many copies.",
+            "code": 'print("ab" * 2)  # abab',
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "The result is one continuous string with no spaces between copies.",
+        },
+    ],
+    "First and Last Elements": [
+        {
+            "kind": "nudge",
+            "title": "Two indexes",
+            "body": "You need the value at the very start and the value at the very end of the list.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Positive and negative indexing",
+            "body": "Index 0 is the first item; index -1 is the last item, counting from the end.",
+            "code": "print(items[0])\nprint(items[-1])",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Two lines: the first element, then the last element.",
+        },
+    ],
+    "Count Down by Twos": [
+        {
+            "kind": "nudge",
+            "title": "Step downward",
+            "body": "A range can move backward when you give it a negative step.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Range with a step",
+            "body": "`range(start, stop, step)` stops before `stop`, so go one past your last value.",
+            "code": "for n in range(10, 1, -2):\n    print(n)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Five lines: 10, 8, 6, 4, 2 — and 2 must be included.",
+        },
+    ],
+    "Sum of Digits": [
+        {
+            "kind": "nudge",
+            "title": "Treat digits as characters",
+            "body": "Turning the number into text lets you visit one digit at a time.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Convert, loop, accumulate",
+            "body": "Loop over the string form and convert each character back to an integer to add it.",
+            "code": "total = 0\nfor digit in str(number):\n    total += int(digit)\nprint(total)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the single total after the loop finishes.",
+        },
+    ],
+    "Remove Duplicates": [
+        {
+            "kind": "nudge",
+            "title": "Drop repeats, then order",
+            "body": "First remove the duplicate values, then put what is left in ascending order.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Set then sort",
+            "body": "A `set` removes duplicates; `sorted()` turns it back into an ordered list.",
+            "code": "unique = sorted(set(values))\nprint(unique)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the list object so it shows with brackets, like [1, 2, 3, 4].",
+        },
+    ],
+    "Title Case a Sentence": [
+        {
+            "kind": "nudge",
+            "title": "One method does it",
+            "body": "Python can capitalize the first letter of every word for you without a manual loop.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Title-casing",
+            "body": "`.title()` returns a new string with each word's first letter capitalized.",
+            "code": 'print("two words".title())  # Two Words',
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Every word starts with a capital letter; the rest stay lowercase.",
+        },
+    ],
+    "Prime Numbers": [
+        {
+            "kind": "nudge",
+            "title": "Test each candidate",
+            "body": "For every number in the range, check whether any smaller number divides it without a remainder.",
+        },
+        {
+            "kind": "pattern",
+            "title": "for/else for primality",
+            "body": "The `else` on a `for` loop runs only when no `break` happened — perfect for 'no divisor found'.",
+            "code": (
+                "for num in range(2, 21):\n"
+                "    for d in range(2, num):\n"
+                "        if num % d == 0:\n"
+                "            break\n"
+                "    else:\n"
+                "        print(num)"
+            ),
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Eight lines: 2, 3, 5, 7, 11, 13, 17, 19. Note that 20 is not prime.",
+        },
+    ],
+    "Recursive GCD": [
+        {
+            "kind": "nudge",
+            "title": "Shrink the problem",
+            "body": "Each step replaces the pair with a smaller pair until the second number reaches zero.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Base case and recursive case",
+            "body": "Return `a` when `b` is 0; otherwise recurse with `b` and the remainder `a % b`.",
+            "code": "def gcd(a, b):\n    if b == 0:\n        return a\n    return gcd(b, a % b)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the value returned by `gcd(48, 36)`, which is 12.",
+        },
+    ],
+    "Merge Two Sorted Lists": [
+        {
+            "kind": "nudge",
+            "title": "Walk both at once",
+            "body": "Keep a position in each list and always take the smaller of the two current items.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Two-pointer merge",
+            "body": "Advance only the pointer whose value you just used; append the leftovers at the end.",
+            "code": (
+                "i = j = 0\n"
+                "merged = []\n"
+                "while i < len(a) and j < len(b):\n"
+                "    if a[i] <= b[j]:\n"
+                "        merged.append(a[i])\n"
+                "        i += 1\n"
+                "    else:\n"
+                "        merged.append(b[j])\n"
+                "        j += 1\n"
+                "merged += a[i:] + b[j:]"
+            ),
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the merged list object: [1, 2, 3, 4, 5, 6].",
+        },
+    ],
 }
 
 
@@ -1416,6 +1807,67 @@ EXERCISE_SOLUTIONS = {
     "Sum of Even Numbers": {
         "code": "total = 0\nfor n in range(1, 11):\n    if n % 2 == 0:\n        total += n\nprint(total)",
         "explanation": "Only even numbers are added to the running total, producing 2 + 4 + 6 + 8 + 10 = 30.",
+    },
+    "Celsius to Fahrenheit": {
+        "code": "celsius = 37\nprint(celsius * 9 / 5 + 32)",
+        "explanation": "The formula is applied directly; `/` keeps the decimal, so 37 °C prints as 98.6 °F.",
+    },
+    "Repeat a String": {
+        "code": 'word = "ha"\nprint(word * 3)',
+        "explanation": "Multiplying a string by 3 concatenates three copies into `hahaha`.",
+    },
+    "First and Last Elements": {
+        "code": "numbers = [10, 20, 30, 40, 50]\nprint(numbers[0])\nprint(numbers[-1])",
+        "explanation": "Index 0 returns the first element and index -1 returns the last, without needing the list length.",
+    },
+    "Count Down by Twos": {
+        "code": "for n in range(10, 1, -2):\n    print(n)",
+        "explanation": "The step `-2` walks down from 10, stopping before 1, so it prints 10, 8, 6, 4, 2.",
+    },
+    "Sum of Digits": {
+        "code": "number = 12345\ntotal = 0\nfor digit in str(number):\n    total += int(digit)\nprint(total)",
+        "explanation": "Each character of the number's string form is converted back to an int and added, giving 15.",
+    },
+    "Remove Duplicates": {
+        "code": "values = [3, 1, 2, 3, 1, 4]\nprint(sorted(set(values)))",
+        "explanation": "`set()` discards duplicate values and `sorted()` returns them as an ordered list.",
+    },
+    "Title Case a Sentence": {
+        "code": 'sentence = "hello world from python"\nprint(sentence.title())',
+        "explanation": "`.title()` capitalizes the first letter of every word in the sentence.",
+    },
+    "Prime Numbers": {
+        "code": (
+            "for num in range(2, 21):\n"
+            "    for d in range(2, num):\n"
+            "        if num % d == 0:\n"
+            "            break\n"
+            "    else:\n"
+            "        print(num)"
+        ),
+        "explanation": "The inner loop searches for a divisor; the `for`/`else` prints the number only when none is found.",
+    },
+    "Recursive GCD": {
+        "code": "def gcd(a, b):\n    if b == 0:\n        return a\n    return gcd(b, a % b)\n\nprint(gcd(48, 36))",
+        "explanation": "Each call replaces (a, b) with (b, a % b) until b is 0, leaving the GCD 12 in a.",
+    },
+    "Merge Two Sorted Lists": {
+        "code": (
+            "a = [1, 3, 5]\n"
+            "b = [2, 4, 6]\n"
+            "i = j = 0\n"
+            "merged = []\n"
+            "while i < len(a) and j < len(b):\n"
+            "    if a[i] <= b[j]:\n"
+            "        merged.append(a[i])\n"
+            "        i += 1\n"
+            "    else:\n"
+            "        merged.append(b[j])\n"
+            "        j += 1\n"
+            "merged += a[i:] + b[j:]\n"
+            "print(merged)"
+        ),
+        "explanation": "Two pointers compare the current items, appending the smaller each step, then any remaining tail is added.",
     },
 }
 
