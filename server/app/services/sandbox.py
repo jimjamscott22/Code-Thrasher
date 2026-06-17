@@ -79,6 +79,15 @@ def _run_python_sync(
     if output_truncated and not stderr:
         stderr = f"Output exceeded {max_output_bytes} byte limit"
 
+    # A process killed by a signal (returncode < 0) often produces no stderr —
+    # e.g. RLIMIT_AS exhaustion crashes the interpreter. Surface it as an error
+    # so grading never mistakes a sandbox failure for an empty (wrong) answer.
+    if completed.returncode < 0 and not stderr:
+        stderr = (
+            f"Process terminated by signal {-completed.returncode} "
+            f"(possible memory limit of {max_memory_mb} MB exceeded)"
+        )
+
     return SandboxRunResult(
         stdout=stdout,
         stderr=stderr,

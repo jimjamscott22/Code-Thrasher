@@ -16,7 +16,11 @@ class Settings(BaseSettings):
 
     # Sandbox limits
     SANDBOX_TIMEOUT_SECONDS: int = 5
-    SANDBOX_MAX_MEMORY_MB: int = 64
+    # RLIMIT_AS caps *virtual* address space, which a modern CPython interpreter
+    # maps well beyond its actual memory use just to start up. Set too low (e.g.
+    # 64), the child is killed (SIGSEGV) before running any user code. 256 MB
+    # leaves headroom for interpreter startup while still bounding runaway code.
+    SANDBOX_MAX_MEMORY_MB: int = 256
     SANDBOX_MAX_OUTPUT_BYTES: int = 10_000
 
     @field_validator("CORS_ORIGINS")
