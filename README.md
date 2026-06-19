@@ -80,6 +80,52 @@ Open `http://localhost:5173` in your browser.
 
 ---
 
+## Running on a Raspberry Pi (ARM64 / aarch64)
+
+Code-Thrasher runs on a Raspberry Pi 4/5 without any source changes. The
+`postgres:16-alpine` image is multi-arch and the API image builds Python itself,
+so the `aarch64` architecture is handled automatically. Python *execution* happens
+in the browser via Pyodide, so it does not load the Pi's CPU.
+
+Two things commonly differ from a desktop setup:
+
+- **Compose command.** Raspberry Pi OS often ships the standalone v1 binary
+  `docker-compose` (hyphen) rather than the `docker compose` (space) plugin. If
+  `docker compose version` fails, use `docker-compose` in every command below.
+- **Permissions.** If your user is not in the `docker` group, prefix commands with
+  `sudo`. To drop `sudo`, add yourself to the group once and then **log out and back
+  in** (group membership does not apply to existing shells):
+
+  ```bash
+  sudo usermod -aG docker $USER   # then re-login, or run: newgrp docker
+  ```
+
+**Start the backend (database + API):**
+
+```bash
+cp .env.example .env                       # first run only; set a strong SECRET_KEY
+docker-compose up --build -d               # first build takes a few minutes on a Pi
+docker-compose exec api alembic upgrade head   # first run only
+docker-compose exec api python seed.py         # first run only
+```
+
+**Start the frontend.** Use `--host` so you can browse from another device on your
+network instead of the Pi's own desktop:
+
+```bash
+cd client
+npm install
+npm run dev -- --host
+```
+
+Then open `http://<pi-ip>:5173` from any device on the LAN (or
+`http://localhost:5173` on the Pi itself). The first page load downloads Pyodide
+(~10 MB) in the browser, so that device needs internet access.
+
+To stop everything: `docker-compose down` (add `-v` to also wipe the database).
+
+---
+
 ## Local Development Setup
 
 ### Backend
