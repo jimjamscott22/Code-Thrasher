@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import api from "@/api/client";
 import CodeEditor from "@/components/editor/CodeEditor";
 import ExerciseGuidePanel from "@/components/exercise/ExerciseGuidePanel";
-import { getPyodide, runPythonTests } from "@/services/pyodide";
+import { getPyodide, runPython, runPythonTests } from "@/services/pyodide";
+import type { RunResult } from "@/services/pyodide";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useProgressStore } from "@/store/useProgressStore";
 import type {
@@ -71,6 +72,8 @@ export default function ExerciseDetail() {
   const [result, setResult] = useState<(SubmitResponse & { stdout: string; stderr: string }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [running, setRunning] = useState(false);
+  const [runOutput, setRunOutput] = useState<RunResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pyodideReady, setPyodideReady] = useState(false);
   const [pyodideError, setPyodideError] = useState(false);
@@ -86,6 +89,13 @@ export default function ExerciseDetail() {
     () => navExercises.findIndex((item) => item.id === currentExerciseId),
     [currentExerciseId, navExercises],
   );
+  // First visible test case doubles as a runnable "example" for the scratchpad:
+  // its input_data feeds stdin (empty for current content) and its expected_output
+  // is shown as the target to compare a local run against.
+  const exampleTest = useMemo(
+    () => exercise?.test_cases.find((t) => t.expected_output != null) ?? null,
+    [exercise],
+  );
   const canNavigate = navExercises.length > 1 && currentIndex >= 0;
   const previousExercise = canNavigate
     ? navExercises[(currentIndex - 1 + navExercises.length) % navExercises.length]
@@ -99,6 +109,7 @@ export default function ExerciseDetail() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setRunOutput(null);
 
     api
       .get<ExerciseDetailType>(`/exercises/${id}`)
@@ -134,6 +145,27 @@ export default function ExerciseDetail() {
   function goToExercise(exerciseId: number | undefined) {
     if (!exerciseId) return;
     navigate(`/exercise/${exerciseId}`);
+  }
+
+  async function handleRun() {
+    if (!pyodideReady || running) return;
+    setRunning(true);
+    setRunOutput(null);
+    setError(null);
+    try {
+      const output = await runPython(code, {
+        inputData: exampleTest?.input_data ?? "",
+      });
+      setRunOutput(output);
+    } catch {
+      setRunOutput({
+        stdout: "",
+        stderr: "Could not run your code. The Python runtime may have failed to load.",
+        durationMs: 0,
+      });
+    } finally {
+      setRunning(false);
+    }
   }
 
   async function handleSubmit() {
@@ -324,6 +356,80 @@ export default function ExerciseDetail() {
             <p className="text-xs text-yellow-600">
               Python runtime failed to load — your submission will still be graded server-side.
             </p>
+          )}
+
+          <button
+            onClick={handleRun}
+            disabled={!pyodideReady || running || submitting}
+            className="flex items-center justify-center gap-2 rounded-xl border border-brand-500/50 bg-gray-900 py-3 font-semibold text-brand-400 transition hover:border-brand-500 hover:text-brand-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600"
+            title="Run your code in the browser without submitting"
+          >
+            {running && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
+            )}
+            {running ? "Running…" : "▶ Run code"}
+          </button>
+
+          {/* Scratchpad output — local run, not graded */}
+          {runOutput && (
+            <div className="rounded-xl border border-gray-800 bg-gray-950 p-4">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-gray-500">
+                  Output
+                </span>
+                <span className="text-xs text-gray-600">
+                  {runOutput.timedOut ? "timed out" : `${runOutput.durationMs}ms`}
+                </span>
+              </div>
+              {runOutput.stdout && (
+                <pre className="whitespace-pre-wrap font-mono text-xs text-gray-300">
+                  {runOutput.stdout}
+                </pre>
+              )}
+              {runOutput.stderr && (
+                <pre className="whitespace-pre-wrap font-mono text-xs text-red-400">
+                  {runOutput.stderr}
+                </pre>
+              )}
+              {!runOutput.stdout && !runOutput.stderr && (
+                <p className="font-mono text-xs text-gray-600">
+                  (no output — your code ran without printing anything)
+                </p>
+              )}
+              {runOutput.outputTruncated && (
+                <p className="mt-2 text-xs text-yellow-600">Output was truncated.</p>
+              )}
+
+              {/* Target output from the example test, with a quick local match check */}
+              {exampleTest?.expected_output != null && (
+                <div className="mt-3 border-t border-gray-800 pt-3">
+                  {(() => {
+                    const matches =
+                      !runOutput.stderr &&
+                      !runOutput.timedOut &&
+                      runOutput.stdout.trim() ===
+                        (exampleTest.expected_output ?? "").trim();
+                    return (
+                      <p
+                        className={`mb-1.5 text-xs font-medium ${
+                          matches ? "text-green-400" : "text-gray-500"
+                        }`}
+                      >
+                        {matches
+                          ? "✓ Matches the example's target output"
+                          : "Target output (example):"}
+                      </p>
+                    );
+                  })()}
+                  <pre className="whitespace-pre-wrap font-mono text-xs text-gray-400">
+                    {exampleTest.expected_output || "(empty)"}
+                  </pre>
+                  <p className="mt-2 text-[0.7rem] text-gray-600">
+                    Runs locally in your browser — nothing is recorded. Use Submit to grade against all tests.
+                  </p>
+                </div>
+              )}
+            </div>
           )}
 
           <button
