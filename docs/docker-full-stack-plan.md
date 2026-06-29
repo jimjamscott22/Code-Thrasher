@@ -2,7 +2,7 @@
 
 **Project:** Code-Thrasher  
 **Goal:** Run the entire application (frontend, backend, and database) via Docker Compose with a single command.  
-**Status:** Plan only — not yet implemented.
+**Status:** Implemented. This document is retained as the original implementation plan and verification reference.
 
 ---
 

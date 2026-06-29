@@ -46,7 +46,7 @@ Users register, browse exercises filtered by difficulty or category, write Pytho
 
 ## Quick Start (Docker)
 
-The fastest way to run the full stack is with Docker Compose, which starts PostgreSQL and the API together.
+The fastest way to run the full stack is with Docker Compose. This starts PostgreSQL, the FastAPI backend, and the built React frontend behind nginx.
 
 ```bash
 # 1. Clone the repo
@@ -56,27 +56,38 @@ cd Code-Thrasher
 # 2. Copy the environment file and set a strong SECRET_KEY
 cp .env.example .env
 
-# 3. Start the database and API
+# 3. Start the full app
 docker compose up --build
+```
 
-# 4. Apply database migrations (first run only)
-docker compose exec api alembic upgrade head
+Open the app at `http://localhost:8080`.
 
-# 5. Seed the database with exercises (first run only)
+The API is also available directly at `http://localhost:8000`, and through the frontend container at `http://localhost:8080/api`. Interactive API docs are available at `http://localhost:8000/api/docs`.
+
+Database migrations run automatically when the API container starts. To load the sample exercises on a fresh database, run this once in another terminal after the containers are up:
+
+```bash
 docker compose exec api python seed.py
 ```
 
-The API is now available at `http://localhost:8000`.
-
-Start the frontend development server separately:
+Useful Docker commands:
 
 ```bash
-cd client
-npm install
-npm run dev
+docker compose ps                 # show container status
+docker compose logs -f api         # follow backend logs
+docker compose down                # stop containers, keep database data
+docker compose down -v             # stop containers and delete database data
+docker compose up --build --force-recreate
 ```
 
-Open `http://localhost:5173` in your browser.
+After changing only the frontend, rebuild and replace just the nginx/Vite image:
+
+```bash
+docker compose build --no-cache client
+docker compose up -d --no-deps --force-recreate client
+```
+
+Pyodide runs in the browser via WebAssembly and is governed by the frontend Content Security Policy. If browser logs mention `wasm instantiation failed` or blocked `data:` fonts, verify the live app is serving a CSP with `'wasm-unsafe-eval'` in `script-src` and `data:` in `font-src`, then hard-refresh or clear site data for `localhost:8080`.
 
 ---
 
@@ -100,26 +111,16 @@ Two things commonly differ from a desktop setup:
   sudo usermod -aG docker $USER   # then re-login, or run: newgrp docker
   ```
 
-**Start the backend (database + API):**
+**Start the full app:**
 
 ```bash
 cp .env.example .env                       # first run only; set a strong SECRET_KEY
 docker-compose up --build -d               # first build takes a few minutes on a Pi
-docker-compose exec api alembic upgrade head   # first run only
 docker-compose exec api python seed.py         # first run only
 ```
 
-**Start the frontend.** Use `--host` so you can browse from another device on your
-network instead of the Pi's own desktop:
-
-```bash
-cd client
-npm install
-npm run dev -- --host
-```
-
-Then open `http://<pi-ip>:5173` from any device on the LAN (or
-`http://localhost:5173` on the Pi itself). The first page load downloads Pyodide
+Then open `http://<pi-ip>:8080` from any device on the LAN (or
+`http://localhost:8080` on the Pi itself). The first page load downloads Pyodide
 (~10 MB) in the browser, so that device needs internet access.
 
 To stop everything: `docker-compose down` (add `-v` to also wipe the database).
@@ -178,6 +179,8 @@ Copy `.env.example` to `.env` and configure the values before running:
 | `POSTGRES_DB` | `codethrasher` | PostgreSQL database name |
 | `SECRET_KEY` | *(change this)* | Secret used to sign JWTs — use a long random string in production |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` | JWT token lifetime in minutes |
+| `ENVIRONMENT` | `development` | Runtime environment name; set to `production` only after changing `SECRET_KEY` |
+| `CORS_ORIGINS` | `http://localhost:8080,http://localhost:5173` | Comma-separated allowed browser origins for direct API calls |
 
 ---
 
@@ -228,6 +231,8 @@ mypy src/           # type check
 ```text
 Code-Thrasher/
 ├── client/                  # React frontend
+│   ├── Dockerfile            # Builds frontend and serves it with nginx
+│   ├── nginx.conf            # SPA routing and /api reverse proxy
 │   └── src/
 │       ├── api/             # Axios API client
 │       ├── components/      # Reusable UI components

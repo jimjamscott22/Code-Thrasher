@@ -59,6 +59,13 @@ docker compose up --build
 # First run: docker compose exec api alembic upgrade head
 ```
 
+To rebuild only the production frontend image after changing `client/` files:
+
+```bash
+docker compose build --no-cache client
+docker compose up -d --no-deps --force-recreate client
+```
+
 ## Architecture
 
 ### Code Execution Flow
@@ -105,6 +112,7 @@ JWT auth is required for submit, progress, and solution reveal. `POST /exercises
 ## Key Constraints
 
 - **Vite proxy**: The `vite.config.ts` proxies `/api` to `http://localhost:8000`. CORS origins default to `http://localhost:5173` via `CORS_ORIGINS` in `.env`.
+- **Pyodide CSP**: Pyodide needs `'wasm-unsafe-eval'` in `script-src` for WebAssembly instantiation. Monaco may load `data:` fonts, so keep `font-src` aligned too. CSP is defined in `client/index.html`, `client/vite.config.ts`, `client/nginx.conf`, and `server/app/main.py`; update all four together.
 - **Test isolation**: `server/tests/conftest.py` overrides `get_db` with an async SQLite session; every test gets a fresh schema via `autouse` fixture.
 - **`asyncio_mode = "auto"`** is set in `pyproject.toml` — all test functions can be `async def` without decorators.
 - **Guidance reveal**: `GET /exercises/{id}/solution` requires JWT; reveals are tracked in `solution_reveals`.

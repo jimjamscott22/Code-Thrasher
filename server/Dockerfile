@@ -6,8 +6,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml .
-RUN pip install --no-cache-dir uv && uv pip install --system -e ".[dev]"
+COPY pyproject.toml ./
+COPY app ./app
+RUN pip install --no-cache-dir uv && uv pip install --system .
 
 COPY . .
 

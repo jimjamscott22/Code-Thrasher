@@ -10,6 +10,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 revision: str = "0006"
 down_revision: Union[str, None] = "0005"
@@ -18,7 +19,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    difficulty_enum = sa.Enum(
+    difficulty_enum = postgresql.ENUM(
         "beginner", "intermediate", "advanced", name="difficultylevel", create_type=False
     )
     op.create_table(
