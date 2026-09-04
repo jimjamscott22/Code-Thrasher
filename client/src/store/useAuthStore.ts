@@ -12,6 +12,7 @@ interface AuthState {
   register: (payload: RegisterRequest) => Promise<void>;
   logout: () => void;
   hydrate: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
 }
 
 function clearSession(set: (state: Partial<AuthState>) => void) {
@@ -43,6 +44,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
   logout: () => clearSession(set),
+  // Re-reads the user so server-updated stats (total_score, streak) are current.
+  // Returns the fresh user so callers can diff it against a pre-action snapshot.
+  refreshUser: async () => {
+    const stored = getStoredAuth();
+    if (!stored) return null;
+    const response = await api.get<User>("/auth/me");
+    setStoredAuth(stored.token, response.data);
+    set({ user: response.data });
+    return response.data;
+  },
   hydrate: async () => {
     const stored = getStoredAuth();
     if (!stored) {
