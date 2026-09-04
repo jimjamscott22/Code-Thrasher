@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <style>
+    body {
+      margin: 0;
+      background: #030712;
+      color: #f3f4f6;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #22c55e; text-decoration: none; }
+    a:hover { color: #16a34a; }
+    .mono { font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; min-height: 1180px; background: #030712;">
+
+  <!-- NAVBAR (signed in) -->
+  <nav style="border-bottom: 1px solid #1f2937; background: #111827; padding: 12px 16px;">
+    <div style="max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+      <div class="mono" style="font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #22c55e;">&lt;CodeThrasher /&gt;</div>
+      <div style="display: flex; align-items: center; gap: 24px;">
+        <span style="font-size: 14px; font-weight: 500; color: #f3f4f6;">Exercises</span>
+        <span style="font-size: 14px; font-weight: 500; color: #9ca3af;">Resources</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 14px; color: #9ca3af;">Signed in as <span style="font-weight: 500; color: #f3f4f6;">jimjam</span></span>
+        <span style="border-radius: 8px; border: 1px solid #374151; padding: 5px 12px; font-size: 14px; font-weight: 500; color: #d1d5db;">Logout</span>
+      </div>
+    </div>
+  </nav>
+
+  <div style="max-width: 1024px; margin: 0 auto; padding: 40px 16px 64px;">
+
+    <!-- PAGE HEAD -->
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 28px;">
+      <div>
+        <h1 style="margin: 0 0 4px; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: #f9fafb;">Exercises</h1>
+        <p style="margin: 0; font-size: 15px; color: #9ca3af;">Pick a challenge and start thrashing.</p>
+      </div>
+      <div style="text-align: right;">
+        <p style="margin: 0; font-size: 14px; color: #9ca3af;">
+          <span style="font-weight: 600; color: #ffffff;">7</span><span style="color: #4b5563;"> / 24 solved</span>
+        </p>
+        <div style="margin-top: 6px; height: 6px; width: 160px; border-radius: 9999px; background: #1f2937; overflow: hidden;">
+          <div style="height: 100%; width: 29%; border-radius: 9999px; background: #22c55e;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR (new) -->
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-radius: 12px; border: 1px solid #1f2937; background: #111827; padding: 12px 14px; margin-bottom: 32px;">
+
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="border-radius: 9999px; background: #22c55e; padding: 5px 14px; font-size: 13px; font-weight: 600; color: #ffffff;">All</span>
+        <span style="border-radius: 9999px; padding: 5px 14px; font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(74,222,128,0.1); box-shadow: inset 0 0 0 1px rgba(74,222,128,0.2);">Beginner</span>
+        <span style="border-radius: 9999px; padding: 5px 14px; font-size: 13px; font-weight: 500; color: #facc15; background: rgba(250,204,21,0.1); box-shadow: inset 0 0 0 1px rgba(250,204,21,0.2);">Intermediate</span>
+        <span style="border-radius: 9999px; padding: 5px 14px; font-size: 13px; font-weight: 500; color: #f87171; background: rgba(248,113,113,0.1); box-shadow: inset 0 0 0 1px rgba(248,113,113,0.2);">Advanced</span>
+        <span style="width: 1px; height: 22px; background: #1f2937; margin: 0 4px;"></span>
+        <span style="display: inline-flex; align-items: center; gap: 8px; border-radius: 9999px; border: 1px solid #374151; padding: 4px 14px 4px 10px; font-size: 13px; font-weight: 500; color: #9ca3af;">
+          <span style="width: 28px; height: 16px; border-radius: 9999px; background: #1f2937; display: inline-flex; align-items: center; padding: 2px;"><span style="width: 12px; height: 12px; border-radius: 9999px; background: #6b7280;"></span></span>
+          Unsolved only
+        </span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px; border-radius: 8px; border: 1px solid #374151; background: #030712; padding: 7px 12px; min-width: 200px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <span style="font-size: 13px; color: #4b5563;">Search exercises</span>
+      </div>
+    </div>
+
+    <!-- SECTION: Strings -->
+    <div style="margin-bottom: 40px;">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+        <h2 class="mono" style="margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280;">Strings</h2>
+        <span class="mono" style="font-size: 12px; color: #374151;">3 / 6</span>
+        <div style="flex-grow: 1; height: 1px; background: #1f2937;"></div>
+        <div style="height: 4px; width: 72px; border-radius: 9999px; background: #1f2937; overflow: hidden;">
+          <div style="height: 100%; width: 50%; border-radius: 9999px; background: #22c55e;"></div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+
+        <!-- SOLVED card -->
+        <div style="position: relative; border-radius: 12px; border: 1px solid rgba(34,197,94,0.3); background: #111827; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 0 24px rgba(34,197,94,0.06);">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #ffffff;">Reverse the words in a sentence</h3>
+            <span style="flex-shrink: 0; border-radius: 9999px; padding: 2px 8px; font-size: 12px; font-weight: 500; color: #4ade80; background: rgba(74,222,128,0.1); box-shadow: inset 0 0 0 1px rgba(74,222,128,0.2);">beginner</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #4ade80;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg>
+              Solved
+            </span>
+            <span class="mono" style="font-size: 12px; color: #4b5563;">2 attempts</span>
+          </div>
+        </div>
+
+        <!-- ATTEMPTED card, with best-score bar -->
+        <div style="position: relative; border-radius: 12px; border: 1px solid #1f2937; background: #111827; padding: 20px 20px 16px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #f3f4f6;">Count vowels without a loop</h3>
+            <span style="flex-shrink: 0; border-radius: 9999px; padding: 2px 8px; font-size: 12px; font-weight: 500; color: #facc15; background: rgba(250,204,21,0.1); box-shadow: inset 0 0 0 1px rgba(250,204,21,0.2);">intermediate</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="font-size: 12px; color: #eab308;">Best: 67%</span>
+            <span class="mono" style="font-size: 12px; color: #4b5563;">4 attempts</span>
+          </div>
+          <div style="height: 3px; border-radius: 9999px; background: #1f2937; overflow: hidden;">
+            <div style="height: 100%; width: 67%; border-radius: 9999px; background: #eab308;"></div>
+          </div>
+        </div>
+
+        <!-- UNTOUCHED card -->
+        <div style="position: relative; border-radius: 12px; border: 1px solid #1f2937; background: #111827; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #f3f4f6;">Detect a palindrome, ignoring case</h3>
+            <span style="flex-shrink: 0; border-radius: 9999px; padding: 2px 8px; font-size: 12px; font-weight: 500; color: #4ade80; background: rgba(74,222,128,0.1); box-shadow: inset 0 0 0 1px rgba(74,222,128,0.2);">beginner</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="font-size: 12px; color: #4b5563;">Solve →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Lists & dicts -->
+    <div style="margin-bottom: 40px;">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+        <h2 class="mono" style="margin: 0; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280;">Lists &amp; dicts</h2>
+        <span class="mono" style="font-size: 12px; color: #374151;">1 / 5</span>
+        <div style="flex-grow: 1; height: 1px; background: #1f2937;"></div>
+        <div style="height: 4px; width: 72px; border-radius: 9999px; background: #1f2937; overflow: hidden;">
+          <div style="height: 100%; width: 20%; border-radius: 9999px; background: #22c55e;"></div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+        <!-- HOVER state, called out -->
+        <div style="position: relative; border-radius: 12px; border: 1px solid rgba(34,197,94,0.5); background: #1f2937; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #ffffff;">Group records by a shared key</h3>
+            <span style="flex-shrink: 0; border-radius: 9999px; padding: 2px 8px; font-size: 12px; font-weight: 500; color: #facc15; background: rgba(250,204,21,0.1); box-shadow: inset 0 0 0 1px rgba(250,204,21,0.2);">intermediate</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="font-size: 12px; color: #6b7280;">Solve →</span>
+            <span class="mono" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: #22c55e;">hover</span>
+          </div>
+        </div>
+
+        <div style="position: relative; border-radius: 12px; border: 1px solid #1f2937; background: #111827; padding: 20px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #f3f4f6;">Flatten a nested list, any depth</h3>
+            <span style="flex-shrink: 0; border-radius: 9999px; padding: 2px 8px; font-size: 12px; font-weight: 500; color: #f87171; background: rgba(248,113,113,0.1); box-shadow: inset 0 0 0 1px rgba(248,113,113,0.2);">advanced</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="font-size: 12px; color: #4b5563;">Solve →</span>
+          </div>
+        </div>
+
+        <div style="position: relative; border-radius: 12px; border: 1px solid rgba(34,197,94,0.3); background: #111827; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 0 24px rgba(34,197,94,0.06);">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+            <h3 style="margin: 0; font-size: 15px; font-weight: 500; line-height: 1.4; color: #ffffff;">Merge two dicts, keeping the larger value</h3>
+            <span style="flex-shrink: 0; border-radius: 9999px; padding: 2px 8px; font-size: 12px; font-weight: 500; color: #4ade80; background: rgba(74,222,128,0.1); box-shadow: inset 0 0 0 1px rgba(74,222,128,0.2);">beginner</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #4ade80;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 6.5"/></svg>
+              Solved
+            </span>
+            <span class="mono" style="font-size: 12px; color: #4b5563;">1 attempt</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

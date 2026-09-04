@@ -20,6 +20,62 @@ const DIFFICULTY_COLORS = {
   advanced: "text-red-400 bg-red-400/10",
 } as const;
 
+interface SubmissionStats {
+  totalScore: number;
+  streak: number;
+  scoreDelta: number;
+  streakDelta: number;
+}
+
+const RING_RADIUS = 27;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+function ScoreRing({ score, color }: { score: number; color: string }) {
+  const clamped = Math.max(0, Math.min(100, score));
+  return (
+    <div className="relative h-16 w-16 shrink-0">
+      <svg viewBox="0 0 64 64" className="h-16 w-16" aria-hidden="true">
+        <circle cx="32" cy="32" r={RING_RADIUS} fill="none" stroke="#1f2937" strokeWidth="5" />
+        <circle
+          cx="32"
+          cy="32"
+          r={RING_RADIUS}
+          fill="none"
+          stroke={color}
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray={RING_CIRCUMFERENCE}
+          strokeDashoffset={RING_CIRCUMFERENCE * (1 - clamped / 100)}
+          transform="rotate(-90 32 32)"
+          className="transition-[stroke-dashoffset] duration-700 ease-out"
+        />
+      </svg>
+      <div
+        className="absolute inset-0 flex items-center justify-center font-mono text-[15px] font-bold"
+        style={{ color }}
+      >
+        {Math.round(clamped)}
+      </div>
+    </div>
+  );
+}
+
+function StatTile({ label, value, delta }: { label: string; value: number; delta: number }) {
+  return (
+    <div className="flex-1 rounded-lg border border-gray-800 bg-gray-950/60 px-3 py-2.5">
+      <p className="mb-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-gray-600">
+        {label}
+      </p>
+      <p className="font-mono text-[17px] font-bold text-gray-100">
+        {value}
+        {delta > 0 && (
+          <span className="ml-1 text-xs font-medium text-brand-500">+{delta}</span>
+        )}
+      </p>
+    </div>
+  );
+}
+
 function TestResultRow({
   result,
   isHidden,
@@ -79,7 +135,9 @@ export default function ExerciseDetail() {
   const [error, setError] = useState<string | null>(null);
   const [pyodideReady, setPyodideReady] = useState(false);
   const [pyodideError, setPyodideError] = useState(false);
+  const [stats, setStats] = useState<SubmissionStats | null>(null);
   const user = useAuthStore((state) => state.user);
+  const refreshUser = useAuthStore((state) => state.refreshUser);
   const {
     exercises: progress,
     fetch: fetchProgress,
@@ -111,6 +169,7 @@ export default function ExerciseDetail() {
     setLoading(true);
     setError(null);
     setResult(null);
+    setStats(null);
     setRunOutput(null);
 
     api
@@ -178,7 +237,11 @@ export default function ExerciseDetail() {
     }
     setSubmitting(true);
     setResult(null);
+    setStats(null);
     setError(null);
+    // Snapshot the stats the server is about to change, so the panel can show
+    // the delta rather than just the new totals.
+    const statsBefore = { totalScore: user.total_score, streak: user.streak };
     try {
       const visibleTests = exercise.test_cases.filter(
         (testCase) => testCase.expected_output != null,
@@ -212,6 +275,19 @@ export default function ExerciseDetail() {
 
       setResult({ ...serverResp.data, stdout: preview.stdout, stderr: preview.stderr });
       fetchProgress().catch(() => {});
+      // Stats tiles only appear once the refreshed user actually arrives — if
+      // this fails the panel simply renders without them.
+      refreshUser()
+        .then((fresh) => {
+          if (!fresh) return;
+          setStats({
+            totalScore: fresh.total_score,
+            streak: fresh.streak,
+            scoreDelta: fresh.total_score - statsBefore.totalScore,
+            streakDelta: fresh.streak - statsBefore.streak,
+          });
+        })
+        .catch(() => {});
     } catch (e: unknown) {
       const msg =
         (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
@@ -238,6 +314,12 @@ export default function ExerciseDetail() {
 
   const passed = result?.status === "completed";
   const failed = result?.status === "failed";
+  const totalTests = result?.test_results.length ?? 0;
+  const passedTests = result?.test_results.filter((tr) => tr.passed).length ?? 0;
+  const hiddenTests =
+    result?.test_results.filter(
+      (tr) => exercise.test_cases.find((t) => t.id === tr.test_case_id)?.is_hidden,
+    ).length ?? 0;
 
   return (
     <div className="mx-auto max-w-[96rem] px-4 py-8">
@@ -470,20 +552,53 @@ export default function ExerciseDetail() {
           {/* Result panel */}
           {result && (
             <div
-              className={`rounded-xl border p-5 ${
+              className={`rounded-2xl border p-5 ${
                 passed
-                  ? "border-green-700 bg-green-900/20"
-                  : "border-red-700 bg-red-900/20"
+                  ? "border-brand-500/30 bg-[#0a1410] shadow-[0_0_40px_rgba(34,197,94,0.10)]"
+                  : "border-gray-700 bg-gray-900"
               }`}
             >
-              <div className="mb-3 flex items-center justify-between">
-                <span
-                  className={`text-lg font-bold ${passed ? "text-green-400" : "text-red-400"}`}
-                >
-                  {passed ? "All tests passed!" : `Score: ${result.score}%`}
-                </span>
-                <span className="text-xs text-gray-500">{result.time_taken_ms}ms</span>
+              <div className="mb-4 flex items-center gap-4">
+                <ScoreRing
+                  score={result.score}
+                  color={passed ? "#22c55e" : passedTests > 0 ? "#eab308" : "#f87171"}
+                />
+                <div className="min-w-0">
+                  <h3
+                    className={`text-lg font-bold leading-tight ${
+                      passed ? "text-brand-50" : "text-gray-100"
+                    }`}
+                  >
+                    {passed
+                      ? "All tests passed"
+                      : passedTests > 0
+                        ? `Almost — ${passedTests} of ${totalTests}`
+                        : "No tests passed yet"}
+                  </h3>
+                  <p
+                    className={`mt-1 text-[13px] ${passed ? "text-green-300" : "text-gray-400"}`}
+                  >
+                    {passed
+                      ? `${totalTests} ${totalTests === 1 ? "case" : "cases"}${
+                          hiddenTests > 0 ? `, including ${hiddenTests} hidden` : ""
+                        }.`
+                      : `${totalTests - passedTests} still failing.`}
+                    <span className="text-gray-600"> · {result.time_taken_ms}ms</span>
+                  </p>
+                </div>
               </div>
+
+              {stats && (
+                <div className="mb-4 flex gap-2.5">
+                  <StatTile label="Streak" value={stats.streak} delta={stats.streakDelta} />
+                  <StatTile
+                    label="Total score"
+                    value={stats.totalScore}
+                    delta={stats.scoreDelta}
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
                 {result.test_results.map((tr) => {
                   const tc = exercise.test_cases.find((t) => t.id === tr.test_case_id);

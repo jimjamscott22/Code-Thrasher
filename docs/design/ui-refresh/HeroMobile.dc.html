@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <style>
+    body {
+      margin: 0;
+      background: #030712;
+      color: #f3f4f6;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #22c55e; text-decoration: none; }
+    a:hover { color: #16a34a; }
+    .mono { font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace; }
+  </style>
+</helmet>
+
+<div style="width: 390px; min-height: 1180px; background: #030712; position: relative; overflow: hidden;">
+
+  <div style="position: absolute; width: 460px; height: 460px; left: 40px; top: -180px; border-radius: 9999px; background: radial-gradient(circle, rgba(34,197,94,0.14) 0%, rgba(34,197,94,0.04) 44%, transparent 70%);"></div>
+
+  <!-- NAVBAR -->
+  <nav style="position: relative; border-bottom: 1px solid #1f2937; background: rgba(17,24,39,0.72); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;">
+    <div class="mono" style="font-size: 17px; font-weight: 700; letter-spacing: -0.025em; color: #22c55e;">&lt;CodeThrasher /&gt;</div>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.75" stroke-linecap="round"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>
+  </nav>
+
+  <div style="position: relative; padding: 44px 20px 40px; display: flex; flex-direction: column; gap: 24px;">
+
+    <div style="display: flex; align-items: center; gap: 9px;">
+      <span style="width: 6px; height: 6px; border-radius: 9999px; background: #22c55e; box-shadow: 0 0 12px rgba(34,197,94,0.9);"></span>
+      <span class="mono" style="font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.24em; color: #22c55e;">Python in your browser</span>
+    </div>
+
+    <h1 style="margin: 0; font-size: 38px; line-height: 1.08; font-weight: 700; letter-spacing: -0.03em; color: #f9fafb; text-wrap: balance;">
+      Thrash through Python,<br>
+      <span class="mono" style="color: #22c55e;">one small problem</span><br>
+      at a time.
+    </h1>
+
+    <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #9ca3af; text-wrap: pretty;">
+      Bite-sized challenges in a real editor. Your code runs right here in the browser — no install, no setup.
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <span style="text-align: center; border-radius: 12px; background: #22c55e; padding: 15px 24px; font-size: 16px; font-weight: 600; color: #ffffff; box-shadow: 0 0 32px rgba(34,197,94,0.26);">Start thrashing</span>
+      <span style="text-align: center; border-radius: 12px; border: 1px solid #374151; padding: 14px 24px; font-size: 16px; font-weight: 500; color: #d1d5db;">Browse exercises</span>
+    </div>
+
+    <p class="mono" style="margin: 0; font-size: 11px; line-height: 1.6; color: #4b5563;">Free — no card, no install.<br>Log in only to save your progress.</p>
+
+    <!-- editor vignette, full-bleed-ish on phone -->
+    <div style="margin-top: 8px; border-radius: 16px; border: 1px solid rgba(34,197,94,0.2); background: #030712; box-shadow: 0 0 36px rgba(34,197,94,0.08); overflow: hidden;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid #1f2937; background: #111827; padding: 11px 14px;">
+        <span class="mono" style="font-size: 12px; color: #6b7280;">two_sum.py</span>
+        <span style="border-radius: 9999px; padding: 2px 9px; font-size: 11px; font-weight: 500; color: #facc15; background: rgba(250,204,21,0.1); box-shadow: inset 0 0 0 1px rgba(250,204,21,0.2);">intermediate</span>
+      </div>
+      <div class="mono" style="padding: 16px 14px; font-size: 11.5px; line-height: 1.85; color: #d1d5db;">
+        <div><span style="color: #22c55e;">def</span> <span style="color: #93c5fd;">two_sum</span>(nums, target):</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;seen = {}</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #22c55e;">for</span> i, n <span style="color: #22c55e;">in</span> <span style="color: #93c5fd;">enumerate</span>(nums):</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #22c55e;">if</span> target - n <span style="color: #22c55e;">in</span> seen:</div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #22c55e;">return</span> [seen[t - n], i]</div>
+      </div>
+      <div style="border-top: 1px solid #1f2937; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+        <span class="mono" style="font-size: 12px; color: #86efac;">✓ 2 / 2 passed</span>
+        <span class="mono" style="font-size: 20px; font-weight: 700; color: #22c55e;">100%</span>
+      </div>
+    </div>
+
+    <!-- how it works, stacked -->
+    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+      <h2 class="mono" style="margin: 0 0 4px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280;">How it works</h2>
+
+      <div style="border-radius: 12px; border: 1px solid #1f2937; background: #111827; padding: 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 10l2.5 2.5L7 15"/><path d="M13 15h4"/></svg>
+        <div>
+          <h3 style="margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #f3f4f6;">Write it in a real editor</h3>
+          <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #9ca3af;">The same editor that powers VS Code, starter code included.</p>
+        </div>
+      </div>
+
+      <div style="border-radius: 12px; border: 1px solid #1f2937; background: #111827; padding: 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><path d="M13 2L4.5 13H11l-1 9 8.5-11H12l1-9z"/></svg>
+        <div>
+          <h3 style="margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #f3f4f6;">Run it instantly, offline</h3>
+          <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #9ca3af;">Python runs on your machine. Hit Run as often as you like.</p>
+        </div>
+      </div>
+
+      <div style="border-radius: 12px; border: 1px solid #1f2937; background: #111827; padding: 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><path d="M12 3l7.5 3.5v5c0 4.5-3 8-7.5 9.5-4.5-1.5-7.5-5-7.5-9.5v-5L12 3z"/><path d="M9 12l2 2 4-4"/></svg>
+        <div>
+          <h3 style="margin: 0 0 3px; font-size: 15px; font-weight: 600; color: #f3f4f6;">Submit against hidden tests</h3>
+          <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #9ca3af;">Graded server-side against cases you can't see.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: relative; border-top: 1px solid #1f2937; background: #111827; padding: 16px; text-align: center; font-size: 12px; color: #4b5563;">
+    Code Thrasher © 2026 — Keep thrashing.
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
