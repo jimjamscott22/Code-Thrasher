@@ -39,7 +39,7 @@ function TestResultRow({
         <span>{result.passed ? "✓" : "✗"}</span>
         <span className="text-gray-400">
           Test #{result.test_case_id}
-          {isHidden && <span className="ml-1 text-gray-600">(hidden)</span>}
+          {isHidden && <span className="ml-1 text-gray-600/60">(hidden)</span>}
         </span>
       </div>
       {!result.passed && (
@@ -55,7 +55,9 @@ function TestResultRow({
             {result.actual || "(empty)"}
           </p>
           {isHidden && (
-            <p className="text-gray-600">expected output is hidden — figure it out!</p>
+            <p className="text-gray-600/60">
+              Expected output is hidden — use test input/output clues to figure it out!
+            </p>
           )}
         </div>
       )}
@@ -242,8 +244,7 @@ export default function ExerciseDetail() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)_minmax(18rem,0.75fr)]">
         {/* Left — problem description */}
         <div className="order-1 space-y-6 xl:order-none">
-          <div>
-            <div className="mb-1 flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-2">
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-medium ${DIFFICULTY_COLORS[exercise.difficulty_level]}`}
               >
@@ -253,8 +254,8 @@ export default function ExerciseDetail() {
                 <span className="text-xs text-gray-500">{exercise.category.name}</span>
               )}
             </div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold">{exercise.title}</h1>
+            <h1 className="text-2xl font-bold">{exercise.title}</h1>
+            <div className="flex items-center gap-2 mt-1">
               {exerciseProgress?.solved && (
                 <span className="rounded-full bg-green-900/40 px-2.5 py-0.5 text-xs font-medium text-green-400 ring-1 ring-green-700">
                   ✓ Solved
@@ -279,11 +280,11 @@ export default function ExerciseDetail() {
                 </p>
               </div>
 
-              <div className="flex flex-col gap-2 sm:min-w-72">
+<div className="flex flex-col gap-2 sm:min-w-72">
                 <select
                   value={exercise.id}
                   onChange={(event) => goToExercise(Number(event.target.value))}
-                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus-visible:ring-2 focus-ring-brand-500/50"
                   aria-label="Choose exercise"
                 >
                   {navExercises.length === 0 ? (
@@ -297,12 +298,13 @@ export default function ExerciseDetail() {
                   )}
                 </select>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => goToExercise(previousExercise?.id)}
                     disabled={!previousExercise}
-                    className="rounded-xl border border-gray-700 px-3 py-2 text-sm font-medium text-gray-300 transition hover:border-brand-500/60 hover:text-white disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600"
+                    className="flex-1 rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-sm font-medium text-gray-300 transition-colors duration-200 hover:border-brand-500 hover:text-white disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600 disabled:bg-gray-850"
+                    aria-label="Previous exercise"
                   >
                     ← Previous
                   </button>
@@ -310,11 +312,13 @@ export default function ExerciseDetail() {
                     type="button"
                     onClick={() => goToExercise(nextExercise?.id)}
                     disabled={!nextExercise}
-                    className="rounded-xl bg-brand-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-600"
+                    className="flex-1 rounded-xl bg-brand-500 px-3 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-brand-600 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500"
+                    aria-label="Next exercise"
                   >
                     Next →
                   </button>
                 </div>
+              </div>
               </div>
             </div>
           </div>

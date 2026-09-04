@@ -98,9 +98,10 @@ export default function ExerciseGuidePanel({
   }
 
   return (
-    <aside className="overflow-hidden rounded-[1.75rem] border border-brand-500/20 bg-gray-950 shadow-[0_0_48px_rgba(34,197,94,0.10)] xl:sticky xl:top-6">
-      <div className="relative border-b border-gray-800 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.20),transparent_32%),linear-gradient(135deg,rgba(17,24,39,1),rgba(3,7,18,1))] p-5">
-        <div className="absolute right-4 top-4 h-16 w-16 rounded-full border border-brand-500/20" />
+    <aside
+      className="overflow-hidden rounded-[1.75rem] border border-brand-500/20 bg-gray-950 shadow-[0_4px_12px_rgba(0,0,0,0.10)] xl:sticky xl:top-6"
+    >
+      <div className="relative border-b border-gray-800 bg-gray-950 p-5">
         <p className="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.36em] text-brand-500">
           Field guide
         </p>
@@ -125,7 +126,7 @@ export default function ExerciseGuidePanel({
           return (
             <section
               key={`${block.kind}-${block.title}`}
-              className="group rounded-2xl border border-gray-800 bg-gray-900/80 transition hover:border-gray-700"
+              className="group rounded-2xl border border-gray-800 bg-gray-900/80 transition-all duration-300 hover:border-brand-500/50 hover:bg-gray-950/50"
             >
               <button
                 type="button"
@@ -146,7 +147,7 @@ export default function ExerciseGuidePanel({
                     {block.title}
                   </span>
                 </span>
-                <span className="text-gray-500 transition group-hover:text-brand-500">
+                <span className="text-gray-500 transition duration-200 group-hover:text-brand-500">
                   {isRevealed ? "Hide" : "Open"}
                 </span>
               </button>
@@ -179,7 +180,8 @@ export default function ExerciseGuidePanel({
               type="button"
               disabled={!hasSolution || solutionLoading}
               onClick={revealSolution}
-              className="mt-4 w-full rounded-xl border border-yellow-400/30 bg-yellow-300 px-3 py-2 text-sm font-bold text-gray-950 transition hover:bg-yellow-200 disabled:cursor-not-allowed disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500"
+              className="mt-4 w-full rounded-xl border border-yellow-400/30 bg-yellow-300 px-3 py-2 text-sm font-bold text-gray-950 transition-colors duration-200 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500/50 disabled:cursor-not-allowed disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500"
+              aria-label={confirmReveal ? "Hide solution" : "Show reference solution"}
             >
               {solutionLoading
                 ? "Loading solution..."
