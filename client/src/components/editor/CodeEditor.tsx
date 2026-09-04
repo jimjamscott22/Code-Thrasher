@@ -61,7 +61,6 @@ export default function CodeEditor({
           padding: { top: 12, bottom: 12 },
           renderLineHighlight: "gutter",
           lineNumbers: "on",
-          roundedScrollbar: true,
         }}
       />
     </div>

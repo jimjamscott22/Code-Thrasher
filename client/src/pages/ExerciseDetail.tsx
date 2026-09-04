@@ -244,7 +244,8 @@ export default function ExerciseDetail() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)_minmax(18rem,0.75fr)]">
         {/* Left — problem description */}
         <div className="order-1 space-y-6 xl:order-none">
-          <div className="flex items-center gap-3 mb-2">
+          <div>
+            <div className="mb-2 flex items-center gap-3">
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-medium ${DIFFICULTY_COLORS[exercise.difficulty_level]}`}
               >
@@ -280,7 +281,7 @@ export default function ExerciseDetail() {
                 </p>
               </div>
 
-<div className="flex flex-col gap-2 sm:min-w-72">
+              <div className="flex flex-col gap-2 sm:min-w-72">
                 <select
                   value={exercise.id}
                   onChange={(event) => goToExercise(Number(event.target.value))}
@@ -318,7 +319,6 @@ export default function ExerciseDetail() {
                     Next →
                   </button>
                 </div>
-              </div>
               </div>
             </div>
           </div>
