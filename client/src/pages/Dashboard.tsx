@@ -160,11 +160,14 @@ export default function Dashboard() {
               <span className="font-semibold text-white">{completedCount}</span>
               <span className="text-gray-600"> / {totalExercises} solved</span>
             </p>
-            <div className="mt-1.5 h-1.5 w-40 overflow-hidden rounded-full bg-gray-800">
-              <div
-                className="h-full rounded-full bg-brand-500 transition-all duration-500"
-                style={{ width: `${pct}%` }}
-              />
+            <div className="mt-1.5 flex w-44 items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-800">
+                <div
+                  className="h-full rounded-full bg-brand-500 transition-all duration-700 ease-out"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <span className="font-mono text-xs text-gray-500">{pct}%</span>
             </div>
           </div>
         )}

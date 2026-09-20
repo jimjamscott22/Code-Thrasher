@@ -367,7 +367,7 @@ export default function ExerciseDetail() {
                 <select
                   value={exercise.id}
                   onChange={(event) => goToExercise(Number(event.target.value))}
-                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus-visible:ring-2 focus-ring-brand-500/50"
+                  className="w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
                   aria-label="Choose exercise"
                 >
                   {navExercises.length === 0 ? (
@@ -447,7 +447,7 @@ export default function ExerciseDetail() {
           <button
             onClick={handleRun}
             disabled={!pyodideReady || running || submitting}
-            className="flex items-center justify-center gap-2 rounded-xl border border-brand-500/50 bg-gray-900 py-3 font-semibold text-brand-400 transition hover:border-brand-500 hover:text-brand-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600"
+            className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-brand-500/50 bg-gray-900 py-3 font-semibold text-brand-400 transition-colors duration-200 hover:border-brand-500 hover:text-brand-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
             title="Run your code in the browser without submitting"
           >
             {running && (
@@ -521,7 +521,7 @@ export default function ExerciseDetail() {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className={`flex items-center justify-center gap-2 rounded-xl py-3 font-semibold transition ${
+            className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl py-3 font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500/50 ${
               submitting
                 ? "cursor-not-allowed bg-gray-700 text-gray-400"
                 : passed

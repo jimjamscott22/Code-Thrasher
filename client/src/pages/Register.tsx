@@ -63,7 +63,7 @@ export default function Register() {
               required
               minLength={3}
               maxLength={50}
-              className="mt-2 w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+              className="mt-2 w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-gray-100 outline-none transition-colors duration-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               autoComplete="username"
             />
           </label>
@@ -75,7 +75,7 @@ export default function Register() {
               onChange={(event) => setEmail(event.target.value)}
               required
               type="email"
-              className="mt-2 w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+              className="mt-2 w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-gray-100 outline-none transition-colors duration-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               autoComplete="email"
             />
           </label>
@@ -88,7 +88,7 @@ export default function Register() {
               required
               minLength={8}
               type="password"
-              className="mt-2 w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-gray-100 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+              className="mt-2 w-full rounded-xl border border-gray-700 bg-gray-900 px-3 py-2 text-gray-100 outline-none transition-colors duration-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
               autoComplete="new-password"
             />
           </label>
@@ -102,14 +102,14 @@ export default function Register() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-xl bg-brand-500 px-4 py-3 font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-gray-400"
+            className="w-full cursor-pointer rounded-xl bg-brand-500 px-4 py-3 font-semibold text-white transition-colors duration-200 hover:bg-brand-600 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
           >
             {submitting ? "Creating account..." : "Create account"}
           </button>
 
           <p className="text-center text-sm text-gray-500">
             Already have an account?{" "}
-            <Link to="/login" state={{ from }} className="font-medium text-brand-500 hover:text-brand-400">
+            <Link to="/login" state={{ from }} className="font-medium text-brand-500 transition hover:text-brand-400 hover:underline">
               Log in
             </Link>
           </p>
