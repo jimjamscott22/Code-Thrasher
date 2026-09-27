@@ -830,6 +830,280 @@ EXERCISES = [
             {"input_data": "", "expected_output": "[1, 2, 3, 4, 5, 6]", "score_weight": 1.0, "is_hidden": True},
         ],
     },
+    {
+        "title": "Leap Year",
+        "description": (
+            "## Leap Year\n\n"
+            "A year is a leap year when it is divisible by 4, except century years, which are leap "
+            "years only when they are also divisible by 400. A variable `year` holds `2024`. "
+            "Print `True` if it is a leap year and `False` otherwise.\n\n"
+            "**Expected output:**\n```\nTrue\n```"
+        ),
+        "hint": "Check `year % 4 == 0`, then exclude years divisible by 100 unless they are also divisible by 400.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "basics",
+        "starter_code": "year = 2024\n# Print True if year is a leap year, otherwise False\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Sum of Squares",
+        "description": (
+            "## Sum of Squares\n\n"
+            "Print the sum of the squares of every integer from 1 through 6 "
+            "(1² + 2² + 3² + 4² + 5² + 6²).\n\n"
+            "**Expected output:**\n```\n91\n```"
+        ),
+        "hint": "Square a number with `n ** 2` and add each square into a running total inside a loop.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "loops",
+        "starter_code": "# Print the sum of squares from 1 through 6\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "91", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "91", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Swap Case",
+        "description": (
+            "## Swap Case\n\n"
+            'A variable `text` holds `"PyThOn"`. Print the same letters with uppercase and '
+            "lowercase swapped.\n\n"
+            "**Expected output:**\n```\npYtHoN\n```"
+        ),
+        "hint": "Strings have a `.swapcase()` method that flips the case of every letter.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "strings",
+        "starter_code": 'text = "PyThOn"\n# Print the string with letter case swapped\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "pYtHoN", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "pYtHoN", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Word Lengths",
+        "description": (
+            "## Word Lengths\n\n"
+            'A variable `sentence` holds `"code thrasher rocks"`. Print a list of the length of '
+            "each word, in the same order.\n\n"
+            "**Expected output:**\n```\n[4, 8, 5]\n```"
+        ),
+        "hint": "Split the sentence on spaces, then build a new list of `len(word)` for each word.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "lists",
+        "starter_code": 'sentence = "code thrasher rocks"\n# Print a list of each word\'s length\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "[4, 8, 5]", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "[4, 8, 5]", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Integer Palindrome",
+        "description": (
+            "## Integer Palindrome\n\n"
+            "A variable `number` holds `12321`. Print `True` if its digits read the same forwards "
+            "and backwards, and `False` otherwise.\n\n"
+            "**Expected output:**\n```\nTrue\n```"
+        ),
+        "hint": "Turn the number into a string and compare it with its reverse.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "basics",
+        "starter_code": "number = 12321\n# Print True if the digits form a palindrome\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Reverse Words",
+        "description": (
+            "## Reverse Words\n\n"
+            'A variable `sentence` holds `"learn python today"`. Reverse the order of the words '
+            "and print the result as a single line. Keep each word itself unchanged.\n\n"
+            "**Expected output:**\n```\ntoday python learn\n```"
+        ),
+        "hint": "Split into words, reverse that list, then join the words back together with a space.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "strings",
+        "starter_code": 'sentence = "learn python today"\n# Print the words in reverse order\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "today python learn", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "today python learn", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Second Largest",
+        "description": (
+            "## Second Largest\n\n"
+            "Find and print the second-largest distinct value in "
+            "`[4, 9, 1, 9, 7, 3]`. Duplicates of the maximum should not count as second place.\n\n"
+            "**Expected output:**\n```\n7\n```"
+        ),
+        "hint": "Remove duplicates with a set, sort the remaining values, and take the item just before the last one.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "lists",
+        "starter_code": "numbers = [4, 9, 1, 9, 7, 3]\n# Print the second-largest distinct value\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "7", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "7", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Anagram Check",
+        "description": (
+            "## Anagram Check\n\n"
+            'Two words are anagrams when they use the same letters the same number of times. '
+            '`left` is `"listen"` and `right` is `"silent"`. Print `True` if they are anagrams '
+            "and `False` otherwise.\n\n"
+            "**Expected output:**\n```\nTrue\n```"
+        ),
+        "hint": "Sorting both strings puts matching letters in the same order. Compare the sorted versions.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "strings",
+        "starter_code": 'left = "listen"\nright = "silent"\n# Print True if the words are anagrams\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Common Elements",
+        "description": (
+            "## Common Elements\n\n"
+            "`left` is `[1, 2, 3, 4]` and `right` is `[3, 4, 5, 6]`. Print a sorted list of the "
+            "values that appear in both.\n\n"
+            "**Expected output:**\n```\n[3, 4]\n```"
+        ),
+        "hint": "Turn both lists into sets and use `&` to keep only the shared values, then sort the result.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "lists",
+        "starter_code": "left = [1, 2, 3, 4]\nright = [3, 4, 5, 6]\n# Print the sorted list of shared values\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "[3, 4]", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "[3, 4]", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Collatz Steps",
+        "description": (
+            "## Collatz Steps\n\n"
+            "Start from `n = 13`. While `n` is not 1, replace an even `n` with `n // 2` and an "
+            "odd `n` with `3 * n + 1`. Print how many replacements it takes to reach 1.\n\n"
+            "**Expected output:**\n```\n9\n```"
+        ),
+        "hint": "Keep a counter. Inside a `while n != 1` loop, branch on `n % 2` and add 1 to the counter each time.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "loops",
+        "starter_code": "n = 13\n# Print how many Collatz steps it takes to reach 1\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "9", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "9", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Flatten a Nested List",
+        "description": (
+            "## Flatten a Nested List\n\n"
+            "`nested` holds `[[1, 2], [3], [4, 5, 6]]`. Combine the inner lists into one flat "
+            "list, preserving order, and print it.\n\n"
+            "**Expected output:**\n```\n[1, 2, 3, 4, 5, 6]\n```"
+        ),
+        "hint": "Start an empty list. Loop over each inner list and append every item into the outer list.",
+        "difficulty_level": DifficultyLevel.intermediate,
+        "category_slug": "lists",
+        "starter_code": "nested = [[1, 2], [3], [4, 5, 6]]\n# Print one flat list of all the numbers\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "[1, 2, 3, 4, 5, 6]", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "[1, 2, 3, 4, 5, 6]", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Run-Length Encoding",
+        "description": (
+            "## Run-Length Encoding\n\n"
+            'Compress `"aaabbc"` by replacing each run of the same character with that character '
+            "followed by how many times it appears in a row. Print the compressed string.\n\n"
+            "**Expected output:**\n```\na3b2c1\n```"
+        ),
+        "hint": (
+            "Walk the string once, counting how long the current character repeats. "
+            "When the character changes, append the previous character and its count."
+        ),
+        "difficulty_level": DifficultyLevel.advanced,
+        "category_slug": "strings",
+        "starter_code": 'text = "aaabbc"\n# Print the run-length encoding\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "a3b2c1", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "a3b2c1", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Balanced Parentheses",
+        "description": (
+            "## Balanced Parentheses\n\n"
+            'A variable `expression` holds `"((())())"`. Parentheses are balanced when every '
+            "opening `(` has a matching closing `)` and no closing parenthesis arrives too early. "
+            "Print `True` if the expression is balanced and `False` otherwise.\n\n"
+            "**Expected output:**\n```\nTrue\n```"
+        ),
+        "hint": (
+            "Keep a depth counter. Add 1 for `(`, subtract 1 for `)`, and fail immediately if the "
+            "counter goes negative. It must finish at 0."
+        ),
+        "difficulty_level": DifficultyLevel.advanced,
+        "category_slug": "strings",
+        "starter_code": 'expression = "((())())"\n# Print True if the parentheses are balanced\n',
+        "test_cases": [
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "True", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Binary Search",
+        "description": (
+            "## Binary Search\n\n"
+            "`numbers` is the sorted list `[2, 5, 8, 12, 16, 23, 38]`. Define a function "
+            "`binary_search(numbers, target)` that returns the index of `target`, or `-1` if it "
+            "is missing. Call it to find `16` and print the index.\n\n"
+            "**Expected output:**\n```\n4\n```"
+        ),
+        "hint": (
+            "Keep `low` and `high` bounds. Compare the middle value with the target and discard "
+            "the half that cannot contain it until the bounds cross."
+        ),
+        "difficulty_level": DifficultyLevel.advanced,
+        "category_slug": "functions",
+        "starter_code": (
+            "numbers = [2, 5, 8, 12, 16, 23, 38]\n"
+            "# Define binary_search(numbers, target), find 16, and print its index\n"
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "4", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "4", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Missing Number",
+        "description": (
+            "## Missing Number\n\n"
+            "`numbers` holds `[3, 0, 1]`, which contains every integer from `0` through "
+            "`len(numbers)` except one. Print the missing integer.\n\n"
+            "**Expected output:**\n```\n2\n```"
+        ),
+        "hint": (
+            "The sum of `0` through `n` is `n * (n + 1) // 2`. Subtract the sum of the given "
+            "numbers from that total."
+        ),
+        "difficulty_level": DifficultyLevel.advanced,
+        "category_slug": "lists",
+        "starter_code": "numbers = [3, 0, 1]\n# Print the missing integer from 0 through len(numbers)\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "2", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "2", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
 ]
 
 
@@ -1644,6 +1918,309 @@ EXERCISE_GUIDES = {
             "body": "Print the merged list object: [1, 2, 3, 4, 5, 6].",
         },
     ],
+    "Leap Year": [
+        {
+            "kind": "nudge",
+            "title": "Three divisibility checks",
+            "body": "A leap year is divisible by 4, and a century year only counts when it is also divisible by 400.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Combine the rules",
+            "body": "Group the century exception so a year divisible by 100 still passes when it is divisible by 400.",
+            "code": "is_leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the boolean `True` for 2024, with no extra label.",
+        },
+    ],
+    "Sum of Squares": [
+        {
+            "kind": "nudge",
+            "title": "Square, then add",
+            "body": "Each number from 1 through 6 contributes its square to one running total.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Running total",
+            "body": "`**` raises a number to a power. Add `n ** 2` on every pass.",
+            "code": "total = 0\nfor n in range(1, 7):\n    total += n ** 2",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the single total 91, not the individual squares.",
+        },
+    ],
+    "Swap Case": [
+        {
+            "kind": "nudge",
+            "title": "Flip every letter",
+            "body": "Uppercase letters become lowercase and lowercase letters become uppercase. Leave nothing else to change.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Built-in case swap",
+            "body": "`.swapcase()` returns a new string with the case of each letter flipped.",
+            "code": 'print(text.swapcase())',
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "The result is `pYtHoN`, same length and same letters.",
+        },
+    ],
+    "Word Lengths": [
+        {
+            "kind": "nudge",
+            "title": "Split, then measure",
+            "body": "The sentence has three words separated by spaces. You need the length of each one, in order.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Length comprehension",
+            "body": "`split()` returns the words. A comprehension can turn each word into its length.",
+            "code": "lengths = [len(word) for word in sentence.split()]",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the list `[4, 8, 5]`, including the brackets and commas.",
+        },
+    ],
+    "Integer Palindrome": [
+        {
+            "kind": "nudge",
+            "title": "Digits, not the number",
+            "body": "A palindrome check compares the sequence of digits. Convert the integer to text first.",
+        },
+        {
+            "kind": "pattern",
+            "title": "String reverse",
+            "body": "The slice `[::-1]` reverses a string. Compare the digit text with that reverse.",
+            "code": "digits = str(number)\nprint(digits == digits[::-1])",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the boolean `True` for 12321.",
+        },
+    ],
+    "Reverse Words": [
+        {
+            "kind": "nudge",
+            "title": "Reorder words, not letters",
+            "body": "Each word stays spelled the same way. Only the sequence of words changes.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Split, reverse, join",
+            "body": "`split()` makes a list of words, `[::-1]` reverses that list, and `join` puts spaces back.",
+            "code": 'print(" ".join(sentence.split()[::-1]))',
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print `today python learn` as one line with single spaces.",
+        },
+    ],
+    "Second Largest": [
+        {
+            "kind": "nudge",
+            "title": "Ignore the duplicate maximum",
+            "body": "9 appears twice, but second place is the next distinct value, not another 9.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Unique then sort",
+            "body": "A set drops duplicates. After sorting, the second-to-last item is the answer.",
+            "code": "unique = sorted(set(numbers))\nprint(unique[-2])",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the number 7 by itself.",
+        },
+    ],
+    "Anagram Check": [
+        {
+            "kind": "nudge",
+            "title": "Same letters, any order",
+            "body": "Order does not matter. Count and identity of the letters do.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Sort both sides",
+            "body": "`sorted()` on a string returns its characters in order. Equal sorted lists mean the words are anagrams.",
+            "code": "print(sorted(left) == sorted(right))",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the boolean `True`.",
+        },
+    ],
+    "Common Elements": [
+        {
+            "kind": "nudge",
+            "title": "Keep the overlap",
+            "body": "A value belongs in the answer only when it appears in both lists.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Set intersection",
+            "body": "`&` between two sets keeps shared values. Sort them so the printed order is stable.",
+            "code": "print(sorted(set(left) & set(right)))",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the list `[3, 4]`.",
+        },
+    ],
+    "Collatz Steps": [
+        {
+            "kind": "nudge",
+            "title": "Count the replacements",
+            "body": "You are counting steps, not printing the sequence. Stop when the value becomes 1.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Even and odd branches",
+            "body": "Even values are halved with integer division. Odd values become `3 * n + 1`.",
+            "code": (
+                "steps = 0\n"
+                "while n != 1:\n"
+                "    n = n // 2 if n % 2 == 0 else 3 * n + 1\n"
+                "    steps += 1"
+            ),
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the step count 9, not the intermediate values.",
+        },
+    ],
+    "Flatten a Nested List": [
+        {
+            "kind": "nudge",
+            "title": "One loop inside another",
+            "body": "The outer list holds smaller lists. Visit each inner list and copy its items in order.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Nested append",
+            "body": "An empty result list plus two loops collects every number.",
+            "code": "flat = []\nfor group in nested:\n    for item in group:\n        flat.append(item)",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print `[1, 2, 3, 4, 5, 6]` as one list.",
+        },
+    ],
+    "Run-Length Encoding": [
+        {
+            "kind": "nudge",
+            "title": "Group identical neighbors",
+            "body": "Count how long each character repeats before the next different character starts.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Emit on change",
+            "body": "When the character changes, append the previous character and its count, then start a new count at 1. Remember the final run after the loop.",
+            "code": (
+                "encoded = \"\"\n"
+                "count = 1\n"
+                "for i in range(1, len(text)):\n"
+                "    if text[i] == text[i - 1]:\n"
+                "        count += 1\n"
+                "    else:\n"
+                "        encoded += text[i - 1] + str(count)\n"
+                "        count = 1"
+            ),
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print `a3b2c1` with no separators between groups.",
+        },
+    ],
+    "Balanced Parentheses": [
+        {
+            "kind": "nudge",
+            "title": "Track nesting depth",
+            "body": "You never need to store the whole string. A counter is enough if it never goes negative and ends at zero.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Counter walk",
+            "body": "Increase depth for `(`, decrease it for `)`, and stop if depth would become negative.",
+            "code": (
+                "depth = 0\n"
+                "for char in expression:\n"
+                "    if char == \"(\":\n"
+                "        depth += 1\n"
+                "    else:\n"
+                "        depth -= 1\n"
+                "        if depth < 0:\n"
+                "            break"
+            ),
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the boolean `True` for `((())())`.",
+        },
+    ],
+    "Binary Search": [
+        {
+            "kind": "nudge",
+            "title": "Cut the range in half",
+            "body": "The list is already sorted. Compare the middle item and throw away the half that cannot hold the target.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Low and high bounds",
+            "body": "Move `low` up when the middle value is too small, and move `high` down when it is too large.",
+            "code": (
+                "low, high = 0, len(numbers) - 1\n"
+                "while low <= high:\n"
+                "    mid = (low + high) // 2\n"
+                "    if numbers[mid] == target:\n"
+                "        return mid\n"
+                "    if numbers[mid] < target:\n"
+                "        low = mid + 1\n"
+                "    else:\n"
+                "        high = mid - 1"
+            ),
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the index 4, which is where 16 sits.",
+        },
+    ],
+    "Missing Number": [
+        {
+            "kind": "nudge",
+            "title": "Compare two sums",
+            "body": "You know every integer from 0 through n should be present. The gap is the difference between that full sum and the list's sum.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Closed-form total",
+            "body": "The sum of 0 through n is `n * (n + 1) // 2`. Here n is the length of the list.",
+            "code": "n = len(numbers)\nprint(n * (n + 1) // 2 - sum(numbers))",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the missing value 2.",
+        },
+    ],
 }
 
 
@@ -1868,6 +2445,123 @@ EXERCISE_SOLUTIONS = {
             "print(merged)"
         ),
         "explanation": "Two pointers compare the current items, appending the smaller each step, then any remaining tail is added.",
+    },
+    "Leap Year": {
+        "code": "year = 2024\nprint(year % 4 == 0 and (year % 100 != 0 or year % 400 == 0))",
+        "explanation": "2024 is divisible by 4 and is not a century year, so the leap-year rule prints True.",
+    },
+    "Sum of Squares": {
+        "code": "total = 0\nfor n in range(1, 7):\n    total += n ** 2\nprint(total)",
+        "explanation": "The loop adds 1, 4, 9, 16, 25, and 36, which total 91.",
+    },
+    "Swap Case": {
+        "code": 'text = "PyThOn"\nprint(text.swapcase())',
+        "explanation": "`.swapcase()` flips each letter, turning `PyThOn` into `pYtHoN`.",
+    },
+    "Word Lengths": {
+        "code": 'sentence = "code thrasher rocks"\nprint([len(word) for word in sentence.split()])',
+        "explanation": "Splitting the sentence yields three words, and the comprehension records their lengths.",
+    },
+    "Integer Palindrome": {
+        "code": "number = 12321\ndigits = str(number)\nprint(digits == digits[::-1])",
+        "explanation": "The digit string equals its reverse, so the comparison prints True.",
+    },
+    "Reverse Words": {
+        "code": 'sentence = "learn python today"\nprint(" ".join(sentence.split()[::-1]))',
+        "explanation": "The word list is reversed and joined with spaces, producing `today python learn`.",
+    },
+    "Second Largest": {
+        "code": "numbers = [4, 9, 1, 9, 7, 3]\nprint(sorted(set(numbers))[-2])",
+        "explanation": "Dropping the duplicate 9 and sorting leaves 7 immediately before the maximum.",
+    },
+    "Anagram Check": {
+        "code": 'left = "listen"\nright = "silent"\nprint(sorted(left) == sorted(right))',
+        "explanation": "Both words sort to the same sequence of letters, so they are anagrams.",
+    },
+    "Common Elements": {
+        "code": "left = [1, 2, 3, 4]\nright = [3, 4, 5, 6]\nprint(sorted(set(left) & set(right)))",
+        "explanation": "Set intersection keeps 3 and 4, and sorting prints them in ascending order.",
+    },
+    "Collatz Steps": {
+        "code": (
+            "n = 13\n"
+            "steps = 0\n"
+            "while n != 1:\n"
+            "    if n % 2 == 0:\n"
+            "        n //= 2\n"
+            "    else:\n"
+            "        n = 3 * n + 1\n"
+            "    steps += 1\n"
+            "print(steps)"
+        ),
+        "explanation": "Starting at 13, the even/odd rule reaches 1 after exactly 9 replacements.",
+    },
+    "Flatten a Nested List": {
+        "code": (
+            "nested = [[1, 2], [3], [4, 5, 6]]\n"
+            "flat = []\n"
+            "for group in nested:\n"
+            "    for item in group:\n"
+            "        flat.append(item)\n"
+            "print(flat)"
+        ),
+        "explanation": "The inner loop copies every number into one list, preserving the original order.",
+    },
+    "Run-Length Encoding": {
+        "code": (
+            'text = "aaabbc"\n'
+            'encoded = ""\n'
+            "count = 1\n"
+            "for i in range(1, len(text)):\n"
+            "    if text[i] == text[i - 1]:\n"
+            "        count += 1\n"
+            "    else:\n"
+            "        encoded += text[i - 1] + str(count)\n"
+            "        count = 1\n"
+            "encoded += text[-1] + str(count)\n"
+            "print(encoded)"
+        ),
+        "explanation": "Three a's, two b's, and one c become the groups a3, b2, and c1.",
+    },
+    "Balanced Parentheses": {
+        "code": (
+            'expression = "((())())"\n'
+            "depth = 0\n"
+            "balanced = True\n"
+            "for char in expression:\n"
+            "    if char == \"(\":\n"
+            "        depth += 1\n"
+            "    else:\n"
+            "        depth -= 1\n"
+            "        if depth < 0:\n"
+            "            balanced = False\n"
+            "            break\n"
+            "print(balanced and depth == 0)"
+        ),
+        "explanation": "The depth returns to zero without ever going negative, so the parentheses are balanced.",
+    },
+    "Binary Search": {
+        "code": (
+            "def binary_search(numbers, target):\n"
+            "    low, high = 0, len(numbers) - 1\n"
+            "    while low <= high:\n"
+            "        mid = (low + high) // 2\n"
+            "        if numbers[mid] == target:\n"
+            "            return mid\n"
+            "        if numbers[mid] < target:\n"
+            "            low = mid + 1\n"
+            "        else:\n"
+            "            high = mid - 1\n"
+            "    return -1\n"
+            "\n"
+            "numbers = [2, 5, 8, 12, 16, 23, 38]\n"
+            "print(binary_search(numbers, 16))"
+        ),
+        "explanation": "Halving the sorted range lands on index 4, where 16 is stored.",
+    },
+    "Missing Number": {
+        "code": "numbers = [3, 0, 1]\nn = len(numbers)\nprint(n * (n + 1) // 2 - sum(numbers))",
+        "explanation": "The full sum of 0 through 3 is 6. The list sums to 4, so the missing value is 2.",
     },
 }
 
