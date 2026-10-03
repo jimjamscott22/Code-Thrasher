@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     # leaves headroom for interpreter startup while still bounding runaway code.
     SANDBOX_MAX_MEMORY_MB: int = 256
     SANDBOX_MAX_OUTPUT_BYTES: int = 10_000
+    # Rust is compiled with rustc before it is run. Compilation gets its own
+    # (longer) budget and is not memory-capped: rustc reserves far more virtual
+    # address space than it uses. The compiled binary is capped like Python.
+    SANDBOX_RUST_COMPILE_TIMEOUT_SECONDS: int = 30
 
     @field_validator("CORS_ORIGINS")
     @classmethod

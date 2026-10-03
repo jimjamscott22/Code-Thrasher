@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_current_admin_user, get_current_user
 from app.core.rate_limit import get_user_or_remote_address, limiter
 from app.db.database import get_db
-from app.models.models import DifficultyLevel, Exercise, User
+from app.models.models import DifficultyLevel, Exercise, Language, User
 from app.schemas.schemas import (
     ExerciseCreate,
     ExerciseDetail,
@@ -22,12 +22,14 @@ router = APIRouter(prefix="/exercises", tags=["exercises"])
 async def list_exercises(
     difficulty: DifficultyLevel | None = Query(None),
     category_id: int | None = Query(None),
+    language: Language | None = Query(None),
     db: AsyncSession = Depends(get_db),
 ) -> list[Exercise]:
     return await exercise_service.list_exercises(
         db,
         difficulty=difficulty,
         category_id=category_id,
+        language=language,
     )
 
 

@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.models import DifficultyLevel, Exercise, SolutionReveal, User
+from app.models.models import DifficultyLevel, Exercise, Language, SolutionReveal, User
 from app.schemas.schemas import (
     ExerciseCreate,
     ExerciseDetail,
@@ -36,6 +36,7 @@ def to_exercise_detail(exercise: Exercise) -> ExerciseDetail:
         hint=exercise.hint,
         guide=guide,
         has_solution=exercise.has_solution,
+        language=exercise.language,
         difficulty_level=exercise.difficulty_level,
         starter_code=exercise.starter_code,
         category=exercise.category,
@@ -48,12 +49,15 @@ async def list_exercises(
     *,
     difficulty: DifficultyLevel | None = None,
     category_id: int | None = None,
+    language: Language | None = None,
 ) -> list[Exercise]:
     stmt = select(Exercise).options(selectinload(Exercise.category))
     if difficulty:
         stmt = stmt.where(Exercise.difficulty_level == difficulty)
     if category_id:
         stmt = stmt.where(Exercise.category_id == category_id)
+    if language:
+        stmt = stmt.where(Exercise.language == language.value)
     result = await db.execute(stmt)
     return list(result.scalars().all())
 
@@ -71,7 +75,7 @@ async def get_exercise_by_id(db: AsyncSession, exercise_id: int) -> Exercise | N
 
 
 async def create_exercise(db: AsyncSession, payload: ExerciseCreate) -> Exercise:
-    exercise = Exercise(**payload.model_dump())
+    exercise = Exercise(**{**payload.model_dump(), "language": payload.language.value})
     db.add(exercise)
     await db.commit()
     await db.refresh(exercise)

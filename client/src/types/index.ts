@@ -1,4 +1,5 @@
 export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
+export type Language = "python" | "rust";
 export type SubmissionStatus = "pending" | "completed" | "failed";
 
 export interface User {
@@ -36,6 +37,7 @@ export interface Category {
 export interface ExerciseListItem {
   id: number;
   title: string;
+  language: Language;
   difficulty_level: DifficultyLevel;
   category: Category | null;
 }
@@ -62,6 +64,7 @@ export interface ExerciseDetail {
   hint: string | null;
   guide: ExerciseGuideBlock[];
   has_solution: boolean;
+  language: Language;
   difficulty_level: DifficultyLevel;
   starter_code: string;
   category: Category | null;

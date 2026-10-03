@@ -3,7 +3,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from app.models.models import DifficultyLevel, SubmissionStatus
+from app.models.models import DifficultyLevel, Language, SubmissionStatus
 
 
 # ── Users/Auth ────────────────────────────────────────────────────────────────
@@ -85,6 +85,7 @@ class TestCasePublicOut(BaseModel):
 class ExerciseListItem(BaseModel):
     id: int
     title: str
+    language: Language
     difficulty_level: DifficultyLevel
     category: CategoryOut | None
 
@@ -105,6 +106,7 @@ class ExerciseDetail(BaseModel):
     hint: str | None
     guide: list[ExerciseGuideBlock] = Field(default_factory=list)
     has_solution: bool = False
+    language: Language
     difficulty_level: DifficultyLevel
     starter_code: str
     category: CategoryOut | None
@@ -122,6 +124,7 @@ class ExerciseCreate(BaseModel):
     description: str
     hint: str | None = None
     guide: list[ExerciseGuideBlock] = Field(default_factory=list)
+    language: Language = Language.python
     difficulty_level: DifficultyLevel = DifficultyLevel.beginner
     category_id: int | None = None
     starter_code: str = ""
