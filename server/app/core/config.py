@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     # (longer) budget and is not memory-capped: rustc reserves far more virtual
     # address space than it uses. The compiled binary is capped like Python.
     SANDBOX_RUST_COMPILE_TIMEOUT_SECONDS: int = 30
+    # rustc is CPU- and memory-hungry, so only this many compiles run at once
+    # (across grading and /run); further requests wait their turn. Running the
+    # compiled binary is cheap and is not counted against this cap.
+    SANDBOX_RUST_MAX_CONCURRENT_COMPILES: int = 2
 
     @field_validator("CORS_ORIGINS")
     @classmethod

@@ -75,7 +75,7 @@ docker compose up -d --no-deps --force-recreate client
 1. `client/src/services/pyodide.ts` — Web Worker loads Pyodide from CDN; runs visible test cases for local stdout preview
 2. `ExerciseDetail.tsx` — posts `code` + `exercise_id` to `POST /api/v1/submit/` (no client-reported scores)
 3. `server/app/services/grading.py` — loads all test cases from DB (including hidden), runs each via `sandbox.py`
-4. `server/app/services/sandbox.py` — subprocess runner enforcing `SANDBOX_*` limits from `app/core/config.py`. `code_runner(language, code)` picks the runner from `Exercise.language`; Rust is compiled once with `rustc` per submission, then the binary runs once per test case. Rust has no Pyodide preview — the client's Run button calls `POST /api/v1/run/` instead (`app/services/run.py`, JWT + rate limited, not graded or persisted), and Submit shows server compiler errors from `stderr`.
+4. `server/app/services/sandbox.py` — subprocess runner enforcing `SANDBOX_*` limits from `app/core/config.py`. `code_runner(language, code)` picks the runner from `Exercise.language`; Rust is compiled once with `rustc` per submission, then the binary runs once per test case, with at most `SANDBOX_RUST_MAX_CONCURRENT_COMPILES` compiles in flight at once (others wait). Rust has no Pyodide preview — the client's Run button calls `POST /api/v1/run/` instead (`app/services/run.py`, JWT + rate limited, not graded or persisted), and Submit shows server compiler errors from `stderr`.
 5. `server/app/api/v1/endpoints/submit.py` — persists `Submission` with server-computed score and updates user stats
 
 Hidden test `expected_output` is never sent to the client (`TestCasePublicOut` in exercise detail responses).

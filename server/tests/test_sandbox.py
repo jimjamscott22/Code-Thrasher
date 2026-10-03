@@ -108,3 +108,54 @@ async def test_run_rust_without_toolchain(monkeypatch):
     monkeypatch.setenv("PATH", "")
     result = await run_rust("fn main() {}")
     assert "not installed" in result.stderr
+
+
+@pytest.mark.parametrize("limit", [1, 2])
+@pytest.mark.asyncio
+async def test_rust_compiles_are_capped(monkeypatch, limit):
+    import asyncio
+    import threading
+    import time
+
+    from app.core.config import settings
+    from app.services import sandbox
+
+    monkeypatch.setattr(settings, "SANDBOX_RUST_MAX_CONCURRENT_COMPILES", limit)
+
+    lock = threading.Lock()
+    active = peak = 0
+
+    def fake_compile(code, workdir, timeout_seconds, max_output_bytes):
+        nonlocal active, peak
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        time.sleep(0.05)
+        with lock:
+            active -= 1
+        # Report a failure so no binary is needed for the run step.
+        return sandbox.SandboxRunResult("", "stub", False, False)
+
+    monkeypatch.setattr(sandbox, "_compile_rust_sync", fake_compile)
+
+    results = await asyncio.gather(*(run_rust("fn main() {}") for _ in range(8)))
+
+    assert all(r.stderr == "stub" for r in results)
+    assert peak == limit
+
+
+@pytest.mark.asyncio
+async def test_failed_compile_releases_its_slot(monkeypatch):
+    from app.core.config import settings
+    from app.services import sandbox
+
+    monkeypatch.setattr(settings, "SANDBOX_RUST_MAX_CONCURRENT_COMPILES", 1)
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("compiler exploded")
+
+    monkeypatch.setattr(sandbox, "_compile_rust_sync", boom)
+
+    for _ in range(2):  # the second call would hang if the slot leaked
+        with pytest.raises(RuntimeError):
+            await run_rust("fn main() {}")
