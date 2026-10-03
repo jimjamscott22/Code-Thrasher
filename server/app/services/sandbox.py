@@ -134,6 +134,20 @@ async def run_python(
 
 RunFn = Callable[[str], Awaitable[SandboxRunResult]]
 
+# An asyncio.Semaphore binds to the event loop it first waits on, so keep one per
+# (running loop, limit) rather than a single module-level instance. In production
+# there is one loop and one limit, so this is just a lazily created singleton.
+_compile_slots: tuple[asyncio.AbstractEventLoop, int, asyncio.Semaphore] | None = None
+
+
+def _compile_semaphore() -> asyncio.Semaphore:
+    global _compile_slots
+    loop = asyncio.get_running_loop()
+    limit = max(1, settings.SANDBOX_RUST_MAX_CONCURRENT_COMPILES)
+    if _compile_slots is None or _compile_slots[:2] != (loop, limit):
+        _compile_slots = (loop, limit, asyncio.Semaphore(limit))
+    return _compile_slots[2]
+
 
 def _compile_rust_sync(
     code: str,
@@ -226,13 +240,14 @@ async def rust_runner(
 
     with tempfile.TemporaryDirectory(prefix="code-thrasher-rust-") as tmp:
         workdir = Path(tmp)
-        failure = await asyncio.to_thread(
-            _compile_rust_sync,
-            code,
-            workdir,
-            settings.SANDBOX_RUST_COMPILE_TIMEOUT_SECONDS,
-            max_bytes,
-        )
+        async with _compile_semaphore():
+            failure = await asyncio.to_thread(
+                _compile_rust_sync,
+                code,
+                workdir,
+                settings.SANDBOX_RUST_COMPILE_TIMEOUT_SECONDS,
+                max_bytes,
+            )
 
         async def run(input_data: str = "") -> SandboxRunResult:
             if failure is not None:

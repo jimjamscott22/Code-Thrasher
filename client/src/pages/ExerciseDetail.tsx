@@ -10,6 +10,7 @@ import { useProgressStore } from "@/store/useProgressStore";
 import type {
   ExerciseDetail as ExerciseDetailType,
   ExerciseListItem,
+  RunResponse,
   SubmitResponse,
   TestCaseResult,
 } from "@/types";
@@ -216,15 +217,46 @@ export default function ExerciseDetail() {
     navigate(`/exercise/${exerciseId}`);
   }
 
+  // Server-only languages (Rust) run through POST /run/: not graded, not saved.
+  async function runOnServer(inputData: string): Promise<RunResult> {
+    try {
+      const { data } = await api.post<RunResponse>("/run/", {
+        exercise_id: exercise?.id,
+        code,
+        input_data: inputData,
+      });
+      return {
+        stdout: data.stdout,
+        stderr: data.stderr,
+        durationMs: data.duration_ms,
+        timedOut: data.timed_out,
+        outputTruncated: data.output_truncated,
+      };
+    } catch (e: unknown) {
+      const detail = (e as { response?: { data?: { detail?: string } } })?.response?.data
+        ?.detail;
+      return {
+        stdout: "",
+        stderr: detail ?? "Could not run your code. Please try again.",
+        durationMs: 0,
+      };
+    }
+  }
+
   async function handleRun() {
-    if (!pyodideReady || running) return;
+    if (running || (usesPyodide && !pyodideReady)) return;
+    if (!usesPyodide && !user) {
+      navigate("/login", { state: { from: `/exercise/${exercise?.id}` } });
+      return;
+    }
     setRunning(true);
     setRunOutput(null);
     setError(null);
+    const inputData = exampleTest?.input_data ?? "";
     try {
-      const output = await runPython(code, {
-        inputData: exampleTest?.input_data ?? "",
-      });
+      const output = usesPyodide
+        ? await runPython(code, { inputData })
+        : await runOnServer(inputData);
       setRunOutput(output);
     } catch {
       setRunOutput({
@@ -456,8 +488,8 @@ export default function ExerciseDetail() {
 
           {!usesPyodide && (
             <p className="text-xs text-gray-500">
-              Rust is compiled and run on the server when you submit. Compiler errors will
-              show up in the results below.
+              Rust is compiled and run on the server. Use Run to check your code and see
+              compiler errors without submitting.
             </p>
           )}
 
@@ -473,22 +505,24 @@ export default function ExerciseDetail() {
             </p>
           )}
 
-          {usesPyodide && (
-            <button
-              onClick={handleRun}
-              disabled={!pyodideReady || running || submitting}
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-brand-500/50 bg-gray-900 py-3 font-semibold text-brand-400 transition-colors duration-200 hover:border-brand-500 hover:text-brand-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
-              title="Run your code in the browser without submitting"
-            >
-              {running && (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
-              )}
-              {running ? "Running…" : "▶ Run code"}
-            </button>
-          )}
+          <button
+            onClick={handleRun}
+            disabled={(usesPyodide && !pyodideReady) || running || submitting}
+            className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-brand-500/50 bg-gray-900 py-3 font-semibold text-brand-400 transition-colors duration-200 hover:border-brand-500 hover:text-brand-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+            title={
+              usesPyodide
+                ? "Run your code in the browser without submitting"
+                : "Compile and run your code on the server without submitting"
+            }
+          >
+            {running && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
+            )}
+            {running ? "Running…" : !usesPyodide && !user ? "Login to run" : "▶ Run code"}
+          </button>
 
           {/* Scratchpad output — local run, not graded */}
-          {usesPyodide && runOutput && (
+          {runOutput && (
             <div className="rounded-xl border border-gray-800 bg-gray-950 p-4">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-gray-500">
@@ -542,7 +576,7 @@ export default function ExerciseDetail() {
                     {exampleTest.expected_output || "(empty)"}
                   </pre>
                   <p className="mt-2 text-[0.7rem] text-gray-600">
-                    Runs locally in your browser — nothing is recorded. Use Submit to grade against all tests.
+                    {usesPyodide ? "Runs locally in your browser" : "Runs on the server"} — nothing is recorded. Use Submit to grade against all tests.
                   </p>
                 </div>
               )}
