@@ -1,6 +1,10 @@
 import pytest
 from httpx import AsyncClient
 
+from app.models.models import DifficultyLevel, Exercise, TestCase
+from app.services.sandbox import rust_available
+from tests.conftest import TestingSession
+
 
 async def test_submit_all_pass(
     client: AsyncClient,
@@ -127,3 +131,65 @@ async def test_submit_updates_user_stats(
     data = me.json()
     assert data["total_score"] == 100
     assert data["streak"] >= 1
+
+
+async def _rust_exercise(language: str = "rust") -> int:
+    async with TestingSession() as session:
+        exercise = Exercise(
+            title="Rust Graded",
+            description="Print forty-two",
+            language=language,
+            difficulty_level=DifficultyLevel.beginner,
+            starter_code="",
+        )
+        session.add(exercise)
+        await session.flush()
+        session.add_all(
+            TestCase(exercise_id=exercise.id, expected_output="42", is_hidden=hidden)
+            for hidden in (False, True)
+        )
+        await session.commit()
+        return exercise.id
+
+
+@pytest.mark.skipif(not rust_available(), reason="rustc not installed")
+async def test_submit_rust_pass_and_compile_error(
+    client: AsyncClient, auth_headers: dict[str, str]
+):
+    exercise_id = await _rust_exercise()
+
+    ok = await client.post(
+        "/api/v1/submit/",
+        headers=auth_headers,
+        json={
+            "exercise_id": exercise_id,
+            "code": 'fn main() { println!("{}", 6 * 7); }',
+        },
+    )
+    assert ok.status_code == 200
+    assert ok.json()["status"] == "completed"
+    assert ok.json()["score"] == 100.0
+
+    bad = await client.post(
+        "/api/v1/submit/",
+        headers=auth_headers,
+        json={"exercise_id": exercise_id, "code": "fn main() { let x: i32 = \"a\"; }"},
+    )
+    assert bad.status_code == 200
+    body = bad.json()
+    assert body["score"] == 0.0
+    assert body["status"] == "failed"
+    assert "mismatched types" in body["stderr"]
+    assert body["stderr"].count("mismatched types") == 1  # not repeated per test case
+
+
+async def test_python_code_is_not_graded_as_rust(
+    client: AsyncClient, auth_headers: dict[str, str]
+):
+    exercise_id = await _rust_exercise(language="python")
+    r = await client.post(
+        "/api/v1/submit/",
+        headers=auth_headers,
+        json={"exercise_id": exercise_id, "code": "print(42)"},
+    )
+    assert r.json()["status"] == "completed"

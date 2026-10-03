@@ -143,6 +143,10 @@ export default function ExerciseDetail() {
     fetch: fetchProgress,
     reset: resetProgress,
   } = useProgressStore();
+  // Python is previewed in-browser with Pyodide; Rust is compiled and run on the
+  // server only, so none of the Pyodide UI applies to it.
+  const language = exercise?.language ?? "python";
+  const usesPyodide = language === "python";
   const exerciseProgress = id ? progress[Number(id)] : undefined;
   const currentExerciseId = id ? Number(id) : undefined;
   const currentIndex = useMemo(
@@ -176,7 +180,8 @@ export default function ExerciseDetail() {
       .get<ExerciseDetailType>(`/exercises/${id}`)
       .then((r) => {
         setExercise(r.data);
-        setCode(r.data.starter_code || "# Write your solution here\n");
+        const comment = r.data.language === "rust" ? "//" : "#";
+        setCode(r.data.starter_code || `${comment} Write your solution here\n`);
       })
       .catch(() => setError("Exercise not found."))
       .finally(() => setLoading(false));
@@ -186,14 +191,17 @@ export default function ExerciseDetail() {
       .then((r) => setNavExercises([...r.data].sort((a, b) => a.id - b.id)))
       .catch(() => setNavExercises([]));
 
+  }, [id]);
+
+  useEffect(() => {
     setPyodideReady(false);
     setPyodideError(false);
+    if (!usesPyodide || !exercise) return;
     // Kick off Pyodide download in the background while the user reads the problem
     getPyodide()
       .then(() => setPyodideReady(true))
       .catch(() => setPyodideError(true));
-
-  }, [id]);
+  }, [exercise, usesPyodide]);
 
   useEffect(() => {
     if (user) {
@@ -251,7 +259,7 @@ export default function ExerciseDetail() {
         stderr: "",
         totalDurationMs: 0,
       };
-      if (visibleTests.length && pyodideReady) {
+      if (usesPyodide && visibleTests.length && pyodideReady) {
         try {
           preview = await runPythonTests(
             code,
@@ -273,7 +281,13 @@ export default function ExerciseDetail() {
         time_taken_ms: preview.totalDurationMs,
       });
 
-      setResult({ ...serverResp.data, stdout: preview.stdout, stderr: preview.stderr });
+      // The server's combined stdout includes hidden tests, so only its stderr
+      // (compiler errors, panics) is shown for server-only languages.
+      setResult({
+        ...serverResp.data,
+        stdout: usesPyodide ? preview.stdout : "",
+        stderr: usesPyodide ? preview.stderr : serverResp.data.stderr,
+      });
       fetchProgress().catch(() => {});
       // Stats tiles only appear once the refreshed user actually arrives — if
       // this fails the panel simply renders without them.
@@ -336,6 +350,9 @@ export default function ExerciseDetail() {
               {exercise.category && (
                 <span className="text-xs text-gray-500">{exercise.category.name}</span>
               )}
+              <span className="rounded-full bg-gray-800 px-2 py-0.5 font-mono text-xs text-gray-300">
+                {exercise.language === "rust" ? "Rust" : "Python"}
+              </span>
             </div>
             <h1 className="text-2xl font-bold">{exercise.title}</h1>
             <div className="flex items-center gap-2 mt-1">
@@ -415,7 +432,12 @@ export default function ExerciseDetail() {
 
         {/* Right — editor + submit */}
         <div className="order-3 flex flex-col gap-4 xl:order-none">
-          <CodeEditor value={code} onChange={setCode} height="480px" />
+          <CodeEditor
+            value={code}
+            onChange={setCode}
+            height="480px"
+            language={language}
+          />
 
           {!user && (
             <div className="rounded-xl border border-brand-500/20 bg-gray-950 p-4 text-sm text-gray-400">
@@ -432,32 +454,41 @@ export default function ExerciseDetail() {
             </div>
           )}
 
-          {!pyodideReady && !pyodideError && !submitting && (
+          {!usesPyodide && (
+            <p className="text-xs text-gray-500">
+              Rust is compiled and run on the server when you submit. Compiler errors will
+              show up in the results below.
+            </p>
+          )}
+
+          {usesPyodide && !pyodideReady && !pyodideError && !submitting && (
             <p className="flex items-center gap-1.5 text-xs text-gray-500">
               <span className="inline-block h-2.5 w-2.5 animate-spin rounded-full border border-gray-600 border-t-transparent" />
               Loading Python runtime…
             </p>
           )}
-          {pyodideError && !submitting && (
+          {usesPyodide && pyodideError && !submitting && (
             <p className="text-xs text-yellow-600">
               Python runtime failed to load — your submission will still be graded server-side.
             </p>
           )}
 
-          <button
-            onClick={handleRun}
-            disabled={!pyodideReady || running || submitting}
-            className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-brand-500/50 bg-gray-900 py-3 font-semibold text-brand-400 transition-colors duration-200 hover:border-brand-500 hover:text-brand-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
-            title="Run your code in the browser without submitting"
-          >
-            {running && (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
-            )}
-            {running ? "Running…" : "▶ Run code"}
-          </button>
+          {usesPyodide && (
+            <button
+              onClick={handleRun}
+              disabled={!pyodideReady || running || submitting}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-brand-500/50 bg-gray-900 py-3 font-semibold text-brand-400 transition-colors duration-200 hover:border-brand-500 hover:text-brand-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40"
+              title="Run your code in the browser without submitting"
+            >
+              {running && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
+              )}
+              {running ? "Running…" : "▶ Run code"}
+            </button>
+          )}
 
           {/* Scratchpad output — local run, not graded */}
-          {runOutput && (
+          {usesPyodide && runOutput && (
             <div className="rounded-xl border border-gray-800 bg-gray-950 p-4">
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-gray-500">
@@ -539,7 +570,9 @@ export default function ExerciseDetail() {
                 ? "Running…"
                 : "Submitting…"
               : user
-                ? "Run & Submit"
+                ? usesPyodide
+                  ? "Run & Submit"
+                  : "Compile & Submit"
                 : "Login to Submit"}
           </button>
 

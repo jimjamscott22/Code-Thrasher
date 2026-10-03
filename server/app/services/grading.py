@@ -10,7 +10,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models.models import Exercise, SubmissionStatus, TestCase
 from app.schemas.schemas import TestCaseResult
-from app.services.sandbox import run_python
+from app.services.sandbox import code_runner
 
 
 @dataclass
@@ -56,14 +56,17 @@ async def grade_submission(
     total_weight = 0.0
     earned_weight = 0.0
 
-    for test_case in test_cases:
-        run = await run_python(code, test_case.input_data)
+    async with code_runner(exercise.language, code) as run_code:
+        runs = [await run_code(test_case.input_data) for test_case in test_cases]
+
+    for test_case, run in zip(test_cases, runs):
         trimmed_actual = run.stdout.strip()
         trimmed_expected = test_case.expected_output.strip()
 
         if run.stdout:
             combined_stdout.append(run.stdout)
-        if run.stderr:
+        # A compile error repeats for every test case; show it once.
+        if run.stderr and run.stderr not in combined_stderr:
             combined_stderr.append(run.stderr)
 
         has_error = bool(run.stderr) or run.timed_out

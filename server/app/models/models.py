@@ -25,6 +25,11 @@ class DifficultyLevel(str, enum.Enum):
     advanced = "advanced"
 
 
+class Language(str, enum.Enum):
+    python = "python"
+    rust = "rust"
+
+
 class SubmissionStatus(str, enum.Enum):
     pending = "pending"
     completed = "completed"
@@ -70,6 +75,9 @@ class Exercise(Base):
     description: Mapped[str] = mapped_column(Text, nullable=False)
     hint: Mapped[str | None] = mapped_column(Text)
     guide: Mapped[list[dict[str, str]]] = mapped_column(JSON, default=list, nullable=False)
+    language: Mapped[str] = mapped_column(
+        String(20), default=Language.python.value, server_default=Language.python.value, nullable=False
+    )
     difficulty_level: Mapped[DifficultyLevel] = mapped_column(
         Enum(DifficultyLevel), nullable=False, default=DifficultyLevel.beginner
     )

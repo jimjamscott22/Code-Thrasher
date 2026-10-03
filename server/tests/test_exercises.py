@@ -223,3 +223,30 @@ async def test_list_exercises_filter_by_difficulty(
     results = r.json()
     assert len(results) == 1
     assert results[0]["difficulty_level"] == "beginner"
+
+
+async def test_exercise_language_defaults_to_python_and_filters(
+    client: AsyncClient,
+    new_exercise,
+    admin_headers: dict[str, str],
+):
+    created = await client.post("/api/v1/exercises/", json=new_exercise, headers=admin_headers)
+    assert created.json()["language"] == "python"
+
+    await client.post(
+        "/api/v1/exercises/",
+        json={**new_exercise, "title": "Hello Rust", "language": "rust"},
+        headers=admin_headers,
+    )
+
+    listed = (await client.get("/api/v1/exercises/")).json()
+    assert {item["title"]: item["language"] for item in listed} == {
+        "Hello World": "python",
+        "Hello Rust": "rust",
+    }
+
+    rust_only = (await client.get("/api/v1/exercises/?language=rust")).json()
+    assert [item["title"] for item in rust_only] == ["Hello Rust"]
+
+    invalid = await client.get("/api/v1/exercises/?language=cobol")
+    assert invalid.status_code == 422

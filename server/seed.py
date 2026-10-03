@@ -18,6 +18,7 @@ CATEGORIES = [
     {"name": "Lists", "slug": "lists"},
     {"name": "Loops", "slug": "loops"},
     {"name": "Functions", "slug": "functions"},
+    {"name": "Rust Basics", "slug": "rust-basics"},
 ]
 
 # All exercises produce deterministic output (no stdin needed); test cases verify stdout.
@@ -1102,6 +1103,110 @@ EXERCISES = [
         "test_cases": [
             {"input_data": "", "expected_output": "2", "score_weight": 1.0, "is_hidden": False},
             {"input_data": "", "expected_output": "2", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Hello, Rust!",
+        "language": "rust",
+        "description": (
+            "## Hello, Rust!\n\n"
+            "Every Rust program starts at the `main` function. Print the greeting to the screen.\n\n"
+            "**Expected output:**\n```\nHello, Rust!\n```"
+        ),
+        "hint": "Use the `println!` macro inside `main`. Text goes in double quotes, and the line ends with a semicolon.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "rust-basics",
+        "starter_code": "fn main() {\n    // Print the greeting here\n}\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "Hello, Rust!", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "Hello, Rust!", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Mutable Variables",
+        "language": "rust",
+        "description": (
+            "## Mutable Variables\n\n"
+            "In Rust, variables are **immutable** by default: once a value is bound, it cannot change. "
+            "To change it later, the variable must be declared with `mut`.\n\n"
+            "`score` starts at 10. Make it mutable, add 5 to it, and print the result.\n\n"
+            "**Expected output:**\n```\n15\n```"
+        ),
+        "hint": "Declare it as `let mut score = 10;`, then use `score += 5;` before printing with `println!(\"{}\", score);`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "rust-basics",
+        "starter_code": "fn main() {\n    let score = 10;\n    // Make score mutable, add 5 to it, then print it\n}\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Sum with a For Loop",
+        "language": "rust",
+        "description": (
+            "## Sum with a For Loop\n\n"
+            "Use a `for` loop to add up every whole number from 1 to 10 (inclusive), then print the total.\n\n"
+            "**Expected output:**\n```\n55\n```"
+        ),
+        "hint": "The range `1..=10` includes both ends. `1..10` stops before 10.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "rust-basics",
+        "starter_code": "fn main() {\n    let mut total = 0;\n    // Add 1 through 10 to total with a for loop\n    println!(\"{}\", total);\n}\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "55", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "55", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Write a Function",
+        "language": "rust",
+        "description": (
+            "## Write a Function\n\n"
+            "Finish the `square` function so it returns its argument multiplied by itself. "
+            "`main` already calls it twice.\n\n"
+            "**Expected output:**\n```\n49\n9\n```"
+        ),
+        "hint": "A function returns its last expression when that line has no semicolon: `n * n`. You can also write `return n * n;`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "rust-basics",
+        "starter_code": (
+            "fn square(n: i32) -> i32 {\n"
+            "    // Return n multiplied by itself\n"
+            "}\n\n"
+            "fn main() {\n"
+            "    println!(\"{}\", square(7));\n"
+            "    println!(\"{}\", square(-3));\n"
+            "}\n"
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "49\n9", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "49\n9", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Count the Evens",
+        "language": "rust",
+        "description": (
+            "## Count the Evens\n\n"
+            "`numbers` is a vector of integers. Loop over it, count how many of them are even, "
+            "and print the count.\n\n"
+            "**Expected output:**\n```\n4\n```"
+        ),
+        "hint": "Loop with `for n in &numbers`, and test each one with `n % 2 == 0`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "rust-basics",
+        "starter_code": (
+            "fn main() {\n"
+            "    let numbers = vec![3, 8, 15, 22, 7, 10, 4, 9];\n"
+            "    let mut evens = 0;\n"
+            "    // Count the even numbers\n"
+            "    println!(\"{}\", evens);\n"
+            "}\n"
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "4", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "4", "score_weight": 1.0, "is_hidden": True},
         ],
     },
 ]
@@ -2221,6 +2326,96 @@ EXERCISE_GUIDES = {
             "body": "Print the missing value 2.",
         },
     ],
+    "Hello, Rust!": [
+        {
+            "kind": "nudge",
+            "title": "Everything runs from main",
+            "body": "Rust starts executing at `fn main()`. Put your code between its curly braces.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Printing with a macro",
+            "body": "`println!` ends in `!` because it is a macro, not a regular function. It prints its text and then a newline.",
+            "code": 'println!("some text");',
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Match the capitalization, comma, and exclamation mark exactly, and end the statement with a semicolon.",
+        },
+    ],
+    "Mutable Variables": [
+        {
+            "kind": "nudge",
+            "title": "Read the compiler error",
+            "body": "If you try `score += 5` on a plain `let`, the compiler refuses. Its message tells you exactly what to add.",
+        },
+        {
+            "kind": "pattern",
+            "title": "mut and the {} placeholder",
+            "body": "`let mut` allows a variable to change. In `println!`, each `{}` is replaced by the next argument.",
+            "code": 'let mut x = 1;\nx += 1;\nprintln!("{}", x);',
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print only the number. The variable should hold 15 by the time you print it.",
+        },
+    ],
+    "Sum with a For Loop": [
+        {
+            "kind": "nudge",
+            "title": "Accumulate as you go",
+            "body": "`total` starts at 0. On each trip around the loop, add the current number to it.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Inclusive range",
+            "body": "`a..b` stops before `b`, while `a..=b` includes it. A `for` loop can walk through either.",
+            "code": "for i in 1..=3 {\n    // i is 1, then 2, then 3\n}",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "The total of 1 through 10 is 55. If you get 45, your range left out 10.",
+        },
+    ],
+    "Write a Function": [
+        {
+            "kind": "nudge",
+            "title": "Return without a semicolon",
+            "body": "In Rust, the last expression in a function is its return value, as long as it has no semicolon after it.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Function with a return type",
+            "body": "The `-> i32` after the parameters says the function hands back an integer.",
+            "code": "fn double(n: i32) -> i32 {\n    n * 2\n}",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "`square(-3)` should print 9, because a negative times a negative is positive.",
+        },
+    ],
+    "Count the Evens": [
+        {
+            "kind": "nudge",
+            "title": "Check each item, then count",
+            "body": "Visit every number in the vector. For each one, decide whether it is even, and if so add 1 to `evens`.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Loop plus condition",
+            "body": "`&numbers` lets you loop over the vector without using it up. A number is even when dividing by 2 leaves no remainder.",
+            "code": "for n in &numbers {\n    if n % 2 == 0 {\n        // n is even\n    }\n}",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "The even values are 8, 22, 10, and 4, so the count to print is 4.",
+        },
+    ],
 }
 
 
@@ -2562,6 +2757,53 @@ EXERCISE_SOLUTIONS = {
     "Missing Number": {
         "code": "numbers = [3, 0, 1]\nn = len(numbers)\nprint(n * (n + 1) // 2 - sum(numbers))",
         "explanation": "The full sum of 0 through 3 is 6. The list sums to 4, so the missing value is 2.",
+    },
+    "Hello, Rust!": {
+        "code": 'fn main() {\n    println!("Hello, Rust!");\n}',
+        "explanation": "`println!` prints the exact greeting followed by a newline.",
+    },
+    "Mutable Variables": {
+        "code": 'fn main() {\n    let mut score = 10;\n    score += 5;\n    println!("{}", score);\n}',
+        "explanation": "`let mut` makes `score` changeable, so `score += 5` updates it from 10 to 15 before it is printed.",
+    },
+    "Sum with a For Loop": {
+        "code": (
+            "fn main() {\n"
+            "    let mut total = 0;\n"
+            "    for i in 1..=10 {\n"
+            "        total += i;\n"
+            "    }\n"
+            '    println!("{}", total);\n'
+            "}"
+        ),
+        "explanation": "`1..=10` is inclusive, so the loop adds 1 through 10 to `total`, giving 55.",
+    },
+    "Write a Function": {
+        "code": (
+            "fn square(n: i32) -> i32 {\n"
+            "    n * n\n"
+            "}\n\n"
+            "fn main() {\n"
+            '    println!("{}", square(7));\n'
+            '    println!("{}", square(-3));\n'
+            "}"
+        ),
+        "explanation": "`n * n` has no semicolon, so it is the value the function returns: 7 * 7 is 49 and -3 * -3 is 9.",
+    },
+    "Count the Evens": {
+        "code": (
+            "fn main() {\n"
+            "    let numbers = vec![3, 8, 15, 22, 7, 10, 4, 9];\n"
+            "    let mut evens = 0;\n"
+            "    for n in &numbers {\n"
+            "        if n % 2 == 0 {\n"
+            "            evens += 1;\n"
+            "        }\n"
+            "    }\n"
+            '    println!("{}", evens);\n'
+            "}"
+        ),
+        "explanation": "Each number is tested with `n % 2 == 0`. 8, 22, 10, and 4 pass, so `evens` ends at 4.",
     },
 }
 
@@ -3160,6 +3402,7 @@ async def seed() -> None:
             existing_exercise = result.scalar_one_or_none()
             if existing_exercise:
                 existing_exercise.guide = guide
+                existing_exercise.language = ex_data.get("language", "python")
                 existing_exercise.solution_code = solution.get("code")
                 existing_exercise.solution_explanation = solution.get("explanation")
                 print(f"  Updated guide: {title}")

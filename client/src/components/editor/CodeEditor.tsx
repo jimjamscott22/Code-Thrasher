@@ -1,4 +1,10 @@
 import Editor, { type Monaco } from "@monaco-editor/react";
+import type { Language } from "@/types";
+
+const FILE_NAMES: Record<Language, string> = {
+  python: "solution.py",
+  rust: "main.rs",
+};
 
 function defineTheme(monaco: Monaco) {
   monaco.editor.defineTheme("code-thrasher-dark", {
@@ -26,6 +32,7 @@ interface CodeEditorProps {
   onChange: (value: string) => void;
   height?: string;
   readOnly?: boolean;
+  language?: Language;
 }
 
 export default function CodeEditor({
@@ -33,6 +40,7 @@ export default function CodeEditor({
   onChange,
   height = "400px",
   readOnly = false,
+  language = "python",
 }: CodeEditorProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-gray-700 bg-gray-950">
@@ -40,11 +48,11 @@ export default function CodeEditor({
         <span className="h-3 w-3 rounded-full bg-red-500" />
         <span className="h-3 w-3 rounded-full bg-yellow-500" />
         <span className="h-3 w-3 rounded-full bg-green-500" />
-        <span className="ml-2 font-mono text-xs text-gray-500">solution.py</span>
+        <span className="ml-2 font-mono text-xs text-gray-500">{FILE_NAMES[language]}</span>
       </div>
       <Editor
         height={height}
-        defaultLanguage="python"
+        language={language}
         theme="code-thrasher-dark"
         beforeMount={defineTheme}
         value={value}
