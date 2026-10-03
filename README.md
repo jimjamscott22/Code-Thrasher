@@ -27,7 +27,7 @@ Users register, browse exercises filtered by difficulty or category, write Pytho
 - **Exercise library** — filterable by difficulty (`beginner`, `intermediate`, `advanced`) and category
 - **In-browser code editor** — Monaco Editor with Python or Rust syntax highlighting and starter code
 - **In-browser Python preview** — visible tests run in Pyodide for instant feedback; final scoring happens server-side
-- **Rust exercises** — each exercise has a `language` (`python` or `rust`). Rust is compiled with `rustc` and run on the server (there is no in-browser preview), so the API image installs `rustc`
+- **Rust exercises** — each exercise has a `language` (`python` or `rust`). Rust is compiled with `rustc` and run on the server (there is no in-browser preview; **Run** uses `POST /api/v1/run/`, which is ungraded), so the API image installs `rustc`
 - **Progressive challenge guidance** — each exercise can provide staged guide cards, small snippets, and an explicit full-solution reveal
 - **Automated test cases** — submissions are scored against hidden and visible test cases; partial credit is supported via per-case score weights
 - **Interactive dashboard** — lists all exercises with completion status and score breakdown

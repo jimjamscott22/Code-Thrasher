@@ -155,6 +155,27 @@ class SubmitRequest(BaseModel):
         return v
 
 
+class RunRequest(BaseModel):
+    exercise_id: int
+    code: Annotated[str, Field(max_length=50_000)]
+    input_data: Annotated[str, Field(max_length=10_000)] = ""
+
+    @field_validator("code")
+    @classmethod
+    def code_not_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("code must not be empty")
+        return v
+
+
+class RunResponse(BaseModel):
+    stdout: str
+    stderr: str
+    timed_out: bool
+    output_truncated: bool
+    duration_ms: int
+
+
 class SubmitResponse(BaseModel):
     submission_id: int
     status: SubmissionStatus

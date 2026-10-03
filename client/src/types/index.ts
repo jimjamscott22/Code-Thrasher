@@ -79,6 +79,14 @@ export interface TestCaseResult {
   score_weight: number;
 }
 
+export interface RunResponse {
+  stdout: string;
+  stderr: string;
+  timed_out: boolean;
+  output_truncated: boolean;
+  duration_ms: number;
+}
+
 export interface SubmitResponse {
   submission_id: number;
   status: SubmissionStatus;
