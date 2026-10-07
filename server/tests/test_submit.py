@@ -2,7 +2,7 @@ import pytest
 from httpx import AsyncClient
 
 from app.models.models import DifficultyLevel, Exercise, TestCase
-from app.services.sandbox import rust_available
+from app.services.sandbox import node_available, rust_available
 from tests.conftest import TestingSession
 
 
@@ -193,3 +193,28 @@ async def test_python_code_is_not_graded_as_rust(
         json={"exercise_id": exercise_id, "code": "print(42)"},
     )
     assert r.json()["status"] == "completed"
+
+
+@pytest.mark.skipif(not node_available(), reason="node not installed")
+async def test_submit_javascript_pass_and_runtime_error(
+    client: AsyncClient, auth_headers: dict[str, str]
+):
+    exercise_id = await _rust_exercise(language="javascript")
+
+    ok = await client.post(
+        "/api/v1/submit/",
+        headers=auth_headers,
+        json={"exercise_id": exercise_id, "code": "console.log(6 * 7);"},
+    )
+    assert ok.status_code == 200
+    assert ok.json()["status"] == "completed"
+    assert ok.json()["score"] == 100.0
+
+    bad = await client.post(
+        "/api/v1/submit/",
+        headers=auth_headers,
+        json={"exercise_id": exercise_id, "code": "console.log(answer);"},
+    )
+    body = bad.json()
+    assert body["status"] == "failed"
+    assert "ReferenceError: answer is not defined" in body["stderr"]

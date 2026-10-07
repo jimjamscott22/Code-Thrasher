@@ -1,6 +1,13 @@
 import pytest
 
-from app.services.sandbox import run_python, run_rust, rust_available, rust_runner
+from app.services.sandbox import (
+    node_available,
+    run_javascript,
+    run_python,
+    run_rust,
+    rust_available,
+    rust_runner,
+)
 
 
 @pytest.mark.asyncio
@@ -30,6 +37,69 @@ async def test_run_python_timeout():
     result = await run_python("import time\ntime.sleep(30)", timeout_seconds=1)
     assert result.timed_out
     assert "timed out" in result.stderr.lower()
+
+
+requires_node = pytest.mark.skipif(not node_available(), reason="node not installed")
+
+
+@requires_node
+@pytest.mark.asyncio
+async def test_run_javascript_success():
+    result = await run_javascript('console.log("hello")')
+    assert result.stdout.strip() == "hello"
+    assert result.stderr == ""
+    assert not result.timed_out
+
+
+@requires_node
+@pytest.mark.asyncio
+async def test_run_javascript_reads_stdin():
+    code = 'const name = require("fs").readFileSync(0, "utf8").trim();\nconsole.log(`hi ${name}`);'
+    result = await run_javascript(code, input_data="Ada")
+    assert result.stdout.strip() == "hi Ada"
+    assert result.stderr == ""
+
+
+@requires_node
+@pytest.mark.asyncio
+async def test_run_javascript_error_points_at_main_js():
+    result = await run_javascript("const x = 1;\nx = 2;")
+    assert "TypeError: Assignment to constant variable." in result.stderr
+    assert "main.js:2" in result.stderr
+    assert "code-thrasher-js-" not in result.stderr
+    assert "node:" not in result.stderr
+    assert result.stdout == ""
+
+
+@requires_node
+@pytest.mark.asyncio
+async def test_run_javascript_warnings_are_not_errors():
+    result = await run_javascript("console.log(new Buffer(1).length)")
+    assert result.stdout.strip() == "1"
+    assert result.stderr == ""
+
+
+@requires_node
+@pytest.mark.asyncio
+async def test_run_javascript_timeout():
+    result = await run_javascript("while (true) {}", timeout_seconds=1)
+    assert result.timed_out
+
+
+@requires_node
+@pytest.mark.asyncio
+async def test_run_javascript_memory_cap():
+    result = await run_javascript("const a = [];\nwhile (true) a.push(new Array(1e5).fill(1));")
+    assert result.stderr
+    assert result.stdout == ""
+    assert not result.timed_out
+
+
+@pytest.mark.asyncio
+async def test_run_javascript_without_runtime(monkeypatch):
+    monkeypatch.setenv("PATH", "")
+    result = await run_javascript("console.log(1)")
+    assert "not installed" in result.stderr
 
 
 requires_rust = pytest.mark.skipif(not rust_available(), reason="rustc not installed")

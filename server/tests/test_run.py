@@ -3,10 +3,11 @@ from httpx import AsyncClient
 from sqlalchemy import func, select
 
 from app.models.models import DifficultyLevel, Exercise, Submission
-from app.services.sandbox import rust_available
+from app.services.sandbox import node_available, rust_available
 from tests.conftest import TestingSession
 
 requires_rust = pytest.mark.skipif(not rust_available(), reason="rustc not installed")
+requires_node = pytest.mark.skipif(not node_available(), reason="node not installed")
 
 
 async def _exercise(language: str) -> int:
@@ -83,6 +84,23 @@ async def test_run_rust_output_and_compile_error(
     assert bad.status_code == 200
     assert "mismatched types" in bad.json()["stderr"]
     assert bad.json()["stdout"] == ""
+
+
+@requires_node
+async def test_run_javascript_with_stdin(client: AsyncClient, auth_headers: dict[str, str]):
+    exercise_id = await _exercise("javascript")
+    r = await client.post(
+        "/api/v1/run/",
+        headers=auth_headers,
+        json={
+            "exercise_id": exercise_id,
+            "code": 'console.log(require("fs").readFileSync(0, "utf8").toUpperCase());',
+            "input_data": "ada",
+        },
+    )
+    assert r.status_code == 200
+    assert r.json()["stdout"].strip() == "ADA"
+    assert r.json()["stderr"] == ""
 
 
 async def test_run_is_not_persisted(client: AsyncClient, auth_headers: dict[str, str]):

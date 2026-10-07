@@ -25,9 +25,9 @@ Users register, browse exercises filtered by difficulty or category, write Pytho
 
 - **User accounts** — register, log in, and track personal score and streak
 - **Exercise library** — filterable by difficulty (`beginner`, `intermediate`, `advanced`) and category
-- **In-browser code editor** — Monaco Editor with Python or Rust syntax highlighting and starter code
+- **In-browser code editor** — Monaco Editor with Python, Rust, or JavaScript syntax highlighting and starter code
 - **In-browser Python preview** — visible tests run in Pyodide for instant feedback; final scoring happens server-side
-- **Rust exercises** — each exercise has a `language` (`python` or `rust`). Rust is compiled with `rustc` and run on the server (there is no in-browser preview; **Run** uses `POST /api/v1/run/`, which is ungraded), so the API image installs `rustc`
+- **Rust and JavaScript exercises** — each exercise has a `language` (`python`, `rust`, or `javascript`). Rust is compiled with `rustc` and JavaScript runs on Node.js, both on the server (there is no in-browser preview; **Run** uses `POST /api/v1/run/`, which is ungraded), so the API image installs `rustc` and `nodejs`
 - **Progressive challenge guidance** — each exercise can provide staged guide cards, small snippets, and an explicit full-solution reveal
 - **Automated test cases** — submissions are scored against hidden and visible test cases; partial credit is supported via per-case score weights
 - **Interactive dashboard** — lists all exercises with completion status and score breakdown
@@ -98,7 +98,7 @@ Code-Thrasher runs on a Raspberry Pi 4/5 without any source changes. The
 `postgres:16-alpine` image is multi-arch and the API image builds Python itself,
 so the `aarch64` architecture is handled automatically. Python *previews* run
 in the browser via Pyodide, so they do not load the Pi's CPU. Final grading (and all
-Rust compilation) runs on the server.
+Rust compilation and JavaScript execution) runs on the server.
 
 Two things commonly differ from a desktop setup:
 

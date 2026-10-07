@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Code-Thrasher is a learning platform where users solve bite-sized coding challenges (Python, plus a few Rust exercises) in a Monaco editor. Python gets an instant **client-side preview via Pyodide** (WebAssembly Python); authoritative grading always happens on the server.
+Code-Thrasher is a learning platform where users solve bite-sized coding challenges (Python, plus a few Rust and JavaScript exercises) in a Monaco editor. Python gets an instant **client-side preview via Pyodide** (WebAssembly Python); authoritative grading always happens on the server.
 
 ## Development Commands
 
@@ -75,7 +75,7 @@ docker compose up -d --no-deps --force-recreate client
 1. `client/src/services/pyodide.ts` — Web Worker loads Pyodide from CDN; runs visible test cases for local stdout preview
 2. `ExerciseDetail.tsx` — posts `code` + `exercise_id` to `POST /api/v1/submit/` (no client-reported scores)
 3. `server/app/services/grading.py` — loads all test cases from DB (including hidden), runs each via `sandbox.py`
-4. `server/app/services/sandbox.py` — subprocess runner enforcing `SANDBOX_*` limits from `app/core/config.py`. `code_runner(language, code)` picks the runner from `Exercise.language`; Rust is compiled once with `rustc` per submission, then the binary runs once per test case, with at most `SANDBOX_RUST_MAX_CONCURRENT_COMPILES` compiles in flight at once (others wait). Rust has no Pyodide preview — the client's Run button calls `POST /api/v1/run/` instead (`app/services/run.py`, JWT + rate limited, not graded or persisted), and Submit shows server compiler errors from `stderr`.
+4. `server/app/services/sandbox.py` — subprocess runner enforcing `SANDBOX_*` limits from `app/core/config.py`. `code_runner(language, code)` picks the runner from `Exercise.language`; Rust is compiled once with `rustc` per submission, then the binary runs once per test case, with at most `SANDBOX_RUST_MAX_CONCURRENT_COMPILES` compiles in flight at once (others wait). JavaScript runs as `main.js` under `node --jitless` (the JIT's code-space reservation would otherwise exceed the `RLIMIT_AS` memory cap). Rust and JavaScript have no Pyodide preview — the client's Run button calls `POST /api/v1/run/` instead (`app/services/run.py`, JWT + rate limited, not graded or persisted), and Submit shows server compiler/runtime errors from `stderr`.
 5. `server/app/api/v1/endpoints/submit.py` — persists `Submission` with server-computed score and updates user stats
 
 Hidden test `expected_output` is never sent to the client (`TestCasePublicOut` in exercise detail responses).
@@ -105,7 +105,7 @@ JWT auth is required for submit, run, progress, and solution reveal. `POST /exer
 
 ### Data Model
 
-`Exercise` has a `language` (`python` default, or `rust`) and many `TestCase`s. Each `TestCase` has `input_data`, `expected_output`, `score_weight`, and `is_hidden`. Submissions store the final `score` (0–100) and `status` (`completed` = 100, `failed` = anything less).
+`Exercise` has a `language` (`python` default, `rust`, or `javascript`) and many `TestCase`s. Each `TestCase` has `input_data`, `expected_output`, `score_weight`, and `is_hidden`. Submissions store the final `score` (0–100) and `status` (`completed` = 100, `failed` = anything less).
 
 `Exercise` keeps legacy `hint`, plus structured `guide` JSON and optional `solution_code` / `solution_explanation`; expose answers only through the solution reveal endpoint.
 

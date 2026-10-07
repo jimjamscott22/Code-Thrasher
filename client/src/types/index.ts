@@ -1,5 +1,5 @@
 export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
-export type Language = "python" | "rust";
+export type Language = "python" | "rust" | "javascript";
 export type SubmissionStatus = "pending" | "completed" | "failed";
 
 export interface User {

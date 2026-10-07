@@ -19,6 +19,7 @@ CATEGORIES = [
     {"name": "Loops", "slug": "loops"},
     {"name": "Functions", "slug": "functions"},
     {"name": "Rust Basics", "slug": "rust-basics"},
+    {"name": "JavaScript Basics", "slug": "javascript-basics"},
 ]
 
 # All exercises produce deterministic output (no stdin needed); test cases verify stdout.
@@ -1207,6 +1208,183 @@ EXERCISES = [
         "test_cases": [
             {"input_data": "", "expected_output": "4", "score_weight": 1.0, "is_hidden": False},
             {"input_data": "", "expected_output": "4", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Hello, JavaScript!",
+        "language": "javascript",
+        "description": (
+            "## Hello, JavaScript!\n\n"
+            "Your first JavaScript program. `console.log` prints whatever you give it to the console. "
+            "Print the greeting below.\n\n"
+            "**Expected output:**\n```\nHello, JavaScript!\n```"
+        ),
+        "hint": 'Call `console.log("...")` with the text in quotes. Single quotes, double quotes, or backticks all work.',
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": "// Print the greeting below\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "Hello, JavaScript!", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "Hello, JavaScript!", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Reassign with let",
+        "language": "javascript",
+        "description": (
+            "## Reassign with let\n\n"
+            "JavaScript has two everyday ways to declare a variable: `const` for values that never change, "
+            "and `let` for values that do. Reassigning a `const` throws an error.\n\n"
+            "`score` starts at 10. Change its declaration so it can be updated, add 5 to it, and print it.\n\n"
+            "**Expected output:**\n```\n15\n```"
+        ),
+        "hint": "Swap `const` for `let`, then use `score += 5;` (or `score = score + 5;`) before `console.log(score);`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": "const score = 10;\n// Make score changeable, add 5 to it, then print it\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "15", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Template Literals",
+        "language": "javascript",
+        "description": (
+            "## Template Literals\n\n"
+            "Strings wrapped in backticks (`` ` ``) are **template literals**. Anything inside `${...}` is "
+            "evaluated and dropped into the string.\n\n"
+            "Use a template literal and the two variables to print the sentence below.\n\n"
+            "**Expected output:**\n```\nAda is learning JavaScript!\n```"
+        ),
+        "hint": "Write the sentence inside backticks and put each variable in a placeholder, like `${name}`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": (
+            'const name = "Ada";\n'
+            'const language = "JavaScript";\n'
+            "// Print: Ada is learning JavaScript!\n"
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "Ada is learning JavaScript!", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "Ada is learning JavaScript!", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Strict Equality",
+        "language": "javascript",
+        "description": (
+            "## Strict Equality\n\n"
+            "JavaScript has two equality operators. `==` converts both sides to the same type before comparing, "
+            "so the number `5` and the string `\"5\"` count as equal. `===` also checks the type, so they don't.\n\n"
+            "Print the result of `num == text`, then the result of `num === text`, each on its own line.\n\n"
+            "**Expected output:**\n```\ntrue\nfalse\n```"
+        ),
+        "hint": "`console.log` can print a comparison directly: `console.log(num == text);`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": (
+            "const num = 5;\n"
+            'const text = "5";\n'
+            "// Print num == text, then num === text\n"
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "true\nfalse", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "true\nfalse", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Countdown",
+        "language": "javascript",
+        "description": (
+            "## Countdown\n\n"
+            "Use a `for` loop to count down from 5 to 1, printing each number on its own line. "
+            "After the loop, print `Liftoff!`.\n\n"
+            "**Expected output:**\n```\n5\n4\n3\n2\n1\nLiftoff!\n```"
+        ),
+        "hint": "Start the counter at 5, keep going while it is at least 1, and subtract 1 each time: `for (let i = 5; i >= 1; i--)`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": "// Count down from 5 to 1, then print Liftoff!\n",
+        "test_cases": [
+            {"input_data": "", "expected_output": "5\n4\n3\n2\n1\nLiftoff!", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "5\n4\n3\n2\n1\nLiftoff!", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Arrow Functions",
+        "language": "javascript",
+        "description": (
+            "## Arrow Functions\n\n"
+            "An **arrow function** is a short way to write a function: `(params) => result`.\n\n"
+            "Finish `toFahrenheit` so it converts a Celsius temperature to Fahrenheit using "
+            "`F = C × 9 / 5 + 32`. The calls at the bottom are already written.\n\n"
+            "**Expected output:**\n```\n32\n212\n-40\n```"
+        ),
+        "hint": "With braces, an arrow function needs `return`. Without braces, the expression after `=>` is returned for you.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": (
+            "const toFahrenheit = (celsius) => {\n"
+            "  // Return the temperature in Fahrenheit\n"
+            "};\n\n"
+            "console.log(toFahrenheit(0));\n"
+            "console.log(toFahrenheit(100));\n"
+            "console.log(toFahrenheit(-40));\n"
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "32\n212\n-40", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "32\n212\n-40", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Object Properties",
+        "language": "javascript",
+        "description": (
+            "## Object Properties\n\n"
+            "An **object** groups related values under named keys. Read a value with dot notation, "
+            "like `book.title`.\n\n"
+            "Use the properties of `book` to print the line below.\n\n"
+            "**Expected output:**\n```\nDune by Frank Herbert (412 pages)\n```"
+        ),
+        "hint": "Combine `book.title`, `book.author`, and `book.pages` in a template literal.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": (
+            "const book = {\n"
+            '  title: "Dune",\n'
+            '  author: "Frank Herbert",\n'
+            "  pages: 412,\n"
+            "};\n"
+            "// Print: Dune by Frank Herbert (412 pages)\n"
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "Dune by Frank Herbert (412 pages)", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "Dune by Frank Herbert (412 pages)", "score_weight": 1.0, "is_hidden": True},
+        ],
+    },
+    {
+        "title": "Keep the Evens",
+        "language": "javascript",
+        "description": (
+            "## Keep the Evens\n\n"
+            "Arrays have a `filter` method that builds a new array containing only the items "
+            "that pass a test you supply.\n\n"
+            "Use `filter` to keep just the even numbers, then print them joined with `, `.\n\n"
+            "**Expected output:**\n```\n8, 22, 10, 4\n```"
+        ),
+        "hint": "Pass `filter` an arrow function that returns `true` for evens: `(n) => n % 2 === 0`.",
+        "difficulty_level": DifficultyLevel.beginner,
+        "category_slug": "javascript-basics",
+        "starter_code": (
+            "const numbers = [3, 8, 15, 22, 7, 10, 4, 9];\n"
+            "// Use numbers.filter(...) to keep only the even numbers\n"
+            "const evens = numbers;\n"
+            'console.log(evens.join(", "));\n'
+        ),
+        "test_cases": [
+            {"input_data": "", "expected_output": "8, 22, 10, 4", "score_weight": 1.0, "is_hidden": False},
+            {"input_data": "", "expected_output": "8, 22, 10, 4", "score_weight": 1.0, "is_hidden": True},
         ],
     },
 ]
@@ -2416,6 +2594,150 @@ EXERCISE_GUIDES = {
             "body": "The even values are 8, 22, 10, and 4, so the count to print is 4.",
         },
     ],
+    "Hello, JavaScript!": [
+        {
+            "kind": "nudge",
+            "title": "One line is enough",
+            "body": "JavaScript runs your file from top to bottom. A single `console.log` call is the whole program.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Logging a string",
+            "body": "`console.log` prints its argument and then a newline. Strings go in quotes.",
+            "code": 'console.log("some text");',
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Match the capital J and S, the comma, and the exclamation mark exactly.",
+        },
+    ],
+    "Reassign with let": [
+        {
+            "kind": "nudge",
+            "title": "Read the error",
+            "body": "Run the code with `score += 5` on a `const` and you get `TypeError: Assignment to constant variable.` That is your clue.",
+        },
+        {
+            "kind": "pattern",
+            "title": "let can change, const can't",
+            "body": "Use `let` when a variable will be given a new value later. Prefer `const` everywhere else.",
+            "code": "let count = 1;\ncount += 1;\nconsole.log(count);",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print only the number. `score` should hold 15 by the time you log it.",
+        },
+    ],
+    "Template Literals": [
+        {
+            "kind": "nudge",
+            "title": "Backticks, not quotes",
+            "body": "`${...}` only works inside backticks. In single or double quotes it is printed as plain text.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Placeholders",
+            "body": "Each `${}` is replaced by the value of the expression inside it.",
+            "code": "const city = \"Paris\";\nconsole.log(`I live in ${city}.`);",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Check the spaces around each placeholder and the `!` at the end.",
+        },
+    ],
+    "Strict Equality": [
+        {
+            "kind": "nudge",
+            "title": "Same value, different types",
+            "body": "`num` is a number and `text` is a string. Ask what each operator does with that difference.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Logging a comparison",
+            "body": "A comparison produces `true` or `false`, and `console.log` prints it as that word.",
+            "code": "console.log(1 < 2);  // true",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Print the `==` result first and the `===` result second. In your own code, reach for `===` by default.",
+        },
+    ],
+    "Countdown": [
+        {
+            "kind": "nudge",
+            "title": "Run the loop backwards",
+            "body": "A `for` loop has three parts: where to start, when to keep going, and how to step. Here you step down, not up.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Classic for loop",
+            "body": "`i--` subtracts 1 from `i` after each pass. The loop stops once the condition is false.",
+            "code": "for (let i = 3; i >= 1; i--) {\n  console.log(i);\n}",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "`Liftoff!` goes after the loop, so it prints once. If you see it five times, it is inside the braces.",
+        },
+    ],
+    "Arrow Functions": [
+        {
+            "kind": "nudge",
+            "title": "Don't forget to return",
+            "body": "If every line prints `undefined`, the function is running but not handing a value back.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Two ways to write it",
+            "body": "With a block body you write `return`. A one-line body without braces returns automatically.",
+            "code": "const double = (n) => {\n  return n * 2;\n};\nconst triple = (n) => n * 3;",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "0°C is 32°F and 100°C is 212°F. -40 is the same in both scales.",
+        },
+    ],
+    "Object Properties": [
+        {
+            "kind": "nudge",
+            "title": "Reach into the object",
+            "body": "Each value in `book` has a name. Put the object, a dot, and the name together to read it.",
+        },
+        {
+            "kind": "pattern",
+            "title": "Dot notation",
+            "body": "`object.key` gives you the value stored under `key`. It works anywhere a value does, including inside `${}`.",
+            "code": "const pet = { name: \"Rex\", legs: 4 };\nconsole.log(`${pet.name} has ${pet.legs} legs`);",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "Look for the word `by` and the parentheses around `412 pages`.",
+        },
+    ],
+    "Keep the Evens": [
+        {
+            "kind": "nudge",
+            "title": "filter asks a yes/no question",
+            "body": "`filter` calls your function once per item. Return `true` to keep that item, `false` to drop it.",
+        },
+        {
+            "kind": "pattern",
+            "title": "filter with an arrow function",
+            "body": "`filter` leaves the original array alone and returns a new one. A number is even when `n % 2` is 0.",
+            "code": "const big = [1, 50, 7, 99].filter((n) => n > 10);\n// big is [50, 99]",
+        },
+        {
+            "kind": "checklist",
+            "title": "Output check",
+            "body": "The evens stay in their original order: 8, 22, 10, 4. `join` adds the commas for you.",
+        },
+    ],
 }
 
 
@@ -2804,6 +3126,70 @@ EXERCISE_SOLUTIONS = {
             "}"
         ),
         "explanation": "Each number is tested with `n % 2 == 0`. 8, 22, 10, and 4 pass, so `evens` ends at 4.",
+    },
+    "Hello, JavaScript!": {
+        "code": 'console.log("Hello, JavaScript!");',
+        "explanation": "`console.log` prints the exact greeting followed by a newline.",
+    },
+    "Reassign with let": {
+        "code": "let score = 10;\nscore += 5;\nconsole.log(score);",
+        "explanation": "Declaring `score` with `let` allows `score += 5` to update it from 10 to 15 before it is printed.",
+    },
+    "Template Literals": {
+        "code": (
+            'const name = "Ada";\n'
+            'const language = "JavaScript";\n'
+            "console.log(`${name} is learning ${language}!`);"
+        ),
+        "explanation": "Inside backticks, `${name}` and `${language}` are replaced by the variables' values to build the sentence.",
+    },
+    "Strict Equality": {
+        "code": (
+            "const num = 5;\n"
+            'const text = "5";\n'
+            "console.log(num == text);\n"
+            "console.log(num === text);"
+        ),
+        "explanation": "`==` turns the string \"5\" into the number 5 before comparing, so it is `true`. `===` sees a number and a string, so it is `false`.",
+    },
+    "Countdown": {
+        "code": (
+            "for (let i = 5; i >= 1; i--) {\n"
+            "  console.log(i);\n"
+            "}\n"
+            'console.log("Liftoff!");'
+        ),
+        "explanation": "The loop starts at 5 and subtracts 1 each pass until `i >= 1` fails. `Liftoff!` is printed once, after the loop ends.",
+    },
+    "Arrow Functions": {
+        "code": (
+            "const toFahrenheit = (celsius) => {\n"
+            "  return celsius * 9 / 5 + 32;\n"
+            "};\n\n"
+            "console.log(toFahrenheit(0));\n"
+            "console.log(toFahrenheit(100));\n"
+            "console.log(toFahrenheit(-40));"
+        ),
+        "explanation": "The function returns `celsius * 9 / 5 + 32`: 0 gives 32, 100 gives 212, and -40 gives -40.",
+    },
+    "Object Properties": {
+        "code": (
+            "const book = {\n"
+            '  title: "Dune",\n'
+            '  author: "Frank Herbert",\n'
+            "  pages: 412,\n"
+            "};\n"
+            "console.log(`${book.title} by ${book.author} (${book.pages} pages)`);"
+        ),
+        "explanation": "Dot notation reads each property, and the template literal places them into the sentence.",
+    },
+    "Keep the Evens": {
+        "code": (
+            "const numbers = [3, 8, 15, 22, 7, 10, 4, 9];\n"
+            "const evens = numbers.filter((n) => n % 2 === 0);\n"
+            'console.log(evens.join(", "));'
+        ),
+        "explanation": "`filter` keeps each number where `n % 2 === 0`, giving `[8, 22, 10, 4]`, and `join(\", \")` prints them separated by commas.",
     },
 }
 
