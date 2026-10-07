@@ -4,6 +4,7 @@ import type { Language } from "@/types";
 const FILE_NAMES: Record<Language, string> = {
   python: "solution.py",
   rust: "main.rs",
+  javascript: "main.js",
 };
 
 function defineTheme(monaco: Monaco) {

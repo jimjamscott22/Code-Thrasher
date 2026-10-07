@@ -1,4 +1,4 @@
-"""Subprocess-based code runners (Python, Rust) with timeout and output limits."""
+"""Subprocess-based code runners (Python, Rust, JavaScript) with timeout and output limits."""
 
 from __future__ import annotations
 
@@ -268,12 +268,95 @@ def rust_available() -> bool:
     return shutil.which("rustc") is not None
 
 
+# ── JavaScript ───────────────────────────────────────────────────────────────
+
+# V8 reserves several hundred MB of address space for JIT code at startup, which
+# trips the RLIMIT_AS cap before any user code runs. --jitless skips that
+# reservation (and WebAssembly, hence --no-expose-wasm, which would otherwise
+# print a warning), so Node runs under the same memory cap as everything else.
+# Runtime warnings are silenced so they are never mistaken for a failed run.
+NODE_FLAGS = ["--jitless", "--no-expose-wasm", "--no-warnings"]
+
+
+def _clean_node_stderr(stderr: str, source: str) -> str:
+    """Point error traces at main.js and drop stack frames inside Node itself."""
+    lines = stderr.replace(source, "main.js").splitlines(keepends=True)
+    return "".join(
+        line
+        for line in lines
+        if not (line.lstrip().startswith("at ") and "node:" in line)
+        and not line.startswith("Node.js v")
+    )
+
+
+def _run_javascript_sync(
+    code: str,
+    input_data: str,
+    timeout_seconds: int,
+    max_output_bytes: int,
+    max_memory_mb: int,
+) -> SandboxRunResult:
+    with tempfile.TemporaryDirectory(prefix="code-thrasher-js-") as tmp:
+        source = Path(tmp) / "main.js"
+        source.write_text(code, encoding="utf-8")
+        try:
+            completed = subprocess.run(
+                ["node", *NODE_FLAGS, str(source)],
+                input=input_data,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+                cwd=tmp,
+                preexec_fn=_memory_limiter(max_memory_mb),
+            )
+        except FileNotFoundError:
+            return SandboxRunResult(
+                stdout="",
+                stderr="JavaScript runtime (node) is not installed on the server",
+                timed_out=False,
+                output_truncated=False,
+            )
+        except subprocess.TimeoutExpired:
+            return _timed_out_result()
+
+    completed.stderr = _clean_node_stderr(completed.stderr, str(source))
+    return _result_from_completed(completed, max_output_bytes, max_memory_mb)
+
+
+async def run_javascript(
+    code: str,
+    input_data: str = "",
+    *,
+    timeout_seconds: int | None = None,
+    max_output_bytes: int | None = None,
+    max_memory_mb: int | None = None,
+) -> SandboxRunResult:
+    return await asyncio.to_thread(
+        _run_javascript_sync,
+        code,
+        input_data,
+        timeout_seconds or settings.SANDBOX_TIMEOUT_SECONDS,
+        max_output_bytes or settings.SANDBOX_MAX_OUTPUT_BYTES,
+        max_memory_mb or settings.SANDBOX_MAX_MEMORY_MB,
+    )
+
+
+def node_available() -> bool:
+    return shutil.which("node") is not None
+
+
 @asynccontextmanager
 async def code_runner(language: str, code: str) -> AsyncIterator[RunFn]:
     """Yield ``run(input_data)`` for the exercise's language."""
     if language == "rust":
         async with rust_runner(code) as run:
             yield run
+    elif language == "javascript":
+
+        async def run(input_data: str = "") -> SandboxRunResult:
+            return await run_javascript(code, input_data)
+
+        yield run
     else:
 
         async def run(input_data: str = "") -> SandboxRunResult:

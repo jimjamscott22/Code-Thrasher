@@ -6,7 +6,7 @@ must produce the expected stdout for every test case.
 
 import pytest
 
-from app.services.sandbox import code_runner, rust_available
+from app.services.sandbox import code_runner, node_available, rust_available
 from seed import EXERCISE_GUIDES, EXERCISE_SOLUTIONS, EXERCISES
 
 
@@ -32,6 +32,8 @@ async def test_seeded_solutions_match_expected_output():
         language = exercise.get("language", "python")
         if language == "rust" and not rust_available():
             continue
+        if language == "javascript" and not node_available():
+            continue
         code = EXERCISE_SOLUTIONS[exercise["title"]]["code"]
         async with code_runner(language, code) as run:
             for test_case in exercise["test_cases"]:
@@ -47,3 +49,9 @@ def test_rust_exercises_are_in_their_own_category():
     rust = [e for e in EXERCISES if e.get("language") == "rust"]
     assert len(rust) >= 5
     assert {e["category_slug"] for e in rust} == {"rust-basics"}
+
+
+def test_javascript_exercises_are_in_their_own_category():
+    javascript = [e for e in EXERCISES if e.get("language") == "javascript"]
+    assert len(javascript) >= 5
+    assert {e["category_slug"] for e in javascript} == {"javascript-basics"}

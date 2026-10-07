@@ -28,6 +28,7 @@ class DifficultyLevel(str, enum.Enum):
 class Language(str, enum.Enum):
     python = "python"
     rust = "rust"
+    javascript = "javascript"
 
 
 class SubmissionStatus(str, enum.Enum):

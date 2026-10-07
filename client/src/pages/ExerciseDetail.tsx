@@ -10,6 +10,7 @@ import { useProgressStore } from "@/store/useProgressStore";
 import type {
   ExerciseDetail as ExerciseDetailType,
   ExerciseListItem,
+  Language,
   RunResponse,
   SubmitResponse,
   TestCaseResult,
@@ -20,6 +21,12 @@ const DIFFICULTY_COLORS = {
   intermediate: "text-yellow-400 bg-yellow-400/10",
   advanced: "text-red-400 bg-red-400/10",
 } as const;
+
+const LANGUAGE_LABELS: Record<Language, string> = {
+  python: "Python",
+  rust: "Rust",
+  javascript: "JavaScript",
+};
 
 interface SubmissionStats {
   totalScore: number;
@@ -144,8 +151,8 @@ export default function ExerciseDetail() {
     fetch: fetchProgress,
     reset: resetProgress,
   } = useProgressStore();
-  // Python is previewed in-browser with Pyodide; Rust is compiled and run on the
-  // server only, so none of the Pyodide UI applies to it.
+  // Python is previewed in-browser with Pyodide; Rust and JavaScript run on the
+  // server only, so none of the Pyodide UI applies to them.
   const language = exercise?.language ?? "python";
   const usesPyodide = language === "python";
   const exerciseProgress = id ? progress[Number(id)] : undefined;
@@ -181,7 +188,7 @@ export default function ExerciseDetail() {
       .get<ExerciseDetailType>(`/exercises/${id}`)
       .then((r) => {
         setExercise(r.data);
-        const comment = r.data.language === "rust" ? "//" : "#";
+        const comment = r.data.language === "python" ? "#" : "//";
         setCode(r.data.starter_code || `${comment} Write your solution here\n`);
       })
       .catch(() => setError("Exercise not found."))
@@ -217,7 +224,7 @@ export default function ExerciseDetail() {
     navigate(`/exercise/${exerciseId}`);
   }
 
-  // Server-only languages (Rust) run through POST /run/: not graded, not saved.
+  // Server-only languages (Rust, JavaScript) run through POST /run/: not graded, not saved.
   async function runOnServer(inputData: string): Promise<RunResult> {
     try {
       const { data } = await api.post<RunResponse>("/run/", {
@@ -383,7 +390,7 @@ export default function ExerciseDetail() {
                 <span className="text-xs text-gray-500">{exercise.category.name}</span>
               )}
               <span className="rounded-full bg-gray-800 px-2 py-0.5 font-mono text-xs text-gray-300">
-                {exercise.language === "rust" ? "Rust" : "Python"}
+                {LANGUAGE_LABELS[exercise.language]}
               </span>
             </div>
             <h1 className="text-2xl font-bold">{exercise.title}</h1>
@@ -488,8 +495,9 @@ export default function ExerciseDetail() {
 
           {!usesPyodide && (
             <p className="text-xs text-gray-500">
-              Rust is compiled and run on the server. Use Run to check your code and see
-              compiler errors without submitting.
+              {language === "rust"
+                ? "Rust is compiled and run on the server. Use Run to check your code and see compiler errors without submitting."
+                : "JavaScript runs on the server with Node.js. Use Run to check your code and see errors without submitting."}
             </p>
           )}
 
@@ -512,7 +520,9 @@ export default function ExerciseDetail() {
             title={
               usesPyodide
                 ? "Run your code in the browser without submitting"
-                : "Compile and run your code on the server without submitting"
+                : language === "rust"
+                  ? "Compile and run your code on the server without submitting"
+                  : "Run your code on the server without submitting"
             }
           >
             {running && (
@@ -604,9 +614,9 @@ export default function ExerciseDetail() {
                 ? "Running…"
                 : "Submitting…"
               : user
-                ? usesPyodide
-                  ? "Run & Submit"
-                  : "Compile & Submit"
+                ? language === "rust"
+                  ? "Compile & Submit"
+                  : "Run & Submit"
                 : "Login to Submit"}
           </button>
 

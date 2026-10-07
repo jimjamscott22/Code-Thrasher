@@ -238,15 +238,24 @@ async def test_exercise_language_defaults_to_python_and_filters(
         json={**new_exercise, "title": "Hello Rust", "language": "rust"},
         headers=admin_headers,
     )
+    await client.post(
+        "/api/v1/exercises/",
+        json={**new_exercise, "title": "Hello JS", "language": "javascript"},
+        headers=admin_headers,
+    )
 
     listed = (await client.get("/api/v1/exercises/")).json()
     assert {item["title"]: item["language"] for item in listed} == {
         "Hello World": "python",
         "Hello Rust": "rust",
+        "Hello JS": "javascript",
     }
 
     rust_only = (await client.get("/api/v1/exercises/?language=rust")).json()
     assert [item["title"] for item in rust_only] == ["Hello Rust"]
+
+    js_only = (await client.get("/api/v1/exercises/?language=javascript")).json()
+    assert [item["title"] for item in js_only] == ["Hello JS"]
 
     invalid = await client.get("/api/v1/exercises/?language=cobol")
     assert invalid.status_code == 422
