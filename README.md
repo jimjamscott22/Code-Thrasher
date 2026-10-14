@@ -203,6 +203,44 @@ alembic downgrade -1
 
 ---
 
+## Code execution sandbox (server grading)
+
+Submitted Python, Rust, and JavaScript is graded inside the API container using
+[bubblewrap](https://github.com/containers/bubblewrap) when available. Each run:
+
+- Executes as the unprivileged `codethrasher-sandbox` user (not the API user)
+- Starts with a cleared environment (no `DATABASE_URL`, `SECRET_KEY`, or other API secrets)
+- Has no network access (`--unshare-net`)
+- Is wrapped with `prlimit` for `RLIMIT_AS`, `RLIMIT_NPROC`, `RLIMIT_FSIZE`, and
+  `RLIMIT_NOFILE` (limits apply to user code; `rustc` compilation is isolated but not
+  memory- or file-size-capped so linking still works)
+
+The API image installs `bubblewrap`, creates `codethrasher-sandbox`, and sets
+`SANDBOX_RUSTC_PATH=/usr/bin/rustc` so grading uses the distro `rustc` package rather
+than a rustup shim.
+
+**Deploy / rebuild after pulling sandbox changes:**
+
+```bash
+docker compose build --no-cache api
+docker compose up -d --force-recreate api
+```
+
+**Host requirements:** Linux with unprivileged user namespaces enabled (default on most
+distros). If bubblewrap cannot create namespaces inside Docker, ensure the host allows
+user namespaces (`sysctl kernel.unprivileged_userns_clone=1` on older kernels) or run
+the API with Compose options your platform documents for namespace-capable containers.
+
+**Local backend without bubblewrap:** set `SANDBOX_ENABLE_ISOLATION=false` in `.env` for
+a best-effort fallback (minimal env + `setrlimit` only). Security isolation tests in
+`server/tests/test_sandbox_isolation.py` skip when bubblewrap is unavailable.
+
+Optional tuning via environment (see `server/app/core/config.py`): `SANDBOX_MAX_PROCESSES`,
+`SANDBOX_MAX_FILE_SIZE_BYTES`, `SANDBOX_MAX_OPEN_FILES`, `SANDBOX_USER`,
+`SANDBOX_BUBBLEWRAP_PATH`, `SANDBOX_RUSTC_PATH`.
+
+---
+
 ## Running Tests
 
 ```bash
