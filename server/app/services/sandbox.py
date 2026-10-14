@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from app.core.config import settings
+from app.services.sandbox_isolation import build_sandbox_command, sandbox_rustc_command
 
 
 @dataclass
@@ -32,18 +33,36 @@ def _truncate_output(text: str, max_bytes: int) -> tuple[str, bool]:
     return truncated, True
 
 
-def _memory_limiter(max_memory_mb: int) -> Callable[[], None] | None:
-    if sys.platform == "win32":
-        return None
-
-    import resource
-
-    max_memory_bytes = max_memory_mb * 1024 * 1024
-
-    def _set_limits() -> None:
-        resource.setrlimit(resource.RLIMIT_AS, (max_memory_bytes, max_memory_bytes))
-
-    return _set_limits
+def _run_subprocess(
+    argv: list[str],
+    *,
+    workdir: Path | str | None = None,
+    input_data: str | None = None,
+    timeout_seconds: int,
+    max_memory_mb: int,
+    apply_memory_limit: bool = True,
+    apply_resource_limits: bool = True,
+    include_rust_toolchain: bool = False,
+) -> subprocess.CompletedProcess[str]:
+    work = Path(workdir) if workdir is not None else None
+    cmd, env, preexec = build_sandbox_command(
+        argv,
+        workdir=work,
+        max_memory_mb=max_memory_mb,
+        apply_memory_limit=apply_memory_limit,
+        apply_resource_limits=apply_resource_limits,
+        include_rust_toolchain=include_rust_toolchain,
+    )
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=timeout_seconds,
+        cwd=workdir,
+        input=input_data,
+        env=env,
+        preexec_fn=preexec,
+    )
 
 
 def _timed_out_result(message: str = "Execution timed out") -> SandboxRunResult:
@@ -99,12 +118,10 @@ def _run_python_sync(
     full_code = f"{wrapper}\n{code}"
 
     try:
-        completed = subprocess.run(
+        completed = _run_subprocess(
             [sys.executable, "-c", full_code],
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-            preexec_fn=_memory_limiter(max_memory_mb),
+            timeout_seconds=timeout_seconds,
+            max_memory_mb=max_memory_mb,
         )
     except subprocess.TimeoutExpired:
         return _timed_out_result()
@@ -161,22 +178,27 @@ def _compile_rust_sync(
 
     # No memory rlimit here: rustc maps far more address space than it uses.
     # Warnings are silenced so they are never mistaken for a failed run.
+    rustc_argv = sandbox_rustc_command(
+        [
+            "rustc",
+            "--edition=2021",
+            "-A",
+            "warnings",
+            "--color=never",
+            "-o",
+            str(workdir / "main"),
+            str(source),
+        ]
+    )
     try:
-        completed = subprocess.run(
-            [
-                "rustc",
-                "--edition=2021",
-                "-A",
-                "warnings",
-                "--color=never",
-                "-o",
-                str(workdir / "main"),
-                str(source),
-            ],
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-            cwd=workdir,
+        completed = _run_subprocess(
+            rustc_argv,
+            workdir=workdir,
+            timeout_seconds=timeout_seconds,
+            max_memory_mb=settings.SANDBOX_MAX_MEMORY_MB,
+            apply_memory_limit=False,
+            apply_resource_limits=False,
+            include_rust_toolchain=True,
         )
     except FileNotFoundError:
         return SandboxRunResult(
@@ -206,14 +228,12 @@ def _run_rust_binary_sync(
     max_memory_mb: int,
 ) -> SandboxRunResult:
     try:
-        completed = subprocess.run(
+        completed = _run_subprocess(
             [str(workdir / "main")],
-            input=input_data,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-            cwd=workdir,
-            preexec_fn=_memory_limiter(max_memory_mb),
+            workdir=workdir,
+            input_data=input_data,
+            timeout_seconds=timeout_seconds,
+            max_memory_mb=max_memory_mb,
         )
     except subprocess.TimeoutExpired:
         return _timed_out_result()
@@ -300,14 +320,12 @@ def _run_javascript_sync(
         source = Path(tmp) / "main.js"
         source.write_text(code, encoding="utf-8")
         try:
-            completed = subprocess.run(
+            completed = _run_subprocess(
                 ["node", *NODE_FLAGS, str(source)],
-                input=input_data,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-                cwd=tmp,
-                preexec_fn=_memory_limiter(max_memory_mb),
+                workdir=Path(tmp),
+                input_data=input_data,
+                timeout_seconds=timeout_seconds,
+                max_memory_mb=max_memory_mb,
             )
         except FileNotFoundError:
             return SandboxRunResult(

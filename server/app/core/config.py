@@ -30,6 +30,15 @@ class Settings(BaseSettings):
     # (across grading and /run); further requests wait their turn. Running the
     # compiled binary is cheap and is not counted against this cap.
     SANDBOX_RUST_MAX_CONCURRENT_COMPILES: int = 2
+    # Process isolation (bubblewrap + dedicated user when available)
+    SANDBOX_ENABLE_ISOLATION: bool = True
+    SANDBOX_USER: str = "codethrasher-sandbox"
+    SANDBOX_BUBBLEWRAP_PATH: str = "bwrap"
+    SANDBOX_MAX_PROCESSES: int = 64
+    SANDBOX_MAX_FILE_SIZE_BYTES: int = 1_048_576
+    SANDBOX_MAX_OPEN_FILES: int = 64
+    # Debian/Ubuntu package rustc in Docker; override when rustc is a rustup shim.
+    SANDBOX_RUSTC_PATH: str = ""
 
     @field_validator("CORS_ORIGINS")
     @classmethod
